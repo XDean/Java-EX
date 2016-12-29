@@ -5,6 +5,11 @@
 	<artifactId>Java-EX</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>io.reactivex</groupId>
@@ -42,7 +47,6 @@
 			<version>4.12</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -53,6 +57,19 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

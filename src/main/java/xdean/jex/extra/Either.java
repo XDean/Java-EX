@@ -6,6 +6,14 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+
+/**
+ * 
+ * @author org.reactfx.util, XDean
+ *
+ * @param <L>
+ * @param <R>
+ */
 public interface Either<L, R> {
 
   static <L, R> Either<L, R> left(L l) {

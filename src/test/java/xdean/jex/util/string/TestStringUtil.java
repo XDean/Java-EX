@@ -1,4 +1,4 @@
-package xdean.jex.string;
+package xdean.jex.util.string;
 
 import org.junit.Assert;
 import org.junit.Test;
