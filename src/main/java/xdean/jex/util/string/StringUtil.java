@@ -3,6 +3,8 @@ package xdean.jex.util.string;
 import java.util.Base64;
 import java.util.stream.Stream;
 
+import xdean.jex.util.cache.CacheUtil;
+
 import com.google.common.collect.Ordering;
 
 public class StringUtil {
@@ -88,6 +90,15 @@ public class StringUtil {
 
   public static String upperFirst(String st) {
     return st.substring(0, 1).toUpperCase() + st.substring(1).toLowerCase();
+  }
+
+  public static int indexOfIgnoreCase(String str, String target) {
+    return indexOfIgnoreCase(str, target, 0);
+  }
+
+  public static int indexOfIgnoreCase(String str, String target, int startIndex) {
+    return CacheUtil.cache(str, "lowerCase", () -> str.toLowerCase())
+        .indexOf(CacheUtil.cache(target, "lowerCase", () -> target.toLowerCase()), startIndex);
   }
 
   public static String encode(String str) {

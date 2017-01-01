@@ -23,4 +23,10 @@ public class ListUtil {
       consumer.accept(list.get(i), i);
     }
   }
+
+  public static <T> void addIfAbsent(List<? super T> list, T t) {
+    if (list.contains(t) == false) {
+      list.add(t);
+    }
+  }
 }
