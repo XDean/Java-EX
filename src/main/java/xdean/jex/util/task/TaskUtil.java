@@ -13,12 +13,18 @@ import xdean.jex.extra.Either;
 public enum TaskUtil {
   ;
 
-  public static interface TaskWithException<T> {
-    T call() throws Exception;
+  public static interface TaskWithThrowable<V, T extends Throwable> {
+    V call() throws T;
   }
 
-  public static interface RunnableWithException {
-    void run() throws Exception;
+  public static interface RunnableWithThrowable<T extends Throwable> {
+    void run() throws T;
+  }
+
+  public static interface TaskWithException<V> extends TaskWithThrowable<V, Exception> {
+  }
+
+  public static interface RunnableWithException extends RunnableWithThrowable<Exception> {
   }
 
   public static void async(Runnable task) {
@@ -65,21 +71,51 @@ public enum TaskUtil {
     return null;
   }
 
-  public static Optional<Exception> throwToReturn(RunnableWithException task) {
+  // public static Optional<Exception> throwToReturn(RunnableWithException task)
+  // {
+  // try {
+  // task.run();
+  // } catch (Exception e) {
+  // return Optional.of(e);
+  // }
+  // return Optional.empty();
+  // }
+
+  // public static <T> Either<T, Exception> throwToReturn(TaskWithException<T>
+  // task) {
+  // try {
+  // T t = task.call();
+  // return Either.left(t);
+  // } catch (Exception e) {
+  // return Either.right(e);
+  // }
+  // }
+
+  @SuppressWarnings("unchecked")
+  public static <E extends Exception> Optional<E> throwToReturn(RunnableWithThrowable<E> task) {
     try {
       task.run();
     } catch (Exception e) {
-      return Optional.of(e);
+      try {
+        return Optional.of((E) e);
+      } catch (ClassCastException cce) {
+        throw new RuntimeException("An unexcepted exception thrown.", e);
+      }
     }
     return Optional.empty();
   }
 
-  public static <T> Either<T, Exception> throwToReturn(TaskWithException<T> task) {
+  @SuppressWarnings("unchecked")
+  public static <T, E extends Exception> Either<T, E> throwToReturn(TaskWithThrowable<T, E> task) {
     try {
       T t = task.call();
       return Either.left(t);
     } catch (Exception e) {
-      return Either.right(e);
+      try {
+        return Either.right((E) e);
+      } catch (ClassCastException cce) {
+        throw new RuntimeException("An unexcepted exception thrown.", e);
+      }
     }
   }
 
@@ -140,17 +176,19 @@ public enum TaskUtil {
     }
   }
 
-  public static void ifTodo(boolean b, Runnable todo) {
+  public static boolean ifTodo(boolean b, Runnable todo) {
     if (b) {
       todo.run();
     }
+    return b;
   }
 
-  public static void ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
+  public static boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
     if (b) {
       todo.run();
     } else {
       elseTodo.run();
     }
+    return b;
   }
 }
