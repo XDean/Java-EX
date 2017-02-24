@@ -4,34 +4,35 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import xdean.jex.extra.Either;
 
 @Slf4j
-public enum TaskUtil {
-  ;
+@UtilityClass
+public class TaskUtil {
 
-  public static interface TaskWithThrowable<V, T extends Throwable> {
+  public interface TaskWithThrowable<V, T extends Throwable> {
     V call() throws T;
   }
 
-  public static interface RunnableWithThrowable<T extends Throwable> {
+  public interface RunnableWithThrowable<T extends Throwable> {
     void run() throws T;
   }
 
-  public static interface TaskWithException<V> extends TaskWithThrowable<V, Exception> {
+  public interface TaskWithException<V> extends TaskWithThrowable<V, Exception> {
   }
 
-  public static interface RunnableWithException extends RunnableWithThrowable<Exception> {
+  public interface RunnableWithException extends RunnableWithThrowable<Exception> {
   }
 
-  public static void async(Runnable task) {
+  public void async(Runnable task) {
     Observable.just(task).observeOn(Schedulers.newThread()).subscribe(r -> r.run());
   }
 
-  public static <T> T uncheck(TaskWithException<T> task) {
+  public <T> T uncheck(TaskWithException<T> task) {
     try {
       return task.call();
     } catch (Exception e) {
@@ -39,7 +40,7 @@ public enum TaskUtil {
     }
   }
 
-  public static void uncheck(RunnableWithException task) {
+  public void uncheck(RunnableWithException task) {
     try {
       task.run();
     } catch (Exception e) {
@@ -47,7 +48,7 @@ public enum TaskUtil {
     }
   }
 
-  public static boolean uncatch(RunnableWithException task) {
+  public boolean uncatch(RunnableWithException task) {
     try {
       task.run();
       return true;
@@ -62,7 +63,7 @@ public enum TaskUtil {
    * @param task
    * @return can be null
    */
-  public static <T> T uncatch(TaskWithException<T> task) {
+  public <T> T uncatch(TaskWithException<T> task) {
     try {
       return task.call();
     } catch (Exception e) {
@@ -71,7 +72,7 @@ public enum TaskUtil {
     return null;
   }
 
-  // public static Optional<Exception> throwToReturn(RunnableWithException task)
+  // public Optional<Exception> throwToReturn(RunnableWithException task)
   // {
   // try {
   // task.run();
@@ -81,7 +82,7 @@ public enum TaskUtil {
   // return Optional.empty();
   // }
 
-  // public static <T> Either<T, Exception> throwToReturn(TaskWithException<T>
+  // public <T> Either<T, Exception> throwToReturn(TaskWithException<T>
   // task) {
   // try {
   // T t = task.call();
@@ -92,7 +93,7 @@ public enum TaskUtil {
   // }
 
   @SuppressWarnings("unchecked")
-  public static <E extends Exception> Optional<E> throwToReturn(RunnableWithThrowable<E> task) {
+  public <E extends Exception> Optional<E> throwToReturn(RunnableWithThrowable<E> task) {
     try {
       task.run();
     } catch (Exception e) {
@@ -106,7 +107,7 @@ public enum TaskUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T, E extends Exception> Either<T, E> throwToReturn(TaskWithThrowable<T, E> task) {
+  public <T, E extends Exception> Either<T, E> throwToReturn(TaskWithThrowable<T, E> task) {
     try {
       T t = task.call();
       return Either.left(t);
@@ -119,7 +120,7 @@ public enum TaskUtil {
     }
   }
 
-  public static void todoAll(Runnable... tasks) {
+  public void todoAll(Runnable... tasks) {
     for (Runnable task : tasks) {
       task.run();
     }
@@ -132,7 +133,7 @@ public enum TaskUtil {
    * @return can be null
    */
   @SafeVarargs
-  public static <T> T firstSuccess(TaskWithException<T>... tasks) {
+  public <T> T firstSuccess(TaskWithException<T>... tasks) {
     for (TaskWithException<T> task : tasks) {
       T result = uncatch(task);
       if (result != null) {
@@ -148,7 +149,7 @@ public enum TaskUtil {
    * @param tasks
    * @return the exception
    */
-  public static Optional<Exception> firstFail(RunnableWithException... tasks) {
+  public Optional<Exception> firstFail(RunnableWithException... tasks) {
     for (RunnableWithException task : tasks) {
       try {
         task.run();
@@ -159,7 +160,7 @@ public enum TaskUtil {
     return Optional.empty();
   }
 
-  public static void andFinal(Runnable task, Runnable then) {
+  public void andFinal(Runnable task, Runnable then) {
     try {
       task.run();
     } finally {
@@ -167,7 +168,7 @@ public enum TaskUtil {
     }
   }
 
-  public static <T> T andFinal(Supplier<T> task, Consumer<T> then) {
+  public <T> T andFinal(Supplier<T> task, Consumer<T> then) {
     T t = null;
     try {
       return t = task.get();
@@ -176,14 +177,14 @@ public enum TaskUtil {
     }
   }
 
-  public static boolean ifTodo(boolean b, Runnable todo) {
+  public boolean ifTodo(boolean b, Runnable todo) {
     if (b) {
       todo.run();
     }
     return b;
   }
 
-  public static boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
+  public boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
     if (b) {
       todo.run();
     } else {

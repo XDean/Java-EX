@@ -12,15 +12,17 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 import xdean.jex.util.collection.TraversalUtil;
 import xdean.jex.util.task.TaskUtil;
 
 @Slf4j
+@UtilityClass
 public class FileUtil {
 
-  public static void createDirectory(Path path) throws IOException {
+  public void createDirectory(Path path) throws IOException {
     if (Files.notExists(path)) {
       Files.createDirectory(path);
     }
@@ -34,7 +36,7 @@ public class FileUtil {
    * @return
    * @throws IOException
    */
-  public static boolean equals(Path p1, Path p2) throws IOException {
+  public boolean equals(Path p1, Path p2) throws IOException {
     if (Files.size(p1) != Files.size(p2)) {
       return false;
     }
@@ -50,17 +52,17 @@ public class FileUtil {
     }
   }
 
-  public static Observable<Path> deepTraversal(Path path) {
+  public Observable<Path> deepTraversal(Path path) {
     return TraversalUtil.deepTraversal(path,
         p -> TaskUtil.firstSuccess(() -> Files.newDirectoryStream(p), () -> Collections.<Path> emptyList()));
   }
 
-  public static Observable<Path> wideTraversal(Path path) {
+  public Observable<Path> wideTraversal(Path path) {
     return TraversalUtil.wideTraversal(path,
         p -> TaskUtil.firstSuccess(() -> Files.newDirectoryStream(p), () -> Collections.<Path> emptyList()));
   }
 
-  public static String md5(Path path) throws IOException {
+  public String md5(Path path) throws IOException {
     try {
       return digest(path, "MD5");
     } catch (NoSuchAlgorithmException e) {
@@ -69,7 +71,7 @@ public class FileUtil {
     }
   }
 
-  public static String digest(Path path, String algorithm) throws IOException, NoSuchAlgorithmException {
+  public String digest(Path path, String algorithm) throws IOException, NoSuchAlgorithmException {
     log.debug("To calc {}'s {}, its size is: {}", path.getFileName(), algorithm, Files.size(path));
     Stopwatch sw = Stopwatch.createStarted();
     int bufferSize = 256 * 1024;
@@ -91,7 +93,7 @@ public class FileUtil {
     }
   }
 
-  private static String byteArrayToHex(byte[] b) {
+  private String byteArrayToHex(byte[] b) {
     String hs = "";
     String stmp = "";
     for (int n = 0; n < b.length; n++) {

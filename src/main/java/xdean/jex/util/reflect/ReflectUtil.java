@@ -8,15 +8,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public enum ReflectUtil {
-  ;
+@UtilityClass
+public class ReflectUtil {
 
-  private static final Error NEVER = new Error("TO CHECK YOUR CODE, THIS ERROR SHOULD NEVER OCCUR!");
+  private final Error NEVER = new Error("TO CHECK YOUR CODE, THIS ERROR SHOULD NEVER OCCUR!");
 
-  public static Class<?> getClass(String className) {
+  public Class<?> getClass(String className) {
     Class<?> clz = null;
     try {
       clz = Class.forName(className);
@@ -32,7 +33,7 @@ public enum ReflectUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T, O> O getField(Class<T> clz, T t, String fieldName) throws NoSuchFieldException {
+  public <T, O> O getField(Class<T> clz, T t, String fieldName) throws NoSuchFieldException {
     Field field = clz.getDeclaredField(fieldName);
     field.setAccessible(true);
     try {

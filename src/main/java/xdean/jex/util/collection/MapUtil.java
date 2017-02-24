@@ -2,12 +2,15 @@ package xdean.jex.util.collection;
 
 import java.util.HashMap;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class MapUtil {
-  public static <K, V> HashMap<K, V> newHashMap() {
+  public <K, V> HashMap<K, V> newHashMap() {
     return new HashMap<>();
   }
 
-  public static <K, V> HashMap<K, V> newHashMap(K[] keys, V[] values) {
+  public <K, V> HashMap<K, V> newHashMap(K[] keys, V[] values) {
     if (keys.length > values.length) {
       throw new IllegalArgumentException("Values is less than keys");
     }
