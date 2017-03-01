@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 
 import com.google.common.base.Stopwatch;
 
@@ -26,6 +27,14 @@ public class FileUtil {
     if (Files.notExists(path)) {
       Files.createDirectory(path);
     }
+  }
+
+  public Path rename(Path path, String name) throws IOException {
+    return Files.move(path, path.resolveSibling(name));
+  }
+
+  public Path rename(Path path, UnaryOperator<String> nameConverter) throws IOException {
+    return rename(path, nameConverter.apply(path.getFileName().toString()));
   }
 
   /**

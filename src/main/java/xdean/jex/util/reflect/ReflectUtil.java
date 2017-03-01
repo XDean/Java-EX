@@ -169,8 +169,6 @@ public class ReflectUtil {
     case "void":
       return Void.TYPE;
     default:
-      // return JSONUtil.getObjectFromJSON(objectValue,
-      // getClass(clz.getName()));
       return null;
     }
   }

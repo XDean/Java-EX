@@ -1,5 +1,7 @@
 package xdean.jex.util.task;
 
+import static xdean.jex.util.function.FunctionAdapter.supplierToRunnable;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -9,51 +11,47 @@ import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import xdean.jex.extra.Either;
+import xdean.jex.extra.Wrapper;
+import xdean.jex.extra.function.RunnableThrow;
+import xdean.jex.extra.function.SupplierThrow;
 
 @Slf4j
 @UtilityClass
 public class TaskUtil {
 
-  public interface TaskWithThrowable<V, T extends Throwable> {
-    V call() throws T;
-  }
-
-  public interface RunnableWithThrowable<T extends Throwable> {
-    void run() throws T;
-  }
-
-  public interface TaskWithException<V> extends TaskWithThrowable<V, Exception> {
-  }
-
-  public interface RunnableWithException extends RunnableWithThrowable<Exception> {
-  }
+  // public interface TaskWithException<V> extends SupplierThrow<V, Exception> {
+  // }
+  //
+  // public interface RunnableWithException extends RunnableThrow<Exception> {
+  // }
 
   public void async(Runnable task) {
     Observable.just(task).observeOn(Schedulers.newThread()).subscribe(r -> r.run());
   }
 
-  public <T> T uncheck(TaskWithException<T> task) {
-    try {
-      return task.call();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void uncheck(RunnableWithException task) {
+  public void uncheck(RunnableThrow<?> task) {
     try {
       task.run();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    } catch (Throwable t) {
+      throw new RuntimeException(t);
     }
   }
 
-  public boolean uncatch(RunnableWithException task) {
+  public <T> T uncheck(SupplierThrow<T, ?> task) {
+    return supplierToRunnable(task, r -> uncheck(r));
+    // try {
+    // return task.get();
+    // } catch (Exception e) {
+    // throw new RuntimeException(e);
+    // }
+  }
+
+  public boolean uncatch(RunnableThrow<?> task) {
     try {
       task.run();
       return true;
-    } catch (Exception e) {
-      log.trace("Dont catch", e);
+    } catch (Throwable t) {
+      log.trace("Dont catch", t);
       return false;
     }
   }
@@ -63,16 +61,17 @@ public class TaskUtil {
    * @param task
    * @return can be null
    */
-  public <T> T uncatch(TaskWithException<T> task) {
-    try {
-      return task.call();
-    } catch (Exception e) {
-      log.trace("Dont catch", e);
-    }
-    return null;
+  public <T> T uncatch(SupplierThrow<T, ?> task) {
+    return supplierToRunnable(task, r -> uncatch(r));
+    // try {
+    // return task.get();
+    // } catch (Exception e) {
+    // log.trace("Dont catch", e);
+    // }
+    // return null;
   }
 
-  // public Optional<Exception> throwToReturn(RunnableWithException task)
+  // public Optional<Exception> throwToReturn(RunnableThrow<Exception> task)
   // {
   // try {
   // task.run();
@@ -82,7 +81,7 @@ public class TaskUtil {
   // return Optional.empty();
   // }
 
-  // public <T> Either<T, Exception> throwToReturn(TaskWithException<T>
+  // public <T> Either<T, Exception> throwToReturn(SupplierThrow<T, Exception>
   // task) {
   // try {
   // T t = task.call();
@@ -93,31 +92,32 @@ public class TaskUtil {
   // }
 
   @SuppressWarnings("unchecked")
-  public <E extends Exception> Optional<E> throwToReturn(RunnableWithThrowable<E> task) {
+  public <E extends Throwable> Optional<E> throwToReturn(RunnableThrow<E> task) {
     try {
       task.run();
-    } catch (Exception e) {
+    } catch (Throwable t) {
       try {
-        return Optional.of((E) e);
+        return Optional.of((E) t);
       } catch (ClassCastException cce) {
-        throw new RuntimeException("An unexcepted exception thrown.", e);
+        throw new RuntimeException("An unexcepted exception thrown.", t);
       }
     }
     return Optional.empty();
   }
 
-  @SuppressWarnings("unchecked")
-  public <T, E extends Exception> Either<T, E> throwToReturn(TaskWithThrowable<T, E> task) {
-    try {
-      T t = task.call();
-      return Either.left(t);
-    } catch (Exception e) {
-      try {
-        return Either.right((E) e);
-      } catch (ClassCastException cce) {
-        throw new RuntimeException("An unexcepted exception thrown.", e);
-      }
-    }
+  public <T, E extends Exception> Either<T, E> throwToReturn(SupplierThrow<T, E> task) {
+    Wrapper<T> w = new Wrapper<T>(null);
+    return Either.rightOrDefault(throwToReturn(() -> w.set(task.get())), w.get());
+    // try {
+    // T t = task.get();
+    // return Either.left(t);
+    // } catch (Exception e) {
+    // try {
+    // return Either.right((E) e);
+    // } catch (ClassCastException cce) {
+    // throw new RuntimeException("An unexcepted exception thrown.", e);
+    // }
+    // }
   }
 
   public void todoAll(Runnable... tasks) {
@@ -133,8 +133,8 @@ public class TaskUtil {
    * @return can be null
    */
   @SafeVarargs
-  public <T> T firstSuccess(TaskWithException<T>... tasks) {
-    for (TaskWithException<T> task : tasks) {
+  public <T> T firstSuccess(SupplierThrow<T, ?>... tasks) {
+    for (SupplierThrow<T, ?> task : tasks) {
       T result = uncatch(task);
       if (result != null) {
         return result;
@@ -149,12 +149,18 @@ public class TaskUtil {
    * @param tasks
    * @return the exception
    */
-  public Optional<Exception> firstFail(RunnableWithException... tasks) {
-    for (RunnableWithException task : tasks) {
+  @SuppressWarnings("unchecked")
+  @SafeVarargs
+  public <T extends Throwable> Optional<T> firstFail(RunnableThrow<T>... tasks) {
+    for (RunnableThrow<T> task : tasks) {
       try {
         task.run();
-      } catch (Exception e) {
-        return Optional.of(e);
+      } catch (Throwable t) {
+        try {
+          return Optional.of((T) t);
+        } catch (ClassCastException cce) {
+          throw new RuntimeException("An unexcepted exception thrown.", t);
+        }
       }
     }
     return Optional.empty();
