@@ -12,10 +12,10 @@ import java.util.Arrays;
  */
 public class FixedLengthList<T> extends AbstractList<T> {
 
-  final int length;
-  final T[] array;
-  int pos;
-  int count;
+  protected final int length;
+  protected final T[] array;
+  protected int pos;
+  protected int count;
 
   @SuppressWarnings("unchecked")
   public FixedLengthList(int length) {

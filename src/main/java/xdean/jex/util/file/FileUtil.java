@@ -4,24 +4,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 
-import com.google.common.base.Stopwatch;
-
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 import xdean.jex.util.collection.TraversalUtil;
+import xdean.jex.util.security.SecurityUtil;
 import xdean.jex.util.task.TaskUtil;
+
+import com.google.common.base.Stopwatch;
 
 @Slf4j
 @UtilityClass
 public class FileUtil {
+
+  public String getNameWithoutSuffix(Path path) {
+    String name = path.getFileName().toString();
+    return name.substring(0, name.lastIndexOf('.'));
+  }
 
   public void createDirectory(Path path) throws IOException {
     if (Files.notExists(path)) {
@@ -72,50 +76,16 @@ public class FileUtil {
   }
 
   public String md5(Path path) throws IOException {
-    try {
-      return digest(path, "MD5");
-    } catch (NoSuchAlgorithmException e) {
-      // MD5 must be ok
-      throw new RuntimeException(e);
-    }
+    return SecurityUtil.md5(Files.newInputStream(path));
   }
 
-  public String digest(Path path, String algorithm) throws IOException, NoSuchAlgorithmException {
+  public String digest(Path path, String algorithm) throws NoSuchAlgorithmException, IOException {
     log.debug("To calc {}'s {}, its size is: {}", path.getFileName(), algorithm, Files.size(path));
-    Stopwatch sw = Stopwatch.createStarted();
-    int bufferSize = 256 * 1024;
-    MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
-    try (
-        InputStream fileInputStream = Files.newInputStream(path);
-        DigestInputStream digestInputStream = new DigestInputStream(fileInputStream, messageDigest);) {
-
-      byte[] buffer = new byte[bufferSize];
-      while (digestInputStream.read(buffer) > 0) {
-        ;
-      }
-      messageDigest = digestInputStream.getMessageDigest();
-      byte[] resultByteArray = messageDigest.digest();
-      return byteArrayToHex(resultByteArray);
+    Stopwatch s = Stopwatch.createStarted();
+    try {
+      return SecurityUtil.digest(Files.newInputStream(path), algorithm);
     } finally {
-      sw.stop();
-      log.debug("Calc end, use {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
+      log.debug("Calc end, use {} ms", s.elapsed(TimeUnit.MILLISECONDS));
     }
-  }
-
-  private String byteArrayToHex(byte[] b) {
-    String hs = "";
-    String stmp = "";
-    for (int n = 0; n < b.length; n++) {
-      stmp = (Integer.toHexString(b[n] & 0XFF));
-      if (stmp.length() == 1) {
-        hs = hs + "0" + stmp;
-      } else {
-        hs = hs + stmp;
-      }
-      if (n < b.length - 1) {
-        hs = hs + "";
-      }
-    }
-    return hs;
   }
 }

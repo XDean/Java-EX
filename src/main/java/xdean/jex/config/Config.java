@@ -58,6 +58,16 @@ public class Config {
     save();
   }
 
+  public static void setIfAbsent(Object key, String value) {
+    setIfAbsent(key.toString(), value);
+  }
+
+  public static void setIfAbsent(String key, String value) {
+    if (getProperty(key).isPresent() == false) {
+      setProperty(key, value);
+    }
+  }
+
   private static void save() {
     if (configFile == null) {
       return;

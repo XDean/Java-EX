@@ -1,5 +1,10 @@
 package xdean.jex.extra;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@EqualsAndHashCode
+@ToString
 public class Wrapper<T> {
   private T value;
 
@@ -14,35 +19,6 @@ public class Wrapper<T> {
 
   public void set(T t) {
     value = t;
-  }
-
-  @Override
-  public String toString() {
-    return value.toString();
-  }
-
-  @Override
-  public int hashCode() {
-    return value.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    Wrapper<?> other = (Wrapper<?>) obj;
-    if (value == null) {
-      if (other.value != null) {
-        return false;
-      }
-    } else if (!value.equals(other.value)) {
-      return false;
-    }
-    return true;
   }
 
   public static <T> Wrapper<T> of(T t) {

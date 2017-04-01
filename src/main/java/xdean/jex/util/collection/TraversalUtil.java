@@ -11,7 +11,7 @@ import rx.Observable;
 @UtilityClass
 public class TraversalUtil {
   public <T> Observable<T> deepTraversal(T root, Function<T, Iterable<T>> getChildren) {
-    return Observable.create(s -> {
+    return Observable.unsafeCreate(s -> {
       List<T> list = new LinkedList<>();
       List<T> bufferList = new ArrayList<>();
       list.add(root);
@@ -28,7 +28,7 @@ public class TraversalUtil {
   }
 
   public <T> Observable<T> wideTraversal(T root, Function<T, Iterable<T>> getChildren) {
-    return Observable.create(s -> {
+    return Observable.unsafeCreate(s -> {
       List<T> list = new LinkedList<>();
       list.add(root);
       s.onStart();

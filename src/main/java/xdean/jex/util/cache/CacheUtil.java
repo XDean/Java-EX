@@ -6,18 +6,19 @@ import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
 import lombok.experimental.UtilityClass;
+import xdean.jex.util.collection.MapUtil;
 
 @UtilityClass
 @SuppressWarnings("unchecked")
 public class CacheUtil {
 
-  private final Map<Object, Map<Object, Object>> CACHE_MAP = new WeakHashMap<>();
+  private final Map<Class<?>, Map<Object, Map<Object, Object>>> CACHE_MAP = createMap();
 
-  public <K, V> V cache(K key, Supplier<V> factory) {
+  public <V> V cache(Object key, Supplier<V> factory) {
     return cache(key.getClass(), key, factory);
   }
 
-  public <K, V> V cache(Object owner, K key, Supplier<V> factory) {
+  public <V> V cache(Object owner, Object key, Supplier<V> factory) {
     Map<Object, Object> map = getMap(owner);
     if (map.containsKey(key)) {
       return (V) map.get(key);
@@ -27,11 +28,11 @@ public class CacheUtil {
     return v;
   }
 
-  public <K, V> Optional<V> get(K key) {
+  public <V> Optional<V> get(Object key) {
     return get(key.getClass(), key);
   }
 
-  public <K, V> Optional<V> get(Object owner, K key) {
+  public <V> Optional<V> get(Object owner, Object key) {
     Map<Object, Object> map = getMap(owner);
     if (map.containsKey(key)) {
       return Optional.of((V) map.get(key));
@@ -39,20 +40,20 @@ public class CacheUtil {
     return Optional.empty();
   }
 
-  public <K, V> void set(K key, V value) {
+  public <V> void set(Object key, V value) {
     set(key.getClass(), key, value);
   }
 
-  public <K, V> void set(Object owner, K key, V value) {
+  public <V> void set(Object owner, Object key, V value) {
     Map<Object, Object> map = getMap(owner);
     map.put(key, value);
   }
 
-  public <K, V> Optional<V> remove(K key) {
+  public <V> Optional<V> remove(Object key) {
     return remove(key.getClass(), key);
   }
 
-  public <K, V> Optional<V> remove(Object owner, K key) {
+  public <V> Optional<V> remove(Object owner, Object key) {
     Map<Object, Object> map = getMap(owner);
     if (map.containsKey(key)) {
       return Optional.of((V) map.remove(key));
@@ -61,11 +62,16 @@ public class CacheUtil {
   }
 
   private Map<Object, Object> getMap(Object owner) {
-    if (CACHE_MAP.containsKey(owner)) {
-      return CACHE_MAP.get(owner);
-    }
-    Map<Object, Object> m = new WeakHashMap<>();
-    CACHE_MAP.put(owner, m);
-    return m;
+    return MapUtil.getOrPutDefault(
+        MapUtil.getOrPutDefault(
+            CACHE_MAP,
+            owner.getClass(),
+            () -> createMap()),
+        owner,
+        () -> createMap());
+  }
+
+  private <K, V> Map<K, V> createMap() {
+    return new WeakHashMap<>();// XXX:Synchronize?
   }
 }

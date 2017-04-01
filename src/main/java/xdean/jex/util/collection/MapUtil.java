@@ -4,6 +4,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import xdean.jex.extra.function.BiConsumerThrow;
 import lombok.experimental.UtilityClass;
@@ -37,6 +38,24 @@ public class MapUtil {
         throw new ConcurrentModificationException(ise);
       }
       action.accept(k, v);
+    }
+  }
+  
+  /**
+   * Get the value of the key. If absent, put the default value.
+   * @param map
+   * @param key
+   * @param defaultGetter
+   * @return
+   */
+  public <K,V> V getOrPutDefault(Map<K,V> map, K key, Supplier<V> defaultGetter){
+    V result = map.get(key);
+    if(result==null){
+      V defaultValue = defaultGetter.get();
+      map.put(key, defaultValue);
+      return defaultValue;
+    }else{
+      return result;
     }
   }
 }
