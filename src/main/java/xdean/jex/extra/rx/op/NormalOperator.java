@@ -1,10 +1,10 @@
-package xdean.jex.extra.rx;
+package xdean.jex.extra.rx.op;
 
 import lombok.AllArgsConstructor;
 import rx.Observable.Operator;
 import rx.Subscriber;
 
-public abstract class SimpleOperator<R, T> implements Operator<R, T> {
+public abstract class NormalOperator<R, T> implements Operator<R, T> {
 
   @Override
   public Subscriber<? super T> call(Subscriber<? super R> t) {
@@ -33,22 +33,22 @@ public abstract class SimpleOperator<R, T> implements Operator<R, T> {
     
     @Override
     public void onStart() {
-      SimpleOperator.this.onStart(actual);
+      NormalOperator.this.onStart(actual);
     }
 
     @Override
     public void onNext(T t) {
-      SimpleOperator.this.onNext(actual, t);
+      NormalOperator.this.onNext(actual, t);
     }
 
     @Override
     public void onCompleted() {
-      SimpleOperator.this.onCompleted(actual);
+      NormalOperator.this.onCompleted(actual);
     }
 
     @Override
     public void onError(Throwable e) {
-      SimpleOperator.this.onError(actual, e);
+      NormalOperator.this.onError(actual, e);
     }
   }
 }

@@ -20,19 +20,17 @@ public class RxUtil {
 
   /**
    * 
-   * @param from
-   *          include
-   * @param to
-   *          include
+   * @param from include
+   * @param to include
    * @param step
    * @return
    */
   public static Observable<Integer> range(int from, int to, int step) {
-    return Observable.range(0, 1 + (to - from) / step + ((to - from) % step == 0 ? 0 : 1)).map(i -> from + i * step);
+    return Observable.range(0, 1 + (to - from) / step).map(i -> from + i * step);
   }
 
   public static Observable<Double> range(double from, double to, double step) {
-    return Observable.range(0, (int) ((to - from) / step + ((to - from) % step == 0 ? 0 : 1))).map(i -> from + i * step);
+    return Observable.range(0, (int) (1 + (to - from) / step)).map(i -> from + i * step);
   }
 
   public static <A, B> Observable<Pair<A, B>> cross(Observable<A> oa, Observable<B> ob) {

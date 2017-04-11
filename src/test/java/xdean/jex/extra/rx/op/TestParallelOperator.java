@@ -1,6 +1,4 @@
-package xdean.jex.extra.rx;
-
-import org.junit.Test;
+package xdean.jex.extra.rx.op;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -8,7 +6,7 @@ import xdean.jex.util.task.TaskUtil;
 
 public class TestParallelOperator {
 
-  @Test
+  // @Test
   public void test() {
     Observable.range(1, 100)
         .lift(new ParallelOperator<>(Schedulers.computation()))

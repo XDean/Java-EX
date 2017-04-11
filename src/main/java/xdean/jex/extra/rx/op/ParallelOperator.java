@@ -1,4 +1,4 @@
-package xdean.jex.extra.rx;
+package xdean.jex.extra.rx.op;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
@@ -11,8 +11,7 @@ import rx.Scheduler;
 import rx.Subscriber;
 
 /**
- * An operator to do tasks on specified scheduler and wait for all tasks
- * completed.
+ * An operator to do tasks on specified scheduler and wait for all tasks completed.
  * 
  * @author XDean
  *
@@ -36,6 +35,7 @@ public class ParallelOperator<T> implements Operator<T, T> {
     private final AtomicInteger endLeft = new AtomicInteger(0);
     // private final AtomicInteger startLeft = new AtomicInteger(0);
     private volatile Thread completeThread;
+
     // private volatile Thread nextThread;
 
     public ParallelSubscriber(Subscriber<? super T> actual) {

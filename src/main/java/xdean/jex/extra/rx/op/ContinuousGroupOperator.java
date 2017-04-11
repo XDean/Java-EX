@@ -1,6 +1,7 @@
-package xdean.jex.extra.rx;
+package xdean.jex.extra.rx.op;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -12,7 +13,7 @@ import rx.Subscriber;
 import xdean.jex.extra.Pair;
 
 /**
- * TODO
+ * TODO change to {@code Operator<Pair<K, Observable<T>>, T>}
  * 
  * @author XDean
  *
@@ -45,22 +46,23 @@ public class ContinuousGroupOperator<K, T> implements Operator<Pair<K, List<T>>,
       K nextKey = keySelector.apply(next);
       if (nextKey.equals(key)) {
         if (list == null) {
-          list = new ArrayList<>();
+          list = new LinkedList<>();
         }
-        list.add(next);
       } else {
         if (list != null) {
           actual.onNext(Pair.of(key, list));
         }
         list = new ArrayList<>();
       }
+      list.add(next);
       key = nextKey;
     }
 
     @Override
     public void onCompleted() {
       if (list != null) {
-        actual.onNext(Pair.of(key, list));
+        actual.onNext(Pair.of(key, new ArrayList<>(list)));
+        list = null;
       }
       actual.onCompleted();
     }
