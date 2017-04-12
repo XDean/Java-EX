@@ -9,7 +9,7 @@ public class TestFunctionOperator {
   @Test
   public void test() {
     Observable.range(0, 5)
-        .lift(new FunctionOperator<>(this::func))
+        .lift(FunctionOperator.of(this::func))
         .test()
         .assertResult(0, -1, -2, -3, -4);
   }

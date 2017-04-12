@@ -2,6 +2,7 @@ package xdean.jex.extra.rx.op;
 
 import java.util.function.Function;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import rx.Observable;
 import rx.Observable.Operator;
@@ -26,8 +27,12 @@ import rx.Subscriber;
  * @param <F>
  * @param <T>
  */
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FunctionOperator<F, T> implements Operator<F, T> {
+
+  public static <F, T> FunctionOperator<F, T> of(Function<Observable<T>, Observable<F>> func) {
+    return new FunctionOperator<>(func);
+  }
 
   Function<Observable<T>, Observable<F>> func;
 
