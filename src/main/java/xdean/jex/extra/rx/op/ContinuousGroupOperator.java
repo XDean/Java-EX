@@ -3,6 +3,7 @@ package xdean.jex.extra.rx.op;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import lombok.AccessLevel;
@@ -44,7 +45,7 @@ public class ContinuousGroupOperator<K, T> implements Operator<Pair<K, List<T>>,
     @Override
     public void onNext(T next) {
       K nextKey = keySelector.apply(next);
-      if (nextKey.equals(key)) {
+      if (Objects.equals(nextKey, key)) {
         if (list == null) {
           list = new LinkedList<>();
         }

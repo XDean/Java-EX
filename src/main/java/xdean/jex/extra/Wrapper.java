@@ -24,4 +24,8 @@ public class Wrapper<T> {
   public static <T> Wrapper<T> of(T t) {
     return new Wrapper<T>(t);
   }
+
+  public static <T> Wrapper<T> empty() {
+    return Wrapper.of(null);
+  }
 }

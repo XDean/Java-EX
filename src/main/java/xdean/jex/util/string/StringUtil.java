@@ -10,6 +10,14 @@ import com.google.common.collect.Ordering;
 
 @UtilityClass
 public class StringUtil {
+  
+  public String repeat(String st, int times){
+    StringBuilder sb = new StringBuilder();
+    while(times-->0){
+      sb.append(st);
+    }
+    return sb.toString();
+  }
 
   public int firstIndexOf(String str, String... ts) {
     return Stream.of(ts)
