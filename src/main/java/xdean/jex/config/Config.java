@@ -1,6 +1,5 @@
 package xdean.jex.config;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,12 +23,10 @@ public class Config {
         }
       }
       CONFIG.load(Files.newBufferedReader(configPath));
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("IOException", e);
     }
-    log.debug(CONFIG.toString());
+    log.debug("Load last config: " + CONFIG.toString());
     configFile = configPath;
   }
 
