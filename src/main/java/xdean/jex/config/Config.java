@@ -6,14 +6,16 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@UtilityClass
 public class Config {
-  private static final Properties CONFIG = new Properties();
-  private static Path configFile;
+  private final Properties CONFIG = new Properties();
+  private Path configFile;
 
-  public static void locate(Path configPath, Path defaultConfig) {
+  public void locate(Path configPath, Path defaultConfig) {
     try {
       if (Files.notExists(configPath)) {
         if (Files.exists(defaultConfig)) {
@@ -30,49 +32,49 @@ public class Config {
     configFile = configPath;
   }
 
-  public static Optional<String> getProperty(String key) {
+  public Optional<String> getProperty(String key) {
     return Optional.ofNullable(CONFIG.getProperty(key));
   }
 
-  public static Optional<String> getProperty(Object key) {
+  public Optional<String> getProperty(Object key) {
     return getProperty(key.toString());
   }
 
-  public static String getProperty(Object key, String defaultValue) {
+  public String getProperty(Object key, String defaultValue) {
     return getProperty(key.toString(), defaultValue);
   }
 
-  public static String getProperty(String key, String defaultValue) {
+  public String getProperty(String key, String defaultValue) {
     return getProperty(key).orElse(defaultValue);
   }
 
-  public static void setProperty(Object key, String value) {
+  public void setProperty(Object key, String value) {
     setProperty(key.toString(), value);
   }
 
-  public static void setProperty(String key, String value) {
+  public void setProperty(String key, String value) {
     CONFIG.setProperty(key, value);
     save();
   }
 
-  public static void setIfAbsent(Object key, String value) {
+  public void setIfAbsent(Object key, String value) {
     setIfAbsent(key.toString(), value);
   }
 
-  public static void setIfAbsent(String key, String value) {
+  public void setIfAbsent(String key, String value) {
     if (getProperty(key).isPresent() == false) {
       setProperty(key, value);
     }
   }
 
-  private static void save() {
+  private synchronized void save() {
     if (configFile == null) {
       return;
     }
     try {
       CONFIG.store(Files.newOutputStream(configFile), "");
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("", e);
     }
   }
 }
