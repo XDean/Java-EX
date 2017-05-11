@@ -6,6 +6,7 @@ import rx.Observable;
 
 public class TestFunctionOperator {
 
+  @SuppressWarnings("deprecation")
   @Test
   public void test() {
     Observable.range(0, 5)
