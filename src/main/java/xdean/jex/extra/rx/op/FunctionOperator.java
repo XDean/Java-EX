@@ -9,6 +9,8 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 
 /**
+ * Well... I found there is {@code compose} operator.
+ * 
  * Lift with this operator seem to apply the function to the observable.
  * 
  * <pre>
@@ -27,8 +29,9 @@ import rx.Subscriber;
  * @param <F>
  * @param <T>
  */
+@Deprecated
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FunctionOperator<F, T> implements Operator<F, T> {
+class FunctionOperator<F, T> implements Operator<F, T> {
 
   public static <F, T> FunctionOperator<F, T> of(Function<Observable<T>, Observable<F>> func) {
     return new FunctionOperator<>(func);
