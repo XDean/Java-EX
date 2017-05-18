@@ -19,12 +19,6 @@ import xdean.jex.extra.function.SupplierThrow;
 @UtilityClass
 public class TaskUtil {
 
-  // public interface TaskWithException<V> extends SupplierThrow<V, Exception> {
-  // }
-  //
-  // public interface RunnableWithException extends RunnableThrow<Exception> {
-  // }
-
   public void async(Runnable task) {
     Observable.just(task).observeOn(Schedulers.newThread()).subscribe(r -> r.run());
   }
@@ -39,11 +33,6 @@ public class TaskUtil {
 
   public <T> T uncheck(SupplierThrow<T, ?> task) {
     return supplierToRunnable(task, r -> uncheck(r));
-    // try {
-    // return task.get();
-    // } catch (Exception e) {
-    // throw new RuntimeException(e);
-    // }
   }
 
   public boolean uncatch(RunnableThrow<?> task) {
@@ -63,33 +52,7 @@ public class TaskUtil {
    */
   public <T> T uncatch(SupplierThrow<T, ?> task) {
     return supplierToRunnable(task, r -> uncatch(r));
-    // try {
-    // return task.get();
-    // } catch (Exception e) {
-    // log.trace("Dont catch", e);
-    // }
-    // return null;
   }
-
-  // public Optional<Exception> throwToReturn(RunnableThrow<Exception> task)
-  // {
-  // try {
-  // task.run();
-  // } catch (Exception e) {
-  // return Optional.of(e);
-  // }
-  // return Optional.empty();
-  // }
-
-  // public <T> Either<T, Exception> throwToReturn(SupplierThrow<T, Exception>
-  // task) {
-  // try {
-  // T t = task.call();
-  // return Either.left(t);
-  // } catch (Exception e) {
-  // return Either.right(e);
-  // }
-  // }
 
   @SuppressWarnings("unchecked")
   public <E extends Throwable> Optional<E> throwToReturn(RunnableThrow<E> task) {
@@ -108,16 +71,6 @@ public class TaskUtil {
   public <T, E extends Exception> Either<T, E> throwToReturn(SupplierThrow<T, E> task) {
     Wrapper<T> w = new Wrapper<T>(null);
     return Either.rightOrDefault(throwToReturn(() -> w.set(task.get())), w.get());
-    // try {
-    // T t = task.get();
-    // return Either.left(t);
-    // } catch (Exception e) {
-    // try {
-    // return Either.right((E) e);
-    // } catch (ClassCastException cce) {
-    // throw new RuntimeException("An unexcepted exception thrown.", e);
-    // }
-    // }
   }
 
   public void todoAll(Runnable... tasks) {
