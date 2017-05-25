@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import lombok.AllArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
@@ -136,19 +137,40 @@ public class TaskUtil {
     }
   }
 
-  public boolean ifTodo(boolean b, Runnable todo) {
-    if (b) {
-      todo.run();
+  @AllArgsConstructor
+  public class IfWrapper {
+    boolean condition;
+
+    public IfWrapper todo(Runnable r) {
+      if (condition) {
+        r.run();
+      }
+      return this;
     }
-    return b;
+
+    public IfWrapper otherwise(Runnable r) {
+      if (!condition) {
+        r.run();
+      }
+      return this;
+    }
+
+    public boolean toBoolean() {
+      return condition;
+    }
   }
 
+  public IfWrapper ifThat(boolean b) {
+    return new IfWrapper(b);
+  }
+
+  @Deprecated
+  public boolean ifTodo(boolean b, Runnable todo) {
+    return ifThat(b).todo(todo).toBoolean();
+  }
+
+  @Deprecated
   public boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
-    if (b) {
-      todo.run();
-    } else {
-      elseTodo.run();
-    }
-    return b;
+    return ifThat(b).todo(todo).otherwise(elseTodo).toBoolean();
   }
 }
