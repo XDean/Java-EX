@@ -1,31 +1,62 @@
 package xdean.jex.util.task;
 
-import lombok.AllArgsConstructor;
+import java.util.Optional;
+import java.util.function.Supplier;
 
-@AllArgsConstructor
-public class If {
+import lombok.RequiredArgsConstructor;
 
-  public static If that(boolean b) {
-    return new If(b);
+@RequiredArgsConstructor
+public class If<T> {
+
+  public static <T> If<T> that(boolean b) {
+    return new If<>(b);
   }
 
-  boolean condition;
+  final boolean condition;
+  T result;
 
-  public If todo(Runnable r) {
+  public If<T> todo(Runnable r) {
     if (condition) {
       r.run();
     }
     return this;
   }
 
-  public If otherwise(Runnable r) {
+  public If<T> tobe(Supplier<T> s) {
+    if (condition) {
+      result = s.get();
+    }
+    return this;
+  }
+
+  public If<T> ordo(Runnable r) {
     if (!condition) {
       r.run();
     }
     return this;
   }
 
+  public If<T> orbe(Supplier<T> s) {
+    if (!condition) {
+      result = s.get();
+    }
+    return this;
+  }
+
+  @Deprecated
   public boolean toBoolean() {
     return condition;
+  }
+
+  public boolean condition() {
+    return condition;
+  }
+
+  public T result() {
+    return result;
+  }
+
+  public Optional<T> safeResult() {
+    return Optional.ofNullable(result);
   }
 }

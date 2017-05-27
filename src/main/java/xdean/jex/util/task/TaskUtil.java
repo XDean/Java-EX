@@ -136,7 +136,7 @@ public class TaskUtil {
     }
   }
 
-  public If ifThat(boolean b) {
+  public <T> If<T> ifThat(boolean b) {
     return If.that(b);
   }
 
@@ -147,6 +147,6 @@ public class TaskUtil {
 
   @Deprecated
   public boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
-    return ifThat(b).todo(todo).otherwise(elseTodo).toBoolean();
+    return ifThat(b).todo(todo).ordo(elseTodo).toBoolean();
   }
 }
