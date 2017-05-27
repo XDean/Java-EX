@@ -13,6 +13,9 @@ public class PropertiesBuilder {
   Map<String, String> values = new HashMap<>();
   Properties defaults;
 
+  private PropertiesBuilder() {
+  }
+
   public PropertiesBuilder put(String key, String value) {
     values.put(key, value);
     return this;
