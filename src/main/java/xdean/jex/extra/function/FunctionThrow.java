@@ -1,0 +1,23 @@
+package xdean.jex.extra.function;
+
+import java.util.Objects;
+
+@FunctionalInterface
+public interface FunctionThrow<F, R, T extends Throwable> {
+
+  R apply(F f) throws T;
+
+  default <V> FunctionThrow<V, R, T> compose(FunctionThrow<? super V, ? extends F, T> before) {
+    Objects.requireNonNull(before);
+    return (V v) -> apply(before.apply(v));
+  }
+
+  default <V> FunctionThrow<F, V, T> andThen(FunctionThrow<? super R, ? extends V, T> after) {
+    Objects.requireNonNull(after);
+    return (F t) -> after.apply(apply(t));
+  }
+
+  static <F, T extends Throwable> FunctionThrow<F, F, T> identity() {
+    return t -> t;
+  }
+}
