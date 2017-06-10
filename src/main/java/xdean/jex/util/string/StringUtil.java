@@ -10,10 +10,10 @@ import com.google.common.collect.Ordering;
 
 @UtilityClass
 public class StringUtil {
-  
-  public String repeat(String st, int times){
+
+  public String repeat(String st, int times) {
     StringBuilder sb = new StringBuilder();
-    while(times-->0){
+    while (times-- > 0) {
       sb.append(st);
     }
     return sb.toString();
@@ -117,5 +117,23 @@ public class StringUtil {
 
   public String decode(String str) {
     return new String(Base64.getDecoder().decode(str.getBytes()));
+  }
+
+  public static String camelToUnderline(String param) {
+    if (param == null || "".equals(param.trim())) {
+      return "";
+    }
+    int len = param.length();
+    StringBuilder sb = new StringBuilder(len);
+    for (int i = 0; i < len; i++) {
+      char c = param.charAt(i);
+      if (Character.isUpperCase(c) || Character.isDigit(c)) {
+        sb.append("_");
+        sb.append(c);
+      } else {
+        sb.append(Character.toUpperCase(c));
+      }
+    }
+    return sb.toString();
   }
 }
