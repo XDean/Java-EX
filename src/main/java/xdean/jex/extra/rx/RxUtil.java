@@ -11,6 +11,12 @@ import xdean.jex.extra.Pair;
 import xdean.jex.util.lang.FinalizeSupport;
 
 public class RxUtil {
+  /**
+   * Create a fixed size scheduler without manual dispose. The scheduler will release when it is useless.
+   * 
+   * @param size
+   * @return
+   */
   public static Scheduler fixedSizeScheduler(int size) {
     ExecutorService pool = Executors.newFixedThreadPool(size, new RxThreadFactory("FixedSizeScheduler-"));
     Scheduler scheduler = Schedulers.from(pool);
