@@ -27,7 +27,7 @@ public class TaskUtil {
     try {
       task.run();
     } catch (Throwable t) {
-      throw new RuntimeException(t);
+      throwAsUncheck(t);
     }
   }
 
@@ -148,5 +148,10 @@ public class TaskUtil {
   @Deprecated
   public boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
     return ifThat(b).todo(todo).ordo(elseTodo).toBoolean();
+  }
+
+  @SuppressWarnings("unchecked")
+  private <E extends Throwable> void throwAsUncheck(Throwable e) throws E {
+    throw (E) e;
   }
 }
