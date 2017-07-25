@@ -1,4 +1,4 @@
-package xdean.jex.util.lang;
+package xdean.jex.util.reflect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import xdean.jex.util.reflect.ReflectUtil;
 import lombok.experimental.UtilityClass;
 
 /**

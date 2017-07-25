@@ -11,6 +11,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import xdean.jex.util.reflect.AnnotationUtil;
+
 public class TestAnnotationUtil {
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
