@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import xdean.jex.util.reflect.ReflectUtil;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -104,13 +105,15 @@ public class AnnotationUtil {
   }
 
   /**
-   * Add annotation to Executable(Method or Constructor)
+   * Add annotation to Executable(Method or Constructor)<br>
+   * Note that you should give the root method.
    * 
    * @param ex
    * @param annotation
    * @author XDean
    * @see java.lang.reflect.Excutable
-   * @see {@link #createAnnotationFromMap(Class, Map)}
+   * @see #createAnnotationFromMap(Class, Map)
+   * @see ReflectUtil#getRootMethods(Class)
    */
   @SuppressWarnings("unchecked")
   public void addAnnotation(Executable ex, Annotation annotation) {
@@ -137,7 +140,7 @@ public class AnnotationUtil {
    * @author Balder@stackoverflow
    * @see https://stackoverflow.com/a/30287201/7803527
    * @see java.lang.Class
-   * @see {@link #createAnnotationFromMap(Class, Map)}
+   * @see #createAnnotationFromMap(Class, Map)
    */
   public <T extends Annotation> void addAnnotation(Class<?> c, T annotation) {
     try {
