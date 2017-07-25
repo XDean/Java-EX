@@ -1,6 +1,7 @@
 package xdean.jex.util.reflect;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,21 +16,22 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class ReflectUtil {
 
-  private final Error NEVER = new Error("TO CHECK YOUR CODE, THIS ERROR SHOULD NEVER OCCUR!");
-
-  public Class<?> getClass(String className) {
-    Class<?> clz = null;
+  private final Method GET_ROOT_METHODS;
+  static {
     try {
-      clz = Class.forName(className);
-    } catch (ClassNotFoundException e) {
-      try {
-        ClassLoader.getSystemClassLoader().loadClass(className);
-        clz = Class.forName(className);
-      } catch (ClassNotFoundException e1) {
-        throw NEVER;
-      }
+      GET_ROOT_METHODS = Class.class.getDeclaredMethod("privateGetPublicMethods", new Class[] {});
+      GET_ROOT_METHODS.setAccessible(true);
+    } catch (NoSuchMethodException | SecurityException e) {
+      throw new IllegalStateException("ReflectUtil init fail, check your java version.", e);
     }
-    return clz;
+  }
+
+  public Method[] getRootMethods(Class<?> clz) {
+    try {
+      return (Method[]) GET_ROOT_METHODS.invoke(clz, new Object[] {});
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -39,7 +41,8 @@ public class ReflectUtil {
     try {
       return (O) field.get(t);
     } catch (IllegalAccessException e) {
-      throw NEVER;
+      log.error("Should not happen.", e);
+      throw new IllegalStateException(e);
     }
   }
 
