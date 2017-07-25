@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -110,12 +111,20 @@ public class AnnotationUtil {
     } catch (IllegalAccessException e) {
       throw new IllegalStateException(e);
     }
+    if (annos.getClass() == Collections.EMPTY_MAP.getClass()) {
+      annos = new HashMap<>();
+      try {
+        Field_Excutable_DeclaredAnnotations.set(ex, annos);
+      } catch (IllegalAccessException e) {
+        throw new IllegalStateException(e);
+      }
+    }
     annos.put(anno.annotationType(), anno);
   }
 
   public <T extends Annotation> void addAnnotation(Class<?> c, Class<T> annotationClass,
       Map<String, Object> valuesMap) {
-    addAnnotation(c, annotationClass, annotationFromMap(annotationClass, valuesMap));
+    addAnnotation(c, annotationClass, createAnnotationFromMap(annotationClass, valuesMap));
   }
 
   public <T extends Annotation> void addAnnotation(Class<?> c, Class<T> annotationClass, T annotation) {
@@ -161,7 +170,7 @@ public class AnnotationUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public <T extends Annotation> T annotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
+  public <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
     return (T) AccessController.doPrivileged(new PrivilegedAction<Annotation>() {
       @Override
       public Annotation run() {
