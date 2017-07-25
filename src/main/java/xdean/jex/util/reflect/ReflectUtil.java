@@ -26,6 +26,12 @@ public class ReflectUtil {
     }
   }
 
+  /**
+   * Get the actual root methods of the class.(BE CAREFUL)
+   * 
+   * @param clz
+   * @return
+   */
   public Method[] getRootMethods(Class<?> clz) {
     try {
       return (Method[]) GET_ROOT_METHODS.invoke(clz, new Object[] {});

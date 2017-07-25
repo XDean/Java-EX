@@ -17,6 +17,12 @@ import java.util.Map;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Change annotations in runtime.
+ * 
+ * @author XDean
+ *
+ */
 @UtilityClass
 public class AnnotationUtil {
 
@@ -30,12 +36,6 @@ public class AnnotationUtil {
   private final Class<?> Atomic_class;
   private final Field Field_Excutable_DeclaredAnnotations;
 
-  /**
-   * @author Balder@stackoverflow, XDean
-   * @see https://stackoverflow.com/a/30287201/7803527
-   * @see java.lang.Class
-   * @see java.lang.reflect.Excutable
-   */
   static {
     // static initialization of necessary reflection Objects
     try {
@@ -103,8 +103,17 @@ public class AnnotationUtil {
     return oldValue;
   }
 
+  /**
+   * Add annotation to Executable(Method or Constructor)
+   * 
+   * @param ex
+   * @param annotation
+   * @author XDean
+   * @see java.lang.reflect.Excutable
+   * @see {@link #createAnnotationFromMap(Class, Map)}
+   */
   @SuppressWarnings("unchecked")
-  public void addAnnotation(Executable ex, Annotation anno) {
+  public void addAnnotation(Executable ex, Annotation annotation) {
     Map<Class<? extends Annotation>, Annotation> annos;
     try {
       annos = (Map<Class<? extends Annotation>, Annotation>) Field_Excutable_DeclaredAnnotations.get(ex);
@@ -119,21 +128,24 @@ public class AnnotationUtil {
         throw new IllegalStateException(e);
       }
     }
-    annos.put(anno.annotationType(), anno);
+    annos.put(annotation.annotationType(), annotation);
   }
 
-  public <T extends Annotation> void addAnnotation(Class<?> c, Class<T> annotationClass,
-      Map<String, Object> valuesMap) {
-    addAnnotation(c, annotationClass, createAnnotationFromMap(annotationClass, valuesMap));
-  }
-
-  public <T extends Annotation> void addAnnotation(Class<?> c, Class<T> annotationClass, T annotation) {
+  /**
+   * @param c
+   * @param annotation
+   * @author Balder@stackoverflow
+   * @see https://stackoverflow.com/a/30287201/7803527
+   * @see java.lang.Class
+   * @see {@link #createAnnotationFromMap(Class, Map)}
+   */
+  public <T extends Annotation> void addAnnotation(Class<?> c, T annotation) {
     try {
       while (true) { // retry loop
         int classRedefinedCount = Class_classRedefinedCount.getInt(c);
         Object /* AnnotationData */annotationData = Class_annotationData.invoke(c);
         // null or stale annotationData -> optimistically create new instance
-        Object newAnnotationData = createAnnotationData(c, annotationData, annotationClass, annotation,
+        Object newAnnotationData = createAnnotationData(c, annotationData, annotation,
             classRedefinedCount);
         // try to install it
         if ((boolean) Atomic_casAnnotationData.invoke(Atomic_class, c, annotationData, newAnnotationData)) {
@@ -149,8 +161,7 @@ public class AnnotationUtil {
 
   @SuppressWarnings("unchecked")
   private <T extends Annotation> Object /* AnnotationData */createAnnotationData(
-      Class<?> c, Object /* AnnotationData */annotationData,
-      Class<T> annotationClass, T annotation, int classRedefinedCount)
+      Class<?> c, Object /* AnnotationData */annotationData, T annotation, int classRedefinedCount)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     Map<Class<? extends Annotation>, Annotation> annotations = (Map<Class<? extends Annotation>, Annotation>) AnnotationData_annotations
         .get(annotationData);
@@ -158,17 +169,24 @@ public class AnnotationUtil {
         .get(annotationData);
 
     Map<Class<? extends Annotation>, Annotation> newDeclaredAnnotations = new LinkedHashMap<>(annotations);
-    newDeclaredAnnotations.put(annotationClass, annotation);
+    newDeclaredAnnotations.put(annotation.annotationType(), annotation);
     Map<Class<? extends Annotation>, Annotation> newAnnotations;
     if (declaredAnnotations == annotations) {
       newAnnotations = newDeclaredAnnotations;
     } else {
       newAnnotations = new LinkedHashMap<>(annotations);
-      newAnnotations.put(annotationClass, annotation);
+      newAnnotations.put(annotation.annotationType(), annotation);
     }
     return AnnotationData_constructor.newInstance(newAnnotations, newDeclaredAnnotations, classRedefinedCount);
   }
 
+  /**
+   * Create annotation from the given map.
+   * 
+   * @param annotationClass
+   * @param valuesMap
+   * @return
+   */
   @SuppressWarnings("unchecked")
   public <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
     return (T) AccessController.doPrivileged(new PrivilegedAction<Annotation>() {
