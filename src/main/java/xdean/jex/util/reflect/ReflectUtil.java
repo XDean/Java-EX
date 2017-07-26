@@ -1,12 +1,15 @@
 package xdean.jex.util.reflect;
 
+import static xdean.jex.util.task.TaskUtil.uncheck;
+
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import lombok.experimental.UtilityClass;
@@ -16,40 +19,56 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class ReflectUtil {
 
-  private final Method GET_ROOT_METHOD;
-  private final Method GET_ROOT_METHODS;
+  private final UnaryOperator<Method> METHOD_GET_ROOT;
+  private final Function<Class<?>, Method[]> CLASS_GET_ROOT_METHODS;
+  private final UnaryOperator<Field> FIELD_GET_ROOT;
+  private final Function<Class<?>, Field[]> CLASS_GET_ROOT_FIELDS;
   static {
     try {
-      GET_ROOT_METHOD = Method.class.getDeclaredMethod("getRoot", new Class[] {});
-      GET_ROOT_METHOD.setAccessible(true);
-      GET_ROOT_METHODS = Class.class.getDeclaredMethod("privateGetPublicMethods", new Class[] {});
-      GET_ROOT_METHODS.setAccessible(true);
-    } catch (NoSuchMethodException | SecurityException e) {
+      Method getRootMethod = Method.class.getDeclaredMethod("getRoot");
+      getRootMethod.setAccessible(true);
+      METHOD_GET_ROOT = m -> uncheck(() -> (Method) getRootMethod.invoke(m));
+      Method getRootMethods = Class.class.getDeclaredMethod("privateGetPublicMethods");
+      getRootMethods.setAccessible(true);
+      CLASS_GET_ROOT_METHODS = c -> uncheck(() -> (Method[]) getRootMethods.invoke(c));
+
+      Field getRootField = Field.class.getDeclaredField("root");
+      getRootField.setAccessible(true);
+      FIELD_GET_ROOT = f -> uncheck(() -> (Field) getRootField.get(f));
+      Method getRootFields = Class.class.getDeclaredMethod("privateGetPublicMethods");
+      getRootFields.setAccessible(true);
+      CLASS_GET_ROOT_FIELDS = c -> uncheck(() -> (Field[]) getRootFields.invoke(c));
+    } catch (NoSuchMethodException | SecurityException | NoSuchFieldException e) {
       throw new IllegalStateException("ReflectUtil init fail, check your java version.", e);
     }
   }
 
+  /**
+   * Get root of the method.
+   */
   public Method getRootMethod(Method m) {
-    try {
-      Method root = (Method) GET_ROOT_METHOD.invoke(m, new Object[] {});
-      return root == null ? m : root;
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      throw new IllegalStateException(e);
-    }
+    return METHOD_GET_ROOT.apply(m);
   }
 
   /**
-   * Get the actual root methods of the class.(BE CAREFUL)
-   * 
-   * @param clz
-   * @return
+   * Get root methods of the class.
    */
   public Method[] getRootMethods(Class<?> clz) {
-    try {
-      return (Method[]) GET_ROOT_METHODS.invoke(clz, new Object[] {});
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      throw new IllegalStateException(e);
-    }
+    return CLASS_GET_ROOT_METHODS.apply(clz);
+  }
+
+  /**
+   * Get root of the field.
+   */
+  public Field getRootField(Field f) {
+    return FIELD_GET_ROOT.apply(f);
+  }
+
+  /**
+   * Get root fields of the class.
+   */
+  public Field[] getRootFields(Class<?> clz) {
+    return CLASS_GET_ROOT_FIELDS.apply(clz);
   }
 
   @SuppressWarnings("unchecked")

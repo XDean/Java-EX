@@ -35,6 +35,7 @@ public class AnnotationUtil {
   private final Method Atomic_casAnnotationData;
   private final Class<?> Atomic_class;
   private final Field Field_Excutable_DeclaredAnnotations;
+  private final Field Field_Field_DeclaredAnnotations;
 
   static {
     // static initialization of necessary reflection Objects
@@ -67,6 +68,9 @@ public class AnnotationUtil {
 
       Field_Excutable_DeclaredAnnotations = Executable.class.getDeclaredField("declaredAnnotations");
       Field_Excutable_DeclaredAnnotations.setAccessible(true);
+
+      Field_Field_DeclaredAnnotations = Field.class.getDeclaredField("declaredAnnotations");
+      Field_Field_DeclaredAnnotations.setAccessible(true);
     } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | NoSuchFieldException e) {
       throw new IllegalStateException("AnnotationUtil init fail, check your java version.", e);
     }
@@ -116,6 +120,7 @@ public class AnnotationUtil {
    */
   @SuppressWarnings("unchecked")
   public void addAnnotation(Executable ex, Annotation annotation) {
+    ex.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
     Map<Class<? extends Annotation>, Annotation> annos;
     try {
       annos = (Map<Class<? extends Annotation>, Annotation>) Field_Excutable_DeclaredAnnotations.get(ex);
@@ -126,6 +131,37 @@ public class AnnotationUtil {
       annos = new HashMap<>();
       try {
         Field_Excutable_DeclaredAnnotations.set(ex, annos);
+      } catch (IllegalAccessException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+    annos.put(annotation.annotationType(), annotation);
+  }
+
+  /**
+   * Add annotation to Field<br>
+   * Note that you may need give the root field.
+   * 
+   * @param field
+   * @param annotation
+   * @author XDean
+   * @see java.lang.reflect.Field
+   * @see #createAnnotationFromMap(Class, Map)
+   * @see ReflectUtil#getRootFields(Class)
+   */
+  @SuppressWarnings("unchecked")
+  public void addAnnotation(Field field, Annotation annotation) {
+    field.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
+    Map<Class<? extends Annotation>, Annotation> annos;
+    try {
+      annos = (Map<Class<? extends Annotation>, Annotation>) Field_Field_DeclaredAnnotations.get(field);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException(e);
+    }
+    if (annos.getClass() == Collections.EMPTY_MAP.getClass()) {
+      annos = new HashMap<>();
+      try {
+        Field_Field_DeclaredAnnotations.set(field, annos);
       } catch (IllegalAccessException e) {
         throw new IllegalStateException(e);
       }
