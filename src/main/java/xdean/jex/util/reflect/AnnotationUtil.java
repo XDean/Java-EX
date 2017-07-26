@@ -177,7 +177,7 @@ public class AnnotationUtil {
    * @see java.lang.Class
    * @see #createAnnotationFromMap(Class, Map)
    */
-  public <T extends Annotation> void addAnnotation(Class<?> c, T annotation) {
+  public void addAnnotation(Class<?> c, Annotation annotation) {
     try {
       while (true) { // retry loop
         int classRedefinedCount = Class_classRedefinedCount.getInt(c);
@@ -198,8 +198,8 @@ public class AnnotationUtil {
   }
 
   @SuppressWarnings("unchecked")
-  private <T extends Annotation> Object /* AnnotationData */createAnnotationData(
-      Class<?> c, Object /* AnnotationData */annotationData, T annotation, int classRedefinedCount)
+  private Object /* AnnotationData */createAnnotationData(
+      Class<?> c, Object /* AnnotationData */annotationData, Annotation annotation, int classRedefinedCount)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     Map<Class<? extends Annotation>, Annotation> annotations = (Map<Class<? extends Annotation>, Annotation>) AnnotationData_annotations
         .get(annotationData);
