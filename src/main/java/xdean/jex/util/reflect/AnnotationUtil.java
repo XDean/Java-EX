@@ -109,7 +109,7 @@ public class AnnotationUtil {
 
   /**
    * Add annotation to Executable(Method or Constructor)<br>
-   * Note that you may need give the root method.
+   * Note that you may need to give the root method.
    * 
    * @param ex
    * @param annotation
@@ -140,7 +140,7 @@ public class AnnotationUtil {
 
   /**
    * Add annotation to Field<br>
-   * Note that you may need give the root field.
+   * Note that you may need to give the root field.
    * 
    * @param field
    * @param annotation
