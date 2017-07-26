@@ -16,13 +16,25 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class ReflectUtil {
 
+  private final Method GET_ROOT_METHOD;
   private final Method GET_ROOT_METHODS;
   static {
     try {
+      GET_ROOT_METHOD = Method.class.getDeclaredMethod("getRoot", new Class[] {});
+      GET_ROOT_METHOD.setAccessible(true);
       GET_ROOT_METHODS = Class.class.getDeclaredMethod("privateGetPublicMethods", new Class[] {});
       GET_ROOT_METHODS.setAccessible(true);
     } catch (NoSuchMethodException | SecurityException e) {
       throw new IllegalStateException("ReflectUtil init fail, check your java version.", e);
+    }
+  }
+
+  public Method getRootMethod(Method m) {
+    try {
+      Method root = (Method) GET_ROOT_METHOD.invoke(m, new Object[] {});
+      return root == null ? m : root;
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new IllegalStateException(e);
     }
   }
 

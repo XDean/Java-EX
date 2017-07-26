@@ -105,7 +105,7 @@ public class AnnotationUtil {
 
   /**
    * Add annotation to Executable(Method or Constructor)<br>
-   * Note that you should give the root method.
+   * Note that you may need give the root method.
    * 
    * @param ex
    * @param annotation
