@@ -16,7 +16,7 @@ import com.google.common.base.Stopwatch;
 public class TimeUtil {
   public void timeThen(Runnable r, Consumer<Long> then) {
     Stopwatch s = getShareStopwatch();
-    s.reset();
+    s.reset(); 
     s.start();
     r.run();
     s.stop();
