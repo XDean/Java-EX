@@ -3,11 +3,11 @@ package xdean.jex.extra.rx;
 import rx.Observable;
 import rx.Subscription;
 
-public class ObservableWrapper<T> implements Subscription {
-  private final Observable<T> ob;
+public class ObservableWrapper implements Subscription {
+  private final Observable<?> ob;
   private Subscription subscription;
 
-  public ObservableWrapper(Observable<T> ob) {
+  public ObservableWrapper(Observable<?> ob) {
     this.ob = ob
         .onErrorResumeNext(e -> {
           unsubscribe();
