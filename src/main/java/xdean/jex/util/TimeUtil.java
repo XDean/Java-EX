@@ -16,11 +16,13 @@ import com.google.common.base.Stopwatch;
 public class TimeUtil {
   public void timeThen(Runnable r, Consumer<Long> then) {
     Stopwatch s = getShareStopwatch();
-    s.reset(); 
+    s.reset();
     s.start();
     r.run();
     s.stop();
-    then.accept(s.elapsed(TimeUnit.MILLISECONDS));
+    if (then != null) {
+      then.accept(s.elapsed(TimeUnit.MILLISECONDS));
+    }
   }
 
   public void timeThenPrint(Runnable r, String format) {
@@ -39,8 +41,7 @@ public class TimeUtil {
    * 
    * @param uniqueKey
    * @param r
-   * @param then
-   *          (this time, total time) -> {...}
+   * @param then (this time, total time) -> {...}
    */
   public void seriesTimeThen(Object uniqueKey, Runnable r, BiConsumer<Long, Long> then) {
     Stopwatch total = CacheUtil.cache(TimeUtil.class, uniqueKey, () -> Stopwatch.createUnstarted());
@@ -51,7 +52,9 @@ public class TimeUtil {
     r.run();
     temp.stop();
     total.stop();
-    then.accept(temp.elapsed(TimeUnit.MILLISECONDS), total.elapsed(TimeUnit.MILLISECONDS));
+    if (then != null) {
+      then.accept(temp.elapsed(TimeUnit.MILLISECONDS), total.elapsed(TimeUnit.MILLISECONDS));
+    }
   }
 
   public void seriesTimeThen(Runnable r, BiConsumer<Long, Long> then) {
