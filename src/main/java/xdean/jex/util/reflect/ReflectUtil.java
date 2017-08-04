@@ -4,9 +4,6 @@ import static xdean.jex.util.task.TaskUtil.uncheck;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -83,16 +80,6 @@ public class ReflectUtil {
     }
   }
 
-  public static Method getMethodBySignature(Class<?> clz, String methodSignature) throws NoSuchMethodException {
-    Optional<Method> find = Stream.of(clz.getMethods()).filter(m -> m.toString().equals(methodSignature)).findAny();
-    if (find.isPresent()) {
-      return find.get();
-    } else {
-      throw new NoSuchMethodException(
-          String.format("There is no method like %s in Class[%s]", methodSignature, clz.getName()));
-    }
-  }
-
   public static Method getGetter(Class<?> clz, String fieldName) throws NoSuchMethodException {
     try {
       return clz.getMethod(String.format("get%s%s", fieldName.toUpperCase().charAt(0), fieldName.substring(1)),
@@ -120,96 +107,54 @@ public class ReflectUtil {
     return method.get();
   }
 
-  public static Map<String, Object> beanToMap(Object bean) {
-    Class<?> beanClass = bean.getClass();
-    Map<String, Object> map = new HashMap<>();
-    Field[] declaredFields = beanClass.getDeclaredFields();
-    Arrays.stream(declaredFields).forEach(f -> {
-      try {
-        Method getter = getGetter(beanClass, f.getName());
-        Object result = getter.invoke(bean, new Object[] {});
-        map.put(f.getName(), result);
-      } catch (Exception e) {
-        log.error("", e);
+  /**
+   * Get the name of the class who calls the caller.<br>
+   * For example. The following code will print "A".
+   *
+   * <pre>
+   * <code>class A {
+   *   static void fun() {
+   *     B.fun();
+   *   }
+   * }
+   *
+   * class B {
+   *   static void fun() {
+   *     System.out.println(ReflectUtil.getCallerClassName());
+   *   }
+   * }</code>
+   * </pre>
+   *
+   * @return
+   */
+  public static String getCallerClassName() {
+    return getCallerClassName(2, true);
+  }
+
+  /**
+   * Get caller class.
+   *
+   * @param deep Deep to search the caller class.If deep is 0, it returns ReflectUtil.class itself. If deep is 1, it
+   *          returns the class who calls this method.
+   * @param ignoreSame If it is true, calling in same class will be ignored.
+   * @return
+   */
+  public static String getCallerClassName(int deep, boolean ignoreSame) {
+    StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
+    String currentClassName = ReflectUtil.class.getName();
+    int found = deep;
+    // index 0 is Thread.getStackTrace
+    // index 1 is ReflectUtil.getCallerClassName
+    for (int i = 2; i < stElements.length; i++) {
+      if (found == 0) {
+        return currentClassName;
       }
-    });
-    return map;
-  }
-
-  public static boolean isBasicType(Object object) {
-    return isBasicType(object.getClass());
-  }
-
-  public static boolean isBasicType(Class<?> clz) {
-    switch (clz.getName()) {
-    case "int":
-    case "java.lang.Integer":
-    case "short":
-    case "java.lang.Short":
-    case "long":
-    case "java.lang.Long":
-    case "double":
-    case "java.lang.Double":
-    case "float":
-    case "java.lang.Float":
-    case "boolean":
-    case "java.lang.Boolean":
-    case "char":
-    case "java.lang.Character":
-    case "byte":
-    case "java.lang.Byte":
-      return true;
-    default:
-      return false;
+      StackTraceElement ste = stElements[i];
+      if (!(ignoreSame && currentClassName.equals(ste.getClassName()))) {
+        currentClassName = ste.getClassName();
+        found--;
+      }
     }
-  }
-
-  public static <T> Object parseBasicType(Class<T> clz, String objectValue) {
-    switch (clz.getName()) {
-    case "int":
-    case "java.lang.Integer":
-      return Integer.valueOf(objectValue);
-    case "short":
-    case "java.lang.Short":
-      return Short.valueOf(objectValue);
-    case "long":
-    case "java.lang.Long":
-      if (objectValue.endsWith("L") || objectValue.endsWith("l")) {
-        objectValue = objectValue.substring(0, objectValue.length() - 1);
-      }
-      return Long.valueOf(objectValue);
-    case "double":
-    case "java.lang.Double":
-      return Double.valueOf(objectValue);
-    case "float":
-    case "java.lang.Float":
-      return Float.valueOf(objectValue);
-    case "boolean":
-    case "java.lang.Boolean":
-      if (objectValue.equalsIgnoreCase(Boolean.TRUE.toString())) {
-        return Boolean.TRUE;
-      } else if (objectValue.equalsIgnoreCase(Boolean.FALSE.toString())) {
-        return Boolean.FALSE;
-      } else {
-        throw new IllegalArgumentException(
-            String.format("The String %s cannot parse as boolean.", objectValue));
-      }
-    case "char":
-    case "java.lang.Character":
-      if (objectValue.length() == 1) {
-        return new Character(objectValue.charAt(0));
-      } else {
-        throw new IllegalArgumentException(String.format("The String %s cannot parse as char.", objectValue));
-      }
-    case "byte":
-    case "java.lang.Byte":
-      return Byte.valueOf(objectValue);
-    case "java.lang.String":
-      return objectValue;
-    case "void":
-      return Void.TYPE;
-    default:
-      return null;
-    }
+    return null;
   }
 }

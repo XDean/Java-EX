@@ -1,5 +1,7 @@
 package xdean.jex.util.reflect;
 
+import static xdean.jex.util.task.TaskUtil.uncheck;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -19,7 +21,7 @@ import lombok.experimental.UtilityClass;
 
 /**
  * Change annotations in runtime.
- * 
+ *
  * @author XDean
  *
  */
@@ -78,7 +80,7 @@ public class AnnotationUtil {
 
   /**
    * Changes the annotation value for the given key of the given annotation to newValue and returns the previous value.
-   * 
+   *
    * @author Balder@stackoverflow
    * @see https://stackoverflow.com/a/28118436/7803527
    * @see sun.reflect.annotation.AnnotationInvocationHandler
@@ -110,7 +112,7 @@ public class AnnotationUtil {
   /**
    * Add annotation to Executable(Method or Constructor)<br>
    * Note that you may need to give the root method.
-   * 
+   *
    * @param ex
    * @param annotation
    * @author XDean
@@ -141,7 +143,7 @@ public class AnnotationUtil {
   /**
    * Add annotation to Field<br>
    * Note that you may need to give the root field.
-   * 
+   *
    * @param field
    * @param annotation
    * @author XDean
@@ -220,27 +222,19 @@ public class AnnotationUtil {
 
   /**
    * Create annotation from the given map.
-   * 
+   *
    * @param annotationClass
    * @param valuesMap
    * @return
    */
   @SuppressWarnings("unchecked")
   public <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
-    return (T) AccessController.doPrivileged(new PrivilegedAction<Annotation>() {
-      @Override
-      public Annotation run() {
-        InvocationHandler handler;
-        try {
-          handler = (InvocationHandler) AnnotationInvocationHandler_constructor.newInstance(annotationClass,
-              new HashMap<>(valuesMap));
-        } catch (InstantiationException | IllegalAccessException
-            | IllegalArgumentException | InvocationTargetException e) {
-          throw new IllegalStateException(e);
-        }
-        return (Annotation) Proxy.newProxyInstance(annotationClass.getClassLoader(), new Class[] { annotationClass },
-            handler);
-      }
-    });
+    return AccessController.doPrivileged((PrivilegedAction<T>) () ->
+        (T) Proxy.newProxyInstance(
+            annotationClass.getClassLoader(),
+            new Class[] { annotationClass },
+            uncheck(() -> (InvocationHandler) AnnotationInvocationHandler_constructor.newInstance(annotationClass,
+                new HashMap<>(valuesMap)))
+            ));
   }
 }
