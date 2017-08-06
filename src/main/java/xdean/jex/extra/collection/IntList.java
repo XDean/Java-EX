@@ -1,30 +1,49 @@
 package xdean.jex.extra.collection;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.RandomAccess;
+import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class IntList implements RandomAccess, Cloneable, java.io.Serializable {
+public class IntList implements RandomAccess, Cloneable, Serializable {
 
-  private static final int DEFAULT_CAPACITY = 10;
+  public static IntList create() {
+    return new IntList();
+  }
 
-  int[] elementData;
-  int size;
+  public static IntList create(int initCapacity) {
+    return new IntList(initCapacity);
+  }
 
-  public IntList() {
+  public static IntList create(int[] initArray) {
+    return new IntList(initArray);
+  }
+
+  public static IntList create(List<Integer> list) {
+    return create(list.stream().mapToInt(i -> i).toArray());
+  }
+
+  private static final int DEFAULT_CAPACITY = 5;
+
+  private transient int[] elementData;
+  private transient int size;
+
+  protected IntList() {
     this(DEFAULT_CAPACITY);
   }
 
-  public IntList(int initialCapacity) {
-    elementData = new int[initialCapacity];
+  protected IntList(int initCapacity) {
+    elementData = new int[initCapacity];
   }
 
-  public IntList(int[] array) {
-    elementData = array;
-    size = array.length;
+  protected IntList(int[] initArray) {
+    size = initArray.length;
+    elementData = Arrays.copyOf(initArray, size);
   }
 
   public int size() {
@@ -54,6 +73,10 @@ public class IntList implements RandomAccess, Cloneable, java.io.Serializable {
 
   public int[] toArray() {
     return Arrays.copyOf(elementData, size);
+  }
+
+  public int[] getArray() {
+    return elementData;
   }
 
   public boolean add(int i) {
@@ -151,12 +174,25 @@ public class IntList implements RandomAccess, Cloneable, java.io.Serializable {
     return -1;
   }
 
+  public void forEach(IntConsumer action) {
+    Objects.requireNonNull(action);
+    final int[] elementData = this.elementData;
+    final int size = this.size;
+    for (int i = 0; i < size; i++) {
+      action.accept(elementData[i]);
+    }
+  }
+
   public IntStream stream() {
     return IntStream.of(elementData).limit(size);
   }
 
   public List<Integer> boxed() {
     return stream().boxed().collect(Collectors.toList());
+  }
+
+  public void sort() {
+    Arrays.sort(elementData, 0, size);
   }
 
   /************************ private methods same as ArrayList ****************************/
@@ -193,7 +229,7 @@ public class IntList implements RandomAccess, Cloneable, java.io.Serializable {
   }
 
   private void ensureCapacity(int minCapacity) {
-    if (minCapacity >= elementData.length) {
+    if (minCapacity > elementData.length) {
       int newCapacity = Math.max(minCapacity, elementData.length + (elementData.length >> 1));
       elementData = Arrays.copyOf(elementData, newCapacity);
     }
@@ -213,5 +249,72 @@ public class IntList implements RandomAccess, Cloneable, java.io.Serializable {
 
   private String outOfBoundsMsg(int index) {
     return "Index: " + index + ", Size: " + size;
+  }
+
+  private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
+    s.defaultWriteObject();
+    s.writeInt(size);
+    for (int i = 0; i < size; i++) {
+      s.writeInt(elementData[i]);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream s) throws java.io.IOException, ClassNotFoundException {
+    elementData = new int[] {};
+    s.defaultReadObject();
+    size = s.readInt();
+    if (size > 0) {
+      ensureCapacity(size);
+      int[] a = elementData;
+      for (int i = 0; i < size; i++) {
+        a[i] = s.readInt();
+      }
+    }
+  }
+
+  @Override
+  public String toString() {
+
+    return "IntList: " +
+        stream().mapToObj(Integer::toString)
+            .reduce((a, b) -> a + ", " + b)
+            .map(s -> "[" + s + "]")
+            .orElse("null");
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    for (int i = 0; i < size; i++) {
+      result = 31 * result + elementData[i];
+    }
+    result = prime * result + size;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    IntList other = (IntList) obj;
+    if (size != other.size) {
+      return false;
+    }
+    int[] a = elementData;
+    int[] a2 = other.elementData;
+    for (int i = 0; i < size; i++) {
+      if (a[i] != a2[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 }
