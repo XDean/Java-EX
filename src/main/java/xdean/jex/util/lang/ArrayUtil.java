@@ -1,10 +1,7 @@
 package xdean.jex.util.lang;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
 public class ArrayUtil {
-  public int compare(int[] a, int[] b) {
+  public static int compare(int[] a, int[] b) {
     if (a.length != b.length) {
       throw new IllegalArgumentException("Can't compare different length arrays");
     }
@@ -18,7 +15,7 @@ public class ArrayUtil {
     return 0;
   }
 
-  public <T extends Comparable<T>> int compare(T[] a, T[] b) {
+  public static <T extends Comparable<T>> int compare(T[] a, T[] b) {
     if (a.length != b.length) {
       throw new IllegalArgumentException("Can't compare different length arrays");
     }

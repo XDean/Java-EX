@@ -3,16 +3,13 @@ package xdean.jex.util.ref;
 import java.lang.ref.WeakReference;
 import java.util.function.Consumer;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
 public class WeakUtil {
-  public <T> Runnable weak(T t, Consumer<T> con) {
+  public static <T> Runnable weak(T t, Consumer<T> con) {
     Weak<T> weak = new Weak<T>(t);
     return () -> weak.doIfPresent(con);
   }
 
-  private class Weak<T> extends WeakReference<T> {
+  private static class Weak<T> extends WeakReference<T> {
     Weak(T referent) {
       super(referent);
     }

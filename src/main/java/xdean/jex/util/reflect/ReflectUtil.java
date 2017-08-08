@@ -9,17 +9,15 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@UtilityClass
 public class ReflectUtil {
 
-  private final UnaryOperator<Method> METHOD_GET_ROOT;
-  private final Function<Class<?>, Method[]> CLASS_GET_ROOT_METHODS;
-  private final UnaryOperator<Field> FIELD_GET_ROOT;
-  private final Function<Class<?>, Field[]> CLASS_GET_ROOT_FIELDS;
+  public static final UnaryOperator<Method> METHOD_GET_ROOT;
+  public static final Function<Class<?>, Method[]> CLASS_GET_ROOT_METHODS;
+  public static final UnaryOperator<Field> FIELD_GET_ROOT;
+  public static final Function<Class<?>, Field[]> CLASS_GET_ROOT_FIELDS;
   static {
     try {
       Method getRootMethod = Method.class.getDeclaredMethod("getRoot");
@@ -43,33 +41,33 @@ public class ReflectUtil {
   /**
    * Get root of the method.
    */
-  public Method getRootMethod(Method m) {
+  public static Method getRootMethod(Method m) {
     return METHOD_GET_ROOT.apply(m);
   }
 
   /**
    * Get root methods of the class.
    */
-  public Method[] getRootMethods(Class<?> clz) {
+  public static Method[] getRootMethods(Class<?> clz) {
     return CLASS_GET_ROOT_METHODS.apply(clz);
   }
 
   /**
    * Get root of the field.
    */
-  public Field getRootField(Field f) {
+  public static Field getRootField(Field f) {
     return FIELD_GET_ROOT.apply(f);
   }
 
   /**
    * Get root fields of the class.
    */
-  public Field[] getRootFields(Class<?> clz) {
+  public static Field[] getRootFields(Class<?> clz) {
     return CLASS_GET_ROOT_FIELDS.apply(clz);
   }
 
   @SuppressWarnings("unchecked")
-  public <T, O> O getField(Class<T> clz, T t, String fieldName) throws NoSuchFieldException {
+  public static <T, O> O getField(Class<T> clz, T t, String fieldName) throws NoSuchFieldException {
     Field field = clz.getDeclaredField(fieldName);
     field.setAccessible(true);
     try {
@@ -117,7 +115,7 @@ public class ReflectUtil {
    *     B.fun();
    *   }
    * }
-   *
+   * 
    * class B {
    *   static void fun() {
    *     System.out.println(ReflectUtil.getCallerClassName());

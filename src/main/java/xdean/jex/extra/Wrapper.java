@@ -1,8 +1,8 @@
 package xdean.jex.extra;
 
-import xdean.jex.extra.annotation.NotThreadSafe;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import xdean.jex.extra.annotation.NotThreadSafe;
 
 @NotThreadSafe
 @EqualsAndHashCode

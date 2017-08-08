@@ -31,7 +31,7 @@ public class ParallelReplayOnSubscribe<T> extends SyncOnSubscribe<Integer, T> {
   public static <T> Observable<T> create(Observable<T> source) {
     return new ParallelReplayOnSubscribe<>(source).create();
   }
-  
+
   public Observable<T> create() {
     return Observable.create(this);
   }

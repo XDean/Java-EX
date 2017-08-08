@@ -17,27 +17,24 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import lombok.experimental.UtilityClass;
-
 /**
  * Change annotations in runtime.
  *
  * @author XDean
  *
  */
-@UtilityClass
 public class AnnotationUtil {
 
-  private final Constructor<?> AnnotationInvocationHandler_constructor;
-  private final Constructor<?> AnnotationData_constructor;
-  private final Method Class_annotationData;
-  private final Field Class_classRedefinedCount;
-  private final Field AnnotationData_annotations;
-  private final Field AnnotationData_declaredAnotations;
-  private final Method Atomic_casAnnotationData;
-  private final Class<?> Atomic_class;
-  private final Field Field_Excutable_DeclaredAnnotations;
-  private final Field Field_Field_DeclaredAnnotations;
+  public static final Constructor<?> AnnotationInvocationHandler_constructor;
+  public static final Constructor<?> AnnotationData_constructor;
+  public static final Method Class_annotationData;
+  public static final Field Class_classRedefinedCount;
+  public static final Field AnnotationData_annotations;
+  public static final Field AnnotationData_declaredAnotations;
+  public static final Method Atomic_casAnnotationData;
+  public static final Class<?> Atomic_class;
+  public static final Field Field_Excutable_DeclaredAnnotations;
+  public static final Field Field_Field_DeclaredAnnotations;
 
   static {
     // static initialization of necessary reflection Objects
@@ -86,7 +83,7 @@ public class AnnotationUtil {
    * @see sun.reflect.annotation.AnnotationInvocationHandler
    */
   @SuppressWarnings("unchecked")
-  public Object changeAnnotationValue(Annotation annotation, String key, Object newValue) {
+  public static Object changeAnnotationValue(Annotation annotation, String key, Object newValue) {
     Object handler = Proxy.getInvocationHandler(annotation);
     Field f;
     try {
@@ -121,7 +118,7 @@ public class AnnotationUtil {
    * @see ReflectUtil#getRootMethods(Class)
    */
   @SuppressWarnings("unchecked")
-  public void addAnnotation(Executable ex, Annotation annotation) {
+  public static void addAnnotation(Executable ex, Annotation annotation) {
     ex.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
     Map<Class<? extends Annotation>, Annotation> annos;
     try {
@@ -152,7 +149,7 @@ public class AnnotationUtil {
    * @see ReflectUtil#getRootFields(Class)
    */
   @SuppressWarnings("unchecked")
-  public void addAnnotation(Field field, Annotation annotation) {
+  public static void addAnnotation(Field field, Annotation annotation) {
     field.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
     Map<Class<? extends Annotation>, Annotation> annos;
     try {
@@ -179,7 +176,7 @@ public class AnnotationUtil {
    * @see java.lang.Class
    * @see #createAnnotationFromMap(Class, Map)
    */
-  public void addAnnotation(Class<?> c, Annotation annotation) {
+  public static void addAnnotation(Class<?> c, Annotation annotation) {
     try {
       while (true) { // retry loop
         int classRedefinedCount = Class_classRedefinedCount.getInt(c);
@@ -200,7 +197,7 @@ public class AnnotationUtil {
   }
 
   @SuppressWarnings("unchecked")
-  private Object /* AnnotationData */createAnnotationData(
+  public static Object /* AnnotationData */createAnnotationData(
       Class<?> c, Object /* AnnotationData */annotationData, Annotation annotation, int classRedefinedCount)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     Map<Class<? extends Annotation>, Annotation> annotations = (Map<Class<? extends Annotation>, Annotation>) AnnotationData_annotations
@@ -228,7 +225,7 @@ public class AnnotationUtil {
    * @return
    */
   @SuppressWarnings("unchecked")
-  public <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
+  public static <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
     return AccessController.doPrivileged((PrivilegedAction<T>) () ->
         (T) Proxy.newProxyInstance(
             annotationClass.getClassLoader(),

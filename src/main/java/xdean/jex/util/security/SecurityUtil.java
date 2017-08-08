@@ -6,14 +6,11 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import lombok.experimental.UtilityClass;
-
 import com.google.common.base.Stopwatch;
 
-@UtilityClass
 public class SecurityUtil {
 
-  public String md5(InputStream input) throws IOException {
+  public static String md5(InputStream input) throws IOException {
     try {
       return digest(input, "MD5");
     } catch (NoSuchAlgorithmException e) {
@@ -22,7 +19,7 @@ public class SecurityUtil {
     }
   }
 
-  public String digest(InputStream input, String algorithm) throws IOException, NoSuchAlgorithmException {
+  public static String digest(InputStream input, String algorithm) throws IOException, NoSuchAlgorithmException {
     Stopwatch sw = Stopwatch.createStarted();
     int bufferSize = 256 * 1024;
     MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
@@ -39,7 +36,7 @@ public class SecurityUtil {
     }
   }
 
-  private String byteArrayToHex(byte[] b) {
+  private static String byteArrayToHex(byte[] b) {
     String hs = "";
     String stmp = "";
     for (int n = 0; n < b.length; n++) {

@@ -5,12 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
-import lombok.experimental.UtilityClass;
 import rx.Observable;
 
-@UtilityClass
 public class TraversalUtil {
-  public <T> Observable<T> deepTraversal(T root, Function<T, Iterable<T>> getChildren) {
+  public static <T> Observable<T> deepTraversal(T root, Function<T, Iterable<T>> getChildren) {
     return Observable.unsafeCreate(s -> {
       List<T> list = new LinkedList<>();
       List<T> bufferList = new ArrayList<>();
@@ -27,7 +25,7 @@ public class TraversalUtil {
     });
   }
 
-  public <T> Observable<T> wideTraversal(T root, Function<T, Iterable<T>> getChildren) {
+  public static <T> Observable<T> wideTraversal(T root, Function<T, Iterable<T>> getChildren) {
     return Observable.unsafeCreate(s -> {
       List<T> list = new LinkedList<>();
       list.add(root);

@@ -7,15 +7,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import lombok.experimental.UtilityClass;
 import xdean.jex.util.reflect.ReflectUtil;
 
-@UtilityClass
 public class FinalizeSupport {
 
-  Map<Reference<?>, Runnable> map = new ConcurrentHashMap<>();
-  ReferenceQueue<Object> queue = new ReferenceQueue<>();
-  Object lock;
+  private static Map<Reference<?>, Runnable> map = new ConcurrentHashMap<>();
+  private static ReferenceQueue<Object> queue = new ReferenceQueue<>();
+  private static Object lock;
 
   static {
     try {
@@ -34,7 +32,7 @@ public class FinalizeSupport {
     handler.start();
   }
 
-  public void finalize(Object o, Runnable r) {
+  public static void finalize(Object o, Runnable r) {
     map.put(new PhantomReference<>(o, queue), r);
   }
 

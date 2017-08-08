@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -16,14 +15,13 @@ import xdean.jex.extra.function.RunnableThrow;
 import xdean.jex.extra.function.SupplierThrow;
 
 @Slf4j
-@UtilityClass
 public class TaskUtil {
 
-  public void async(Runnable task) {
+  public static void async(Runnable task) {
     Observable.just(task).observeOn(Schedulers.newThread()).subscribe(r -> r.run());
   }
 
-  public void uncheck(RunnableThrow<?> task) {
+  public static void uncheck(RunnableThrow<?> task) {
     try {
       task.run();
     } catch (Throwable t) {
@@ -31,11 +29,11 @@ public class TaskUtil {
     }
   }
 
-  public <T> T uncheck(SupplierThrow<T, ?> task) {
+  public static <T> T uncheck(SupplierThrow<T, ?> task) {
     return supplierToRunnable(task, r -> uncheck(r));
   }
 
-  public boolean uncatch(RunnableThrow<?> task) {
+  public static boolean uncatch(RunnableThrow<?> task) {
     try {
       task.run();
       return true;
@@ -46,16 +44,16 @@ public class TaskUtil {
   }
 
   /**
-   * 
+   *
    * @param task
    * @return can be null
    */
-  public <T> T uncatch(SupplierThrow<T, ?> task) {
+  public static <T> T uncatch(SupplierThrow<T, ?> task) {
     return supplierToRunnable(task, r -> uncatch(r));
   }
 
   @SuppressWarnings("unchecked")
-  public <E extends Throwable> Optional<E> throwToReturn(RunnableThrow<E> task) {
+  public static <E extends Throwable> Optional<E> throwToReturn(RunnableThrow<E> task) {
     try {
       task.run();
     } catch (Throwable t) {
@@ -68,12 +66,12 @@ public class TaskUtil {
     return Optional.empty();
   }
 
-  public <T, E extends Exception> Either<T, E> throwToReturn(SupplierThrow<T, E> task) {
+  public static <T, E extends Exception> Either<T, E> throwToReturn(SupplierThrow<T, E> task) {
     Wrapper<T> w = new Wrapper<T>(null);
     return Either.rightOrDefault(throwToReturn(() -> w.set(task.get())), w.get());
   }
 
-  public void todoAll(Runnable... tasks) {
+  public static void todoAll(Runnable... tasks) {
     for (Runnable task : tasks) {
       task.run();
     }
@@ -81,12 +79,12 @@ public class TaskUtil {
 
   /**
    * Return the first NonNull result of these tasks
-   * 
+   *
    * @param tasks
    * @return can be null
    */
   @SafeVarargs
-  public <T> T firstSuccess(SupplierThrow<T, ?>... tasks) {
+  public static <T> T firstSuccess(SupplierThrow<T, ?>... tasks) {
     for (SupplierThrow<T, ?> task : tasks) {
       T result = uncatch(task);
       if (result != null) {
@@ -98,13 +96,13 @@ public class TaskUtil {
 
   /**
    * Run the given tasks until any exception happen
-   * 
+   *
    * @param tasks
    * @return the exception
    */
   @SuppressWarnings("unchecked")
   @SafeVarargs
-  public <T extends Throwable> Optional<T> firstFail(RunnableThrow<T>... tasks) {
+  public static <T extends Throwable> Optional<T> firstFail(RunnableThrow<T>... tasks) {
     for (RunnableThrow<T> task : tasks) {
       try {
         task.run();
@@ -119,7 +117,7 @@ public class TaskUtil {
     return Optional.empty();
   }
 
-  public void andFinal(Runnable task, Runnable then) {
+  public static void andFinal(Runnable task, Runnable then) {
     try {
       task.run();
     } finally {
@@ -127,7 +125,7 @@ public class TaskUtil {
     }
   }
 
-  public <T> T andFinal(Supplier<T> task, Consumer<T> then) {
+  public static <T> T andFinal(Supplier<T> task, Consumer<T> then) {
     T t = null;
     try {
       return t = task.get();
@@ -136,22 +134,22 @@ public class TaskUtil {
     }
   }
 
-  public <T> If<T> ifThat(boolean b) {
+  public static <T> If<T> ifThat(boolean b) {
     return If.that(b);
   }
 
   @Deprecated
-  public boolean ifTodo(boolean b, Runnable todo) {
+  public static boolean ifTodo(boolean b, Runnable todo) {
     return ifThat(b).todo(todo).toBoolean();
   }
 
   @Deprecated
-  public boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
+  public static boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
     return ifThat(b).todo(todo).ordo(elseTodo).toBoolean();
   }
 
   @SuppressWarnings("unchecked")
-  private <E extends Throwable> void throwAsUncheck(Throwable e) throws E {
+  public static <E extends Throwable> void throwAsUncheck(Throwable e) throws E {
     throw (E) e;
   }
 }

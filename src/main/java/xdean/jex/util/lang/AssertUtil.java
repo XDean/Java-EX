@@ -8,47 +8,44 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
 public class AssertUtil {
 
-  public void assertTrue(boolean b) {
+  public static void assertTrue(boolean b) {
     if (!b) {
       throw new AssertionError();
     }
   }
 
-  public void assertEmpty(Optional<?> o) {
+  public static void assertEmpty(Optional<?> o) {
     assertTrue(!o.isPresent());
   }
 
-  public void assertPresent(Optional<?> o) {
+  public static void assertPresent(Optional<?> o) {
     assertTrue(o.isPresent());
   }
 
-  public void assertNotNull(Object obj) {
+  public static void assertNotNull(Object obj) {
     Objects.requireNonNull(obj, "ASSERT NOTNULL FAIL");
   }
 
-  public void assertContainsAll(Map<?, ?> map, Object... keys) {
+  public static void assertContainsAll(Map<?, ?> map, Object... keys) {
     if (!isAllTrue(map::containsKey, keys)) {
       throw new AssertionError("The map should has following keys: " + Arrays.toString(keys));
     }
   }
 
-  public void assertContainsAll(List<?> list, Object... elements) {
+  public static void assertContainsAll(List<?> list, Object... elements) {
     if (!isAllTrue(list::contains, elements)) {
       throw new AssertionError("The list should has following elements: " + Arrays.toString(elements));
     }
   }
 
   @SafeVarargs
-  private <T> boolean isAllTrue(Predicate<? super T> predicate, T... elements) {
+  private static <T> boolean isAllTrue(Predicate<? super T> predicate, T... elements) {
     return !Stream.of(elements).filter(predicate.negate()).findFirst().isPresent();
   }
 
-  public void assertInstanceOf(Object object, Class<?> expectClass) {
+  public static void assertInstanceOf(Object object, Class<?> expectClass) {
     boolean b = expectClass.isInstance(object);
     if (b == false) {
       throw new AssertionError(

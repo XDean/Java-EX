@@ -3,11 +3,8 @@ package xdean.jex.util.exception;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
-public class ExceptionUtil {  
-  public String getStackTraceString(Throwable tr) {
+public class ExceptionUtil {
+  public static String getStackTraceString(Throwable tr) {
     if (tr == null) {
       return "";
     }

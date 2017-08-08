@@ -13,15 +13,15 @@ import xdean.jex.extra.collection.LinkedList.Node;
  *
  * @param <E>
  */
-@ToString(includeFieldNames = true, exclude={"compartor"})
+@ToString(includeFieldNames = true, exclude = { "compartor" })
 public class LinkedMonotoneList<E> extends AbstractList<E> {
 
   public enum MonoType {
     /** When add an element, put it into the correct position **/
     INSERT,
     /**
-     * When add an element, link it to the last, and then delete as less as
-     * possible elements to make the list monotone again
+     * When add an element, link it to the last, and then delete as less as possible elements to make the list monotone
+     * again
      **/
     OVERWRITE;
   }

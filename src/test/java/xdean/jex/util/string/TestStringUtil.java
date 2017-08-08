@@ -3,8 +3,6 @@ package xdean.jex.util.string;
 import org.junit.Assert;
 import org.junit.Test;
 
-import xdean.jex.util.string.StringUtil;
-
 public class TestStringUtil {
 
   @Test

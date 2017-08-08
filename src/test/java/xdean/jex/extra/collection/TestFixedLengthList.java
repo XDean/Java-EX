@@ -12,7 +12,7 @@ public class TestFixedLengthList {
     String answer = "";
     for (int i = 0; i < 10; i++) {
       l.add(i);
-      answer+=l.get(0);
+      answer += l.get(0);
     }
     Assert.assertEquals("0000012345", answer);
   }

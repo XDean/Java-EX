@@ -12,8 +12,8 @@ public abstract class NormalOperator<R, T> implements Operator<R, T> {
     t.add(ns);
     return ns;
   }
-  
-  protected void onStart(Subscriber<? super R> actual){
+
+  protected void onStart(Subscriber<? super R> actual) {
     actual.onStart();
   }
 
@@ -30,7 +30,7 @@ public abstract class NormalOperator<R, T> implements Operator<R, T> {
   @AllArgsConstructor
   private class NormalSubscriber extends Subscriber<T> {
     Subscriber<? super R> actual;
-    
+
     @Override
     public void onStart() {
       NormalOperator.this.onStart(actual);

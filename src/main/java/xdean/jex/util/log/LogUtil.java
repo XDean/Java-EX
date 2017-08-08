@@ -7,7 +7,7 @@ import xdean.jex.util.reflect.ReflectUtil;
 
 public class LogUtil {
 
-  public static Logger log(){
+  public static Logger log() {
     return LoggerFactory.getLogger(ReflectUtil.getCallerClassName());
   }
 
@@ -15,7 +15,7 @@ public class LogUtil {
     return LoggerFactory.getLogger(clz);
   }
 
-  public static Logger log(Object o){
+  public static Logger log(Object o) {
     return log(o.getClass());
   }
 }

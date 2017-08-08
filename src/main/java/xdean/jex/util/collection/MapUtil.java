@@ -7,15 +7,13 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import xdean.jex.extra.function.BiConsumerThrow;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
 public class MapUtil {
-  public <K, V> HashMap<K, V> newHashMap() {
+  public static <K, V> HashMap<K, V> newHashMap() {
     return new HashMap<>();
   }
 
-  public <K, V> HashMap<K, V> newHashMap(K[] keys, V[] values) {
+  public static <K, V> HashMap<K, V> newHashMap(K[] keys, V[] values) {
     if (keys.length > values.length) {
       throw new IllegalArgumentException("Values is less than keys");
     }
@@ -26,7 +24,7 @@ public class MapUtil {
     return map;
   }
 
-  public <K, V, T extends Throwable> void forEach(Map<K, V> map, BiConsumerThrow<K, V, T> action) throws T {
+  public static <K, V, T extends Throwable> void forEach(Map<K, V> map, BiConsumerThrow<K, V, T> action) throws T {
     Objects.requireNonNull(action);
     for (Map.Entry<K, V> entry : map.entrySet()) {
       K k;
@@ -40,21 +38,22 @@ public class MapUtil {
       action.accept(k, v);
     }
   }
-  
+
   /**
    * Get the value of the key. If absent, put the default value.
+   *
    * @param map
    * @param key
    * @param defaultGetter
    * @return
    */
-  public <K,V> V getOrPutDefault(Map<K,V> map, K key, Supplier<V> defaultGetter){
+  public static <K, V> V getOrPutDefault(Map<K, V> map, K key, Supplier<V> defaultGetter) {
     V result = map.get(key);
-    if(result==null){
+    if (result == null) {
       V defaultValue = defaultGetter.get();
       map.put(key, defaultValue);
       return defaultValue;
-    }else{
+    } else {
       return result;
     }
   }
