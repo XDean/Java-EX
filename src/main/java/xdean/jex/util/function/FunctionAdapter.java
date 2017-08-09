@@ -18,6 +18,10 @@ public class FunctionAdapter {
     };
   }
 
+  public static <T> Consumer<T> runnable(Runnable r) {
+    return t -> r.run();
+  }
+
   /**
    * @param s
    * @param c
