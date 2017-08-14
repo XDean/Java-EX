@@ -11,14 +11,18 @@ import xdean.jex.extra.function.SupplierThrow;
 
 public class FunctionAdapter {
 
-  public static <T> UnaryOperator<T> consumer(Consumer<T> c) {
+  public static <T> Supplier<T> supplier(T t) {
+    return () -> t;
+  }
+
+  public static <T> UnaryOperator<T> unaryOp(Consumer<T> c) {
     return t -> {
       c.accept(t);
       return t;
     };
   }
 
-  public static <T> Consumer<T> runnable(Runnable r) {
+  public static <T> Consumer<T> consumer(Runnable r) {
     return t -> r.run();
   }
 
