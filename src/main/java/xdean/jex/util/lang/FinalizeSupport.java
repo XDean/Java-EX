@@ -17,7 +17,7 @@ public class FinalizeSupport {
 
   static {
     try {
-      lock = ReflectUtil.getField(ReferenceQueue.class, queue, "lock");
+      lock = ReflectUtil.getFieldValue(ReferenceQueue.class, queue, "lock");
     } catch (NoSuchFieldException e) {
       throw new Error("Can't find ReferenceQueue's lock, Check code and java version");
     }

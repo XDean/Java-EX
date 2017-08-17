@@ -1,5 +1,6 @@
 package xdean.jex.util.function;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -21,5 +22,10 @@ public class EmptyFunction {
 
   public static <T> Supplier<T> supplier() {
     return () -> null;
+  }
+
+  public static <K, T> BiConsumer<K, T> biconsumer() {
+    return (k, t) -> {
+    };
   }
 }

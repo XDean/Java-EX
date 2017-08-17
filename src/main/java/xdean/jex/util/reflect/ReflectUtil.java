@@ -4,10 +4,13 @@ import static xdean.jex.util.task.TaskUtil.uncheck;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Optional;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,7 +70,7 @@ public class ReflectUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T, O> O getField(Class<T> clz, T t, String fieldName) throws NoSuchFieldException {
+  public static <T, O> O getFieldValue(Class<T> clz, T t, String fieldName) throws NoSuchFieldException {
     Field field = clz.getDeclaredField(fieldName);
     field.setAccessible(true);
     try {
@@ -78,31 +81,21 @@ public class ReflectUtil {
     }
   }
 
-  public static Method getGetter(Class<?> clz, String fieldName) throws NoSuchMethodException {
-    try {
-      return clz.getMethod(String.format("get%s%s", fieldName.toUpperCase().charAt(0), fieldName.substring(1)),
-          new Class[] {});
-    } catch (Exception e) {
-      try {
-        return clz.getMethod(String.format("is%s%s", fieldName.toUpperCase().charAt(0), fieldName.substring(1)),
-            new Class[] {});
-      } catch (Exception ee) {
-        throw new NoSuchMethodException(
-            String.format("There is no getter of %s in Class[%s]", fieldName, clz.getName()));
-      }
-    }
-  }
-
-  public static Method getSetter(Class<?> clz, String fieldName) throws NoSuchMethodException {
-    Optional<Method> method = Stream.of(clz.getMethods())
-        .filter(m -> m.getName()
-            .equals(String.format("set%s%s", fieldName.toUpperCase().charAt(0), fieldName.substring(1))))
-        .filter(m -> m.getReturnType().equals(Void.TYPE)).filter(m -> m.getParameterCount() == 1).findFirst();
-    if (method.isPresent() == false) {
-      throw new NoSuchMethodException(
-          String.format("There is no setter of %s in Class[%s]", fieldName, clz.getName()));
-    }
-    return method.get();
+  /**
+   * Get both private and inherit fields
+   *
+   * @param clz
+   * @return
+   */
+  public static Field[] getAllFields(Class<?> clz, boolean includeStatic) {
+    List<Field> list = new ArrayList<>();
+    do {
+      list.addAll(Arrays.asList(clz.getDeclaredFields())
+          .stream()
+          .filter(f -> includeStatic || !Modifier.isStatic(f.getModifiers()))
+          .collect(Collectors.toList()));
+    } while ((clz = clz.getSuperclass()) != Object.class);
+    return list.toArray(new Field[list.size()]);
   }
 
   /**
@@ -115,7 +108,7 @@ public class ReflectUtil {
    *     B.fun();
    *   }
    * }
-   * 
+   *
    * class B {
    *   static void fun() {
    *     System.out.println(ReflectUtil.getCallerClassName());
