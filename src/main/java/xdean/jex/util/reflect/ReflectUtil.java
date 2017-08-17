@@ -94,7 +94,7 @@ public class ReflectUtil {
           .stream()
           .filter(f -> includeStatic || !Modifier.isStatic(f.getModifiers()))
           .collect(Collectors.toList()));
-    } while ((clz = clz.getSuperclass()) != Object.class);
+    } while ((clz = clz.getSuperclass()) != null);
     return list.toArray(new Field[list.size()]);
   }
 

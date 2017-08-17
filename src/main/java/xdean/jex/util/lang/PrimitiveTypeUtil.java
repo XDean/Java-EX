@@ -1,7 +1,7 @@
 package xdean.jex.util.lang;
 
-public class BaseTypeUtil {
-  public static boolean isBaseType(Class<?> clz) {
+public class PrimitiveTypeUtil {
+  public static boolean isPrimitive(Class<?> clz) {
     switch (clz.getName()) {
     case "int":
     case "short":
@@ -17,7 +17,30 @@ public class BaseTypeUtil {
     }
   }
 
-  public static <T> Object parseBaseType(Class<T> clz, String objectValue) {
+  public static int sizeOf(Class<?> clz) {
+    switch (clz.getName()) {
+    case "int":
+      return Integer.BYTES;
+    case "short":
+      return Short.BYTES;
+    case "long":
+      return Long.BYTES;
+    case "double":
+      return Double.BYTES;
+    case "float":
+      return Float.BYTES;
+    case "boolean":
+      return 1;
+    case "char":
+      return Character.BYTES;
+    case "byte":
+      return 1;
+    default:
+      throw new IllegalArgumentException("Not a primitive type.");
+    }
+  }
+
+  public static <T> Object parse(Class<T> clz, String objectValue) {
     switch (clz.getName()) {
     case "int":
       return Integer.valueOf(objectValue);
