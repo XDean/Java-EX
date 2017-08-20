@@ -13,6 +13,7 @@ import xdean.jex.extra.Either;
 import xdean.jex.extra.Wrapper;
 import xdean.jex.extra.function.RunnableThrow;
 import xdean.jex.extra.function.SupplierThrow;
+import xdean.jex.util.lang.ExceptionUtil;
 
 @Slf4j
 public class TaskUtil {
@@ -25,7 +26,7 @@ public class TaskUtil {
     try {
       task.run();
     } catch (Throwable t) {
-      throwAsUncheck(t);
+      ExceptionUtil.throwAsUncheck(t);
     }
   }
 
@@ -146,10 +147,5 @@ public class TaskUtil {
   @Deprecated
   public static boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
     return ifThat(b).todo(todo).ordo(elseTodo).toBoolean();
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <E extends Throwable> void throwAsUncheck(Throwable e) throws E {
-    throw (E) e;
   }
 }

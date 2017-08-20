@@ -30,6 +30,7 @@ public class TestUnsafeUtil {
         assertEquals(32, sizeOf(SizeB.class));
         assertEquals(24, sizeOf(SizeC.class));
         assertEquals(24, sizeOf(SizeD.class));
+        assertEquals(16, sizeOf(SizeE.class));
       } else {
         assertEquals(16, getHeaderSize());
         assertEquals(16, sizeOf(Object.class));
@@ -37,6 +38,7 @@ public class TestUnsafeUtil {
         assertEquals(40, sizeOf(SizeB.class));
         assertEquals(32, sizeOf(SizeC.class));
         assertEquals(40, sizeOf(SizeD.class));
+        assertEquals(24, sizeOf(SizeE.class));
       }
     } else {
       throw new UnsupportedOperationException("Haven't test ont 32 bit yet.");
@@ -62,5 +64,9 @@ public class TestUnsafeUtil {
 
   static class SizeD {
     Object a, b, c;
+  }
+
+  static class SizeE {
+    boolean a, b, c, d;
   }
 }

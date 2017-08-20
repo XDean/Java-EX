@@ -50,6 +50,16 @@ public class PrimitiveTypeUtil {
   }
 
   /**
+   * Determine the class is primitive wrapper or not.
+   *
+   * @param clz
+   * @return
+   */
+  public static boolean isWrapper(Class<?> clz) {
+    return wrappersToPrimitives.keySet().contains(clz);
+  }
+
+  /**
    * Get the size of a primitive type.
    *
    * @param clz
