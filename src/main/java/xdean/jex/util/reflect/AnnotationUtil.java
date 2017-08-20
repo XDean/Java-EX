@@ -1,6 +1,6 @@
 package xdean.jex.util.reflect;
 
-import static xdean.jex.util.task.TaskUtil.uncheck;
+import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

@@ -1,75 +1,25 @@
 package xdean.jex.util.task;
 
-import static xdean.jex.util.function.FunctionAdapter.supplierToRunnable;
-
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 import rx.schedulers.Schedulers;
-import xdean.jex.extra.Either;
-import xdean.jex.extra.Wrapper;
 import xdean.jex.extra.function.RunnableThrow;
 import xdean.jex.extra.function.SupplierThrow;
 import xdean.jex.util.lang.ExceptionUtil;
 
-@Slf4j
+/**
+ * Utility methods for task flow control.
+ *
+ * @author XDean
+ *
+ */
 public class TaskUtil {
 
   public static void async(Runnable task) {
     Observable.just(task).observeOn(Schedulers.newThread()).subscribe(r -> r.run());
-  }
-
-  public static void uncheck(RunnableThrow<?> task) {
-    try {
-      task.run();
-    } catch (Throwable t) {
-      ExceptionUtil.throwAsUncheck(t);
-    }
-  }
-
-  public static <T> T uncheck(SupplierThrow<T, ?> task) {
-    return supplierToRunnable(task, r -> uncheck(r));
-  }
-
-  public static boolean uncatch(RunnableThrow<?> task) {
-    try {
-      task.run();
-      return true;
-    } catch (Throwable t) {
-      log.trace("Dont catch", t);
-      return false;
-    }
-  }
-
-  /**
-   *
-   * @param task
-   * @return can be null
-   */
-  public static <T> T uncatch(SupplierThrow<T, ?> task) {
-    return supplierToRunnable(task, r -> uncatch(r));
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <E extends Throwable> Optional<E> throwToReturn(RunnableThrow<E> task) {
-    try {
-      task.run();
-    } catch (Throwable t) {
-      try {
-        return Optional.of((E) t);
-      } catch (ClassCastException cce) {
-        throw new RuntimeException("An unexcepted exception thrown.", t);
-      }
-    }
-    return Optional.empty();
-  }
-
-  public static <T, E extends Exception> Either<T, E> throwToReturn(SupplierThrow<T, E> task) {
-    Wrapper<T> w = new Wrapper<T>(null);
-    return Either.rightOrDefault(throwToReturn(() -> w.set(task.get())), w.get());
   }
 
   public static void todoAll(Runnable... tasks) {
@@ -87,7 +37,7 @@ public class TaskUtil {
   @SafeVarargs
   public static <T> T firstSuccess(SupplierThrow<T, ?>... tasks) {
     for (SupplierThrow<T, ?> task : tasks) {
-      T result = uncatch(task);
+      T result = ExceptionUtil.uncatch(task);
       if (result != null) {
         return result;
       }
@@ -133,19 +83,5 @@ public class TaskUtil {
     } finally {
       then.accept(t);
     }
-  }
-
-  public static <T> If<T> ifThat(boolean b) {
-    return If.that(b);
-  }
-
-  @Deprecated
-  public static boolean ifTodo(boolean b, Runnable todo) {
-    return ifThat(b).todo(todo).toBoolean();
-  }
-
-  @Deprecated
-  public static boolean ifTodo(boolean b, Runnable todo, Runnable elseTodo) {
-    return ifThat(b).todo(todo).ordo(elseTodo).toBoolean();
   }
 }

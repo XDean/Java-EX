@@ -8,8 +8,8 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
+import xdean.jex.util.lang.ExceptionUtil;
 import xdean.jex.util.string.StringUtil;
-import xdean.jex.util.task.TaskUtil;
 
 /**
  * An URL who return the input string
@@ -28,7 +28,7 @@ public class StringURL {
   }
 
   public static URL createURL(String text) {
-    return TaskUtil.uncheck(() -> new URL(createURLString(text)));
+    return ExceptionUtil.uncheck(() -> new URL(createURLString(text)));
   }
 
   private static class StringURLConnection extends URLConnection {

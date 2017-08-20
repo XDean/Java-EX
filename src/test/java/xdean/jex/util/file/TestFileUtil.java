@@ -7,10 +7,10 @@ import java.nio.file.Paths;
 import org.junit.Assert;
 import org.junit.Test;
 
-import xdean.jex.util.task.TaskUtil;
+import xdean.jex.util.lang.ExceptionUtil;
 
 public class TestFileUtil {
-  private static final URI CP = TaskUtil.uncheck(() -> TestFileUtil.class.getResource(".").toURI());
+  private static final URI CP = ExceptionUtil.uncheck(() -> TestFileUtil.class.getResource(".").toURI());
 
   @Test
   public void testDeepTraversal() {
