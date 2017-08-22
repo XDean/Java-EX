@@ -9,6 +9,7 @@ import org.junit.Test;
 
 @SuppressWarnings("unused")
 public class TestReflectUtil {
+
   @Test
   public void testGetAllMethod() {
     Observable.fromArray(ReflectUtil.getAllFields(B.class, false))
