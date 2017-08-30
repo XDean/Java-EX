@@ -4,10 +4,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class TestGetterCaller {
+public class TestGetCaller {
   @Test
   public void tetGetCallerName() {
-    assertEquals(TestGetterCaller.class.getName(), First.fisrt(0).getClassName());
+    assertEquals(TestGetCaller.class.getName(), First.fisrt(0).getClassName());
     assertEquals(First.class.getName(), First.fisrt(1).getClassName());
     assertEquals(Second.class.getName(), First.fisrt(2).getClassName());
     assertEquals(Second.class.getName(), First.fisrt(3).getClassName());
@@ -23,12 +23,12 @@ public class TestGetterCaller {
     assertEquals(Third.class.getName(), First.first(5, 3, false).getClassName());
     assertEquals(Second.class.getName(), First.first(5, 4, false).getClassName());
     assertEquals(First.class.getName(), First.first(5, 5, false).getClassName());
-    assertEquals(TestGetterCaller.class.getName(), First.first(5, 6, false).getClassName());
+    assertEquals(TestGetCaller.class.getName(), First.first(5, 6, false).getClassName());
 
     assertEquals(Third.class.getName(), First.first(5, 0, true).getClassName());
     assertEquals(Second.class.getName(), First.first(5, 1, true).getClassName());
     assertEquals(First.class.getName(), First.first(5, 2, true).getClassName());
-    assertEquals(TestGetterCaller.class.getName(), First.first(5, 3, true).getClassName());
+    assertEquals(TestGetCaller.class.getName(), First.first(5, 3, true).getClassName());
   }
 
   // First ( -> Second -> Third*)?
