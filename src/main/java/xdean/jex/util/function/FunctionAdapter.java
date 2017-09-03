@@ -17,7 +17,7 @@ public class FunctionAdapter {
     return () -> t;
   }
 
-  public static <T> UnaryOperator<T> unaryOp(Consumer<T> c) {
+  public static <T> UnaryOperator<T> function(Consumer<T> c) {
     return t -> {
       c.accept(t);
       return t;

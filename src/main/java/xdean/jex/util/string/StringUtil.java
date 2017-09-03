@@ -1,13 +1,58 @@
 package xdean.jex.util.string;
 
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
+import xdean.jex.extra.collection.IntList;
 import xdean.jex.util.cache.CacheUtil;
 
 import com.google.common.collect.Ordering;
 
 public class StringUtil {
+
+  /**
+   * Get a list of not exist chars in given string. You can use these chars as placeholder to replace string safety.
+   *
+   * @param s
+   * @return
+   */
+  public static Iterator<Character> notExistChars(String s) {
+    return new Iterator<Character>() {
+      IntList collect = IntList.create(s.chars().distinct().sorted().toArray());
+      int current = 128;
+      Character next = null;
+
+      @Override
+      public Character next() {
+        if (calcNext()) {
+          Character c = next;
+          next = null;
+          return c;
+        } else {
+          throw new IllegalStateException("No next not exist char.");
+        }
+      }
+
+      @Override
+      public boolean hasNext() {
+        return calcNext();
+      }
+
+      private boolean calcNext() {
+        if (next == null) {
+          while (++current < Integer.MAX_VALUE) {
+            if (collect.remove(current) == false) {
+              next = (char) current;
+              return true;
+            }
+          }
+          return false;
+        }
+        return true;
+      }
+    };
+  }
 
   public static String repeat(String st, int times) {
     StringBuilder sb = new StringBuilder();
@@ -52,6 +97,14 @@ public class StringUtil {
     }
   }
 
+  /**
+   * Get the first balance pair substring index.
+   *
+   * @param str the string
+   * @param left left symbol
+   * @param right right symbol
+   * @return (leftIndex, rightIndex) If not found, rightIndex is -1.
+   */
   public static int[] balancePair(String str, String left, String right) {
     int count = 0;
     int offset = 0;
