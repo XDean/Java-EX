@@ -43,9 +43,9 @@ import java.util.function.Consumer;
 
 /**
  * Copy from system library, jdk 1.8.0_112u
- * 
- * 
- * 
+ *
+ *
+ *
  * Doubly-linked list implementation of the {@code List} and {@code Deque} interfaces. Implements all optional list
  * operations, and permits all elements (including {@code null}).
  *
@@ -63,7 +63,7 @@ import java.util.function.Consumer;
  * If no such object exists, the list should be "wrapped" using the {@link Collections#synchronizedList
  * Collections.synchronizedList} method. This is best done at creation time, to prevent accidental unsynchronized access
  * to the list:
- * 
+ *
  * <pre>
  *   List list = Collections.synchronizedList(new LinkedList(...));
  * </pre>
@@ -93,7 +93,7 @@ import java.util.function.Consumer;
  * @param <E> the type of elements held in this collection
  */
 
-public class LinkedList<E>
+class LinkedList<E>
     extends AbstractSequentialList<E>
     implements List<E>, Deque<E>, Cloneable, java.io.Serializable
 {

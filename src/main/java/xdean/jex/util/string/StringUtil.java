@@ -79,7 +79,7 @@ public class StringUtil {
   }
 
   public static String replacePart(String sourceText, int from, int to, String replaceText) {
-    if (from < to || from < 0 || to > sourceText.length()) {
+    if (from > to || from < 0 || to > sourceText.length()) {
       throw new StringIndexOutOfBoundsException();
     }
     return String.format("%s%s%s", sourceText.substring(0, from), replaceText, sourceText.substring(to));
