@@ -1,14 +1,16 @@
 package xdean.jex.util.task;
 
+import static xdean.jex.util.lang.ExceptionUtil.*;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
+import xdean.jex.extra.Either;
 import xdean.jex.extra.function.RunnableThrow;
 import xdean.jex.extra.function.SupplierThrow;
-import xdean.jex.util.lang.ExceptionUtil;
 
 /**
  * Utility methods for task flow control.
@@ -29,20 +31,40 @@ public class TaskUtil {
   }
 
   /**
-   * Return the first NonNull result of these tasks
+   * Return the first result of these tasks<br>
+   * IGNORE EXCEPTIONS.
+   *
+   * @param tasks
+   * @return can be null
+   * @throws IllegalStateException If all tasks failed.
+   */
+  @SafeVarargs
+  public static <T> T firstSuccess(SupplierThrow<T, ?>... tasks) throws IllegalStateException {
+    for (SupplierThrow<T, ?> task : tasks) {
+      Either<T, ?> res = throwToReturn(task);
+      if (res.isLeft()) {
+        return res.getLeft();
+      }
+    }
+    throw new IllegalStateException("All tasks failed");
+  }
+
+  /**
+   * Return the first non-null result of the given tasks or empty if all of them return null.<br>
+   * IGNORE EXCEPTIONS.
    *
    * @param tasks
    * @return can be null
    */
   @SafeVarargs
-  public static <T> T firstSuccess(SupplierThrow<T, ?>... tasks) {
+  public static <T> Optional<T> firstNonNull(SupplierThrow<T, ?>... tasks) {
     for (SupplierThrow<T, ?> task : tasks) {
-      T result = ExceptionUtil.uncatch(task);
-      if (result != null) {
-        return result;
+      T res = uncatch(task);
+      if (res != null) {
+        return Optional.of(res);
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   /**
@@ -53,7 +75,7 @@ public class TaskUtil {
    */
   @SuppressWarnings("unchecked")
   @SafeVarargs
-  public static <T extends Throwable> Optional<T> firstFail(RunnableThrow<T>... tasks) {
+  public static <T extends Exception> Optional<T> firstFail(RunnableThrow<T>... tasks) {
     for (RunnableThrow<T> task : tasks) {
       try {
         task.run();
