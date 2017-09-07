@@ -54,7 +54,7 @@ public class ExceptionUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static <E extends Throwable> Optional<E> throwToReturn(RunnableThrow<E> task) {
+  public static <E extends Exception> Optional<E> throwToReturn(RunnableThrow<E> task) {
     try {
       task.run();
     } catch (Throwable t) {

@@ -14,14 +14,14 @@ public class OptionalUtil {
     return o;
   }
 
-  public static <T, E extends Throwable> Optional<T> ifEmpty(Optional<T> o, RunnableThrow<E> r) throws E {
+  public static <T, E extends Exception> Optional<T> ifEmpty(Optional<T> o, RunnableThrow<E> r) throws E {
     if (o.isPresent() == false) {
       r.run();
     }
     return o;
   }
 
-  public static <T, E extends Throwable> Optional<T> ifPresent(Optional<T> o, ConsumerThrow<T, E> r) throws E {
+  public static <T, E extends Exception> Optional<T> ifPresent(Optional<T> o, ConsumerThrow<T, E> r) throws E {
     if (o.isPresent()) {
       r.accept(o.get());
     }

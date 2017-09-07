@@ -3,7 +3,7 @@ package xdean.jex.extra.function;
 import java.util.Objects;
 
 @FunctionalInterface
-public interface FunctionThrow<F, R, T extends Throwable> {
+public interface FunctionThrow<F, R, T extends Exception> {
 
   R apply(F f) throws T;
 
@@ -17,7 +17,7 @@ public interface FunctionThrow<F, R, T extends Throwable> {
     return (F t) -> after.apply(apply(t));
   }
 
-  static <F, T extends Throwable> FunctionThrow<F, F, T> identity() {
+  static <F, T extends Exception> FunctionThrow<F, F, T> identity() {
     return t -> t;
   }
 }

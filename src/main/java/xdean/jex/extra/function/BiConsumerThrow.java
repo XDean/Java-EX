@@ -3,7 +3,7 @@ package xdean.jex.extra.function;
 import java.util.Objects;
 
 @FunctionalInterface
-public interface BiConsumerThrow<K, V, T extends Throwable> {
+public interface BiConsumerThrow<K, V, T extends Exception> {
   void accept(K k, V v) throws T;
 
   default BiConsumerThrow<K, V, T> andThen(BiConsumerThrow<? super K, ? super V, T> after) {

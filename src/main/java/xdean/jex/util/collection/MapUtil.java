@@ -24,7 +24,7 @@ public class MapUtil {
     return map;
   }
 
-  public static <K, V, T extends Throwable> void forEach(Map<K, V> map, BiConsumerThrow<K, V, T> action) throws T {
+  public static <K, V, T extends Exception> void forEach(Map<K, V> map, BiConsumerThrow<K, V, T> action) throws T {
     Objects.requireNonNull(action);
     for (Map.Entry<K, V> entry : map.entrySet()) {
       K k;

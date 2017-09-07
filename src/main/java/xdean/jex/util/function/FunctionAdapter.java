@@ -61,7 +61,7 @@ public class FunctionAdapter {
     return w.get();
   }
 
-  public static <T, E extends Throwable, EE extends Throwable> T
+  public static <T, E extends Exception, EE extends Exception> T
       supplierToRunnable(SupplierThrow<T, E> s, ConsumerThrow<RunnableThrow<E>, EE> c) throws EE {
     Wrapper<T> w = new Wrapper<T>(null);
     c.accept(() -> w.set(s.get()));

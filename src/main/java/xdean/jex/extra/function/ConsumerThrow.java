@@ -3,7 +3,7 @@ package xdean.jex.extra.function;
 import java.util.Objects;
 
 @FunctionalInterface
-public interface ConsumerThrow<T, E extends Throwable> {
+public interface ConsumerThrow<T, E extends Exception> {
 
   void accept(T t) throws E;
 
