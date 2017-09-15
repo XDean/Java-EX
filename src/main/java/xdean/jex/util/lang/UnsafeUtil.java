@@ -1,9 +1,13 @@
 package xdean.jex.util.lang;
 
+import static xdean.jex.util.lang.ExceptionUtil.uncheck;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -52,14 +56,18 @@ public class UnsafeUtil {
   }
 
   /**
-   * Measure the size of the given class.
+   * Measure the SHALLOW size of the given class's instance.<br>
+   * If given an array class, only return the base offset (size of array of length 0).<br>
+   * For array class, use {@link UnsafeUtil#shallowSizeOf(Object)}.
    *
    * @param clz
    * @return
    */
-  public static long sizeOf(Class<?> clz) {
+  public static long shallowSizeOf(Class<?> clz) {
     if (PrimitiveTypeUtil.isPrimitive(clz)) {
       return PrimitiveTypeUtil.sizeOf(clz);
+    } else if (clz.isArray()) {
+      return THE_UNSAFE.arrayBaseOffset(clz);
     } else {
       long maxOffset = 0L;
       Field maxField = null;
@@ -78,6 +86,62 @@ public class UnsafeUtil {
         maxOffset += refSizeOf(maxField.getType());
       }
       return ((int) Math.ceil((double) maxOffset / ADDRESS_SIZE)) * ADDRESS_SIZE;
+    }
+  }
+
+  /**
+   * SHALLOW size of the given object. <br>
+   * If given a primitive type, the result will be incorrect.<br>
+   * For primitive type, use {@link UnsafeUtil#shallowSizeOf(Class)}.
+   *
+   * @param o
+   * @return
+   */
+  public static long shallowSizeOf(Object o) {
+    Class<? extends Object> clz = o.getClass();
+    if (clz.isArray()) {
+      int len = Array.getLength(o);
+      return THE_UNSAFE.arrayBaseOffset(clz) + THE_UNSAFE.arrayIndexScale(clz) * len;
+    }
+    return shallowSizeOf(clz);
+  }
+
+  /**
+   * HEAP size of the given object. <br>
+   * If given a primitive type, the result will be incorrect because auto-box.<br>
+   * For primitive type, use {@link UnsafeUtil#shallowSizeOf(Class)}.
+   *
+   * @param o
+   * @return
+   */
+  public static long sizeOf(Object o) {
+    if (o == null) {
+      return 0;
+    }
+    Class<? extends Object> clz = o.getClass();
+    if (clz.isArray()) {
+      long len = Array.getLength(o);
+      long shallowSize = shallowSizeOf(o);
+      if (PrimitiveTypeUtil.isPrimitiveArray(clz)) {
+        return shallowSize;
+      } else {
+        long size = shallowSize;
+        for (int i = 0; i < len; i++) {
+          size += sizeOf(Array.get(o, i));
+        }
+        return size;
+      }
+    } else {
+      return shallowSizeOf(o) + Stream.of(uncheck(() -> ReflectUtil.getAllFields(clz, false)))
+          .mapToLong(f -> {
+            if (PrimitiveTypeUtil.isPrimitive(f.getType())) {
+              return 0;
+            } else {
+              f.setAccessible(true);
+              return uncheck(() -> sizeOf(f.get(o)));
+            }
+          })
+          .sum();
     }
   }
 

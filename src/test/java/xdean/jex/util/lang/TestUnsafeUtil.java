@@ -6,7 +6,10 @@ import static xdean.jex.util.lang.UnsafeUtil.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import xdean.jex.extra.Wrapper;
+
 public class TestUnsafeUtil {
+
   @Test
   public void testGetUnsafe() {
     assertNotNull(getUnsafe());
@@ -23,25 +26,42 @@ public class TestUnsafeUtil {
   @Test
   public void testSizeOf() {
     if (System.getProperty("sun.arch.data.model").equals("64")) {
-      if (UnsafeUtil.isUsecompressedOops()) {
-        assertEquals(12, getHeaderSize());
-        assertEquals(16, sizeOf(Object.class));
-        assertEquals(32, sizeOf(SizeA.class));
-        assertEquals(32, sizeOf(SizeB.class));
-        assertEquals(24, sizeOf(SizeC.class));
-        assertEquals(24, sizeOf(SizeD.class));
-        assertEquals(16, sizeOf(SizeE.class));
-      } else {
-        assertEquals(16, getHeaderSize());
-        assertEquals(16, sizeOf(Object.class));
-        assertEquals(32, sizeOf(SizeA.class));
-        assertEquals(40, sizeOf(SizeB.class));
-        assertEquals(32, sizeOf(SizeC.class));
-        assertEquals(40, sizeOf(SizeD.class));
-        assertEquals(24, sizeOf(SizeE.class));
-      }
+      assertSize(12, 16, getHeaderSize());
+      assertSize(16, 16, shallowSizeOf(Object.class));
+      assertSize(32, 32, shallowSizeOf(SizeA.class));
+      assertSize(32, 40, shallowSizeOf(SizeB.class));
+      assertSize(24, 32, shallowSizeOf(SizeC.class));
+      assertSize(24, 40, shallowSizeOf(SizeD.class));
+      assertSize(16, 24, shallowSizeOf(SizeE.class));
     } else {
       throw new UnsupportedOperationException("Haven't test ont 32 bit yet.");
+    }
+  }
+
+  @Test
+  public void testSizeOfObject() {
+    if (System.getProperty("sun.arch.data.model").equals("64")) {
+      assertSize(12, 16, getHeaderSize());
+      assertSize(16, 16, sizeOf(new Object()));
+      assertSize(32, 32, sizeOf(new SizeA()));
+      assertSize(32, 40, sizeOf(new SizeB()));
+      assertSize(24, 32, sizeOf(new SizeC()));
+      assertSize(24, 40, sizeOf(new SizeD()));
+      assertSize(16, 24, sizeOf(new SizeE()));
+      assertSize(28, 36, sizeOf(new int[] { 1, 2, 3 }));
+      assertSize(56, 72, sizeOf(new Object[] { new Object(), new Object() }));
+      assertSize(16, 24, sizeOf(Wrapper.empty()));
+      assertSize(32, 40, sizeOf(Wrapper.of(new Object())));
+    } else {
+      throw new UnsupportedOperationException("Haven't test ont 32 bit yet.");
+    }
+  }
+
+  private static void assertSize(long useCompressedOop, long notUse, long actual) {
+    if (UnsafeUtil.isUsecompressedOops()) {
+      assertEquals(useCompressedOop, actual);
+    } else {
+      assertEquals(notUse, actual);
     }
   }
 
