@@ -1,12 +1,14 @@
 package xdean.jex.util.lang;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Array;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 public class PrimitiveTypeUtil {
 
-  private static final Map<Class<?>, Class<?>> primitiveToWrappers = new HashMap<>();
-  private static final Map<Class<?>, Class<?>> wrappersToPrimitives = new HashMap<>();
+  private static final BiMap<Class<?>, Class<?>> wrapperToPrimitive = HashBiMap.create();
+  private static final BiMap<Class<?>, Class<?>> arrayToPrimitive = HashBiMap.create();
   static {
     add(boolean.class, Boolean.class);
     add(byte.class, Byte.class);
@@ -16,7 +18,6 @@ public class PrimitiveTypeUtil {
     add(int.class, Integer.class);
     add(long.class, Long.class);
     add(short.class, Short.class);
-    add(void.class, Void.class);
   }
 
   /**
@@ -26,7 +27,7 @@ public class PrimitiveTypeUtil {
    * @return
    */
   public static Class<?> toWrapper(final Class<?> primitiveType) {
-    return primitiveToWrappers.get(primitiveType);
+    return wrapperToPrimitive.inverse().get(primitiveType);
   }
 
   /**
@@ -36,7 +37,7 @@ public class PrimitiveTypeUtil {
    * @return
    */
   public static Class<?> toPrimitive(final Class<?> wrapperType) {
-    return wrappersToPrimitives.get(wrapperType);
+    return wrapperToPrimitive.get(wrapperType);
   }
 
   /**
@@ -46,7 +47,17 @@ public class PrimitiveTypeUtil {
    * @return
    */
   public static boolean isPrimitive(Class<?> clz) {
-    return primitiveToWrappers.keySet().contains(clz);
+    return wrapperToPrimitive.inverse().keySet().contains(clz);
+  }
+
+  /**
+   * Determine the class is primitive array or not.
+   *
+   * @param clz
+   * @return
+   */
+  public static boolean isPrimitiveArray(Class<?> clz) {
+    return arrayToPrimitive.keySet().contains(clz);
   }
 
   /**
@@ -56,7 +67,7 @@ public class PrimitiveTypeUtil {
    * @return
    */
   public static boolean isWrapper(Class<?> clz) {
-    return wrappersToPrimitives.keySet().contains(clz);
+    return wrapperToPrimitive.keySet().contains(clz);
   }
 
   /**
@@ -135,7 +146,7 @@ public class PrimitiveTypeUtil {
   }
 
   private static void add(final Class<?> primitiveType, final Class<?> wrapperType) {
-    primitiveToWrappers.put(primitiveType, wrapperType);
-    wrappersToPrimitives.put(wrapperType, primitiveType);
+    wrapperToPrimitive.put(wrapperType, primitiveType);
+    arrayToPrimitive.put(Array.newInstance(primitiveType, 1).getClass(), primitiveType);
   }
 }
