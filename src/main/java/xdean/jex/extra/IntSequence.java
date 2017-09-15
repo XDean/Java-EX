@@ -1,20 +1,18 @@
 package xdean.jex.extra;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
+import xdean.jex.extra.collection.IntList;
 import xdean.jex.util.task.TaskUtil;
 
 public class IntSequence implements Iterator<Integer> {
-  final Set<Integer> useSet, releaseSet;
+  final IntList useSet, releaseSet;
   final int min;
   transient int current;
 
   public IntSequence(int start) {
-    this.useSet = new HashSet<>();
-    this.releaseSet = new HashSet<>();
+    this.useSet = IntList.create();
+    this.releaseSet = IntList.create();
     this.min = start;
     this.current = start - 1;
   }
@@ -32,7 +30,7 @@ public class IntSequence implements Iterator<Integer> {
       }
       return current;
     } else {
-      return TaskUtil.andFinal(() -> Collections.min(releaseSet), i -> releaseSet.remove(i));
+      return TaskUtil.andFinal(() -> releaseSet.stream().min().getAsInt(), i -> releaseSet.remove(i));
     }
   }
 
