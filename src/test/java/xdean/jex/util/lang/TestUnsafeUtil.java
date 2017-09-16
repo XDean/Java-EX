@@ -2,6 +2,7 @@ package xdean.jex.util.lang;
 
 import static org.junit.Assert.*;
 import static xdean.jex.util.lang.UnsafeUtil.*;
+import static xdean.jex.util.task.TaskUtil.andFinal;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,6 +53,7 @@ public class TestUnsafeUtil {
       assertSize(56, 72, sizeOf(new Object[] { new Object(), new Object() }));
       assertSize(16, 24, sizeOf(Wrapper.empty()));
       assertSize(32, 40, sizeOf(Wrapper.of(new Object())));
+      assertSize(16, 24, sizeOf(andFinal(() -> Wrapper.empty(), w -> w.set(w))));
     } else {
       throw new UnsupportedOperationException("Haven't test ont 32 bit yet.");
     }

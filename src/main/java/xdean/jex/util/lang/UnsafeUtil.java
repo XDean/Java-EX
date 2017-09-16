@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -115,6 +117,14 @@ public class UnsafeUtil {
    * @return
    */
   public static long sizeOf(Object o) {
+    return sizeOf(o, new IdentityHashMap<>());
+  }
+
+  private static long sizeOf(Object o, Map<Object, Object> visited) {
+    if (visited.keySet().contains(o)) {
+      return 0L;
+    }
+    visited.put(o, null);
     if (o == null) {
       return 0;
     }
@@ -127,7 +137,7 @@ public class UnsafeUtil {
       } else {
         long size = shallowSize;
         for (int i = 0; i < len; i++) {
-          size += sizeOf(Array.get(o, i));
+          size += sizeOf(Array.get(o, i), visited);
         }
         return size;
       }
@@ -138,7 +148,7 @@ public class UnsafeUtil {
               return 0;
             } else {
               f.setAccessible(true);
-              return uncheck(() -> sizeOf(f.get(o)));
+              return uncheck(() -> sizeOf(f.get(o), visited));
             }
           })
           .sum();
