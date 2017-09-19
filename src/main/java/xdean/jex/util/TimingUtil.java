@@ -11,7 +11,7 @@ import xdean.jex.util.cache.CacheUtil;
 
 import com.google.common.base.Stopwatch;
 
-public class TimeUtil {
+public class TimingUtil {
   public static void timeThen(Runnable r, Consumer<Long> then) {
     Stopwatch s = getShareStopwatch();
     s.reset();
@@ -42,7 +42,7 @@ public class TimeUtil {
    * @param then (this time, total time) -> {...}
    */
   public static void seriesTimeThen(Object uniqueKey, Runnable r, BiConsumer<Long, Long> then) {
-    Stopwatch total = CacheUtil.cache(TimeUtil.class, uniqueKey, () -> Stopwatch.createUnstarted());
+    Stopwatch total = CacheUtil.cache(TimingUtil.class, uniqueKey, () -> Stopwatch.createUnstarted());
     Stopwatch temp = getShareStopwatch();
     temp.reset();
     temp.start();
@@ -68,7 +68,7 @@ public class TimeUtil {
   }
 
   private static Stopwatch getShareStopwatch() {
-    Stopwatch share = CacheUtil.cache(TimeUtil.class, Thread.currentThread(), () -> Stopwatch.createUnstarted());
+    Stopwatch share = CacheUtil.cache(TimingUtil.class, Thread.currentThread(), () -> Stopwatch.createUnstarted());
     return share.isRunning() ? Stopwatch.createUnstarted() : share;
   }
 }
