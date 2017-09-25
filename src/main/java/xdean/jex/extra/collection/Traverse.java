@@ -1,4 +1,4 @@
-package xdean.jex.util.collection;
+package xdean.jex.extra.collection;
 
 import io.reactivex.Flowable;
 
@@ -8,9 +8,59 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.function.Function;
 
+import lombok.RequiredArgsConstructor;
 import xdean.jex.extra.Either;
+import xdean.jex.extra.rx2.RxIterator;
 
-public class TraversalUtil {
+public class Traverse {
+  @FunctionalInterface
+  public interface Traversable<T> extends Iterable<T> {
+    Flowable<T> traverse(Traverser t);
+
+    default Traverser defaultTraverser() {
+      return DefaultTraverser.BREAD_FIRST;
+    }
+
+    @Override
+    default Iterator<T> iterator() {
+      return iterator(defaultTraverser());
+    }
+
+    default Iterator<T> iterator(Traverser traverser) {
+      return traverse(traverser).to(RxIterator.flowableIterator());
+    }
+
+    default Flowable<T> preOrderTraversal() {
+      return traverse(DefaultTraverser.PRE_ORDER);
+    }
+
+    default Flowable<T> postOrderTraversal() {
+      return traverse(DefaultTraverser.POST_ORDER);
+    }
+
+    default Flowable<T> breadthFirstTraversal() {
+      return traverse(DefaultTraverser.BREAD_FIRST);
+    }
+  }
+
+  @FunctionalInterface
+  public interface Traverser {
+    <T> Flowable<T> travese(T root, Function<T, Iterable<T>> getChildren);
+  }
+
+  @RequiredArgsConstructor
+  public enum DefaultTraverser implements Traverser {
+    PRE_ORDER(Traverse::preOrderTraversal),
+    POST_ORDER(Traverse::postOrderTraversal),
+    BREAD_FIRST(Traverse::breadthFirstTraversal);
+
+    private final Traverser traverser;
+
+    @Override
+    public <T> Flowable<T> travese(T root, Function<T, Iterable<T>> getChildren) {
+      return traverser.travese(root, getChildren);
+    }
+  }
 
   private static <T> Deque<T> newDeque(T root) {
     Deque<T> deque = new ArrayDeque<T>();

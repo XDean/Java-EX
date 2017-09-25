@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 
 import lombok.extern.slf4j.Slf4j;
-import xdean.jex.util.collection.TraversalUtil;
+import xdean.jex.extra.collection.Traverse;
 import xdean.jex.util.security.SecurityUtil;
 import xdean.jex.util.task.TaskUtil;
 
@@ -65,12 +65,12 @@ public class FileUtil {
   }
 
   public static Flowable<Path> deepTraversal(Path path) {
-    return TraversalUtil.preOrderTraversal(path,
+    return Traverse.preOrderTraversal(path,
         p -> TaskUtil.firstSuccess(() -> Files.newDirectoryStream(p), () -> Collections.<Path> emptyList()));
   }
 
   public static Flowable<Path> wideTraversal(Path path) {
-    return TraversalUtil.breadthFirstTraversal(path,
+    return Traverse.breadthFirstTraversal(path,
         p -> TaskUtil.firstSuccess(() -> Files.newDirectoryStream(p), () -> Collections.<Path> emptyList()));
   }
 
