@@ -12,7 +12,6 @@ import io.reactivex.schedulers.Schedulers;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.reactivestreams.Subscription;
@@ -24,21 +23,12 @@ import org.reactivestreams.Subscription;
  *
  */
 public class RxIterator {
-  public static <T> Function<Flowable<T>, Iterator<T>> flowableIterator(Scheduler scheduler) {
-    return o -> toIterator(o, scheduler);
-  }
-
   public static <T> Function<Flowable<T>, Iterator<T>> flowableIterator() {
     return o -> toIterator(o);
   }
 
-  public static <T> Iterator<T> toIterator(Flowable<T> ob, Scheduler scheduler) {
-    return new FlowableIterator<>(ob, scheduler);
-  }
-
-  @SchedulerSupport(SchedulerSupport.IO)
   public static <T> Iterator<T> toIterator(Flowable<T> ob) {
-    return toIterator(ob, Schedulers.io());
+    return new FlowableIterator<>(ob);
   }
 
   public static <T> Function<Observable<T>, Iterator<T>> observableIterator(Scheduler scheduler) {
@@ -60,7 +50,7 @@ public class RxIterator {
 
   public static final class ObservableIterator<T> implements Iterator<T>, AutoCloseable {
     private LinkedBlockingQueue<Notification<T>> queue = new LinkedBlockingQueue<>();
-    private Optional<Notification<T>> next = Optional.empty();
+    private Notification<T> next = null;
     private boolean completed = false;
     private Disposable disposable;
 
@@ -80,11 +70,11 @@ public class RxIterator {
     @Override
     public T next() {
       calcNext();
-      if (next.isPresent() == false) {
+      if (next == null) {
         throw new NoSuchElementException();
       }
-      T t = next.get().getValue();
-      next = Optional.empty();
+      T t = next.getValue();
+      next = null;
       return t;
     }
 
@@ -92,10 +82,10 @@ public class RxIterator {
       if (completed) {
         return;
       }
-      if (next.isPresent() == false) {
+      if (next == null) {
         Notification<T> take = uncheck(queue::take);
         if (take.isOnNext()) {
-          next = Optional.of(take);
+          next = take;
         } else if (take.isOnError()) {
           completed = true;
           throw new RuntimeException(take.getError());
@@ -114,17 +104,16 @@ public class RxIterator {
   }
 
   public static final class FlowableIterator<T> implements Iterator<T>, AutoCloseable {
+    private Notification<T> next = null;
     private LinkedBlockingQueue<Notification<T>> queue = new LinkedBlockingQueue<>(1);
-    private Optional<Notification<T>> next = Optional.empty();
     private boolean completed = false;
     private Subscription subscription;
 
-    public FlowableIterator(Flowable<T> source, Scheduler scheduler) {
+    public FlowableIterator(Flowable<T> source) {
       source
           .materialize()
-          .subscribeOn(scheduler)
           .subscribe(
-              queue::put,
+              e -> queue.put(e),
               e -> completed = true,
               () -> completed = true,
               s -> this.subscription = s
@@ -140,11 +129,11 @@ public class RxIterator {
     @Override
     public T next() {
       calcNext();
-      if (next.isPresent() == false) {
+      if (next == null) {
         throw new NoSuchElementException();
       }
-      T t = next.get().getValue();
-      next = Optional.empty();
+      T t = next.getValue();
+      next = null;
       return t;
     }
 
@@ -152,11 +141,11 @@ public class RxIterator {
       if (completed) {
         return;
       }
-      if (next.isPresent() == false) {
+      if (next == null) {
         subscription.request(1);
-        Notification<T> take = uncheck(queue::take);
+        Notification<T> take = uncheck(() -> queue.take());
         if (take.isOnNext()) {
-          next = Optional.of(take);
+          next = take;
         } else if (take.isOnError()) {
           completed = true;
           throw new RuntimeException(take.getError());
