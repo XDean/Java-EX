@@ -1,5 +1,7 @@
 package xdean.jex.util.file;
 
+import io.reactivex.Flowable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -10,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 
 import lombok.extern.slf4j.Slf4j;
-import rx.Observable;
 import xdean.jex.util.collection.TraversalUtil;
 import xdean.jex.util.security.SecurityUtil;
 import xdean.jex.util.task.TaskUtil;
@@ -63,13 +64,13 @@ public class FileUtil {
     }
   }
 
-  public static Observable<Path> deepTraversal(Path path) {
-    return TraversalUtil.deepTraversal(path,
+  public static Flowable<Path> deepTraversal(Path path) {
+    return TraversalUtil.preOrderTraversal(path,
         p -> TaskUtil.firstSuccess(() -> Files.newDirectoryStream(p), () -> Collections.<Path> emptyList()));
   }
 
-  public static Observable<Path> wideTraversal(Path path) {
-    return TraversalUtil.wideTraversal(path,
+  public static Flowable<Path> wideTraversal(Path path) {
+    return TraversalUtil.breadthFirstTraversal(path,
         p -> TaskUtil.firstSuccess(() -> Files.newDirectoryStream(p), () -> Collections.<Path> emptyList()));
   }
 

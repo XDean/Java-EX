@@ -15,15 +15,16 @@ public class TestFileUtil {
   @Test
   public void testDeepTraversal() {
     FileUtil.deepTraversal(Paths.get(CP).resolve("count"))
-        .count()
-        .forEach(c -> Assert.assertEquals(6, c.intValue()));
+        .map(p -> p.getFileName().toString())
+        .test()
+        .assertValueCount(6);
   }
 
   @Test
   public void testWideTraversal() {
     FileUtil.wideTraversal(Paths.get(CP).resolve("count"))
-        .count()
-        .forEach(c -> Assert.assertEquals(6, c.intValue()));
+        .test()
+        .assertValueCount(6);
   }
 
   @Test
