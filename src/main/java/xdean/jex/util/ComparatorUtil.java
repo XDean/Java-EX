@@ -1,12 +1,11 @@
 package xdean.jex.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import xdean.jex.extra.RelativeComparator;
+
 import com.google.common.collect.Lists;
 
 public class ComparatorUtil {
@@ -30,18 +29,6 @@ public class ComparatorUtil {
 
   @SafeVarargs
   public static <T> Comparator<T> relative(Comparator<T> comp, T... elements) {
-    List<T> origin = Arrays.asList(elements);
-    List<T> target = new ArrayList<>(Arrays.asList(elements));
-    target.sort(comp);
-    if (origin.equals(target)) {
-      return comp;
-    } else {
-      Builder<T, T> builder = ImmutableMap.builder();
-      for (int i = 0; i < elements.length; i++) {
-        builder.put(origin.get(i), target.get(i));
-      }
-      ImmutableMap<T, T> map = builder.build();
-      return (a, b) -> comp.compare(map.getOrDefault(a, a), map.getOrDefault(b, b));
-    }
+    return RelativeComparator.of(comp, elements);
   }
 }
