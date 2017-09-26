@@ -93,16 +93,19 @@ public class RelativeComparator<T> {
         .<Comparator<T>> map(orderList -> {
           List<T> target = new ArrayList<>(orderList);
           target.sort(defaultComparator);
-          if (orderList.equals(target)) {
-            return defaultComparator;
-          } else {
-            Builder<T, T> builder = ImmutableMap.builder();
-            for (int i = 0; i < orderList.size(); i++) {
-              builder.put(orderList.get(i), target.get(i));
-            }
-            ImmutableMap<T, T> map = builder.build();
-            return (a, b) -> defaultComparator.compare(map.getOrDefault(a, a), map.getOrDefault(b, b));
+          Builder<T, T> builder = ImmutableMap.builder();
+          for (int i = 0; i < orderList.size(); i++) {
+            builder.put(orderList.get(i), target.get(i));
           }
+          ImmutableMap<T, T> map = builder.build();
+          return (a, b) -> {
+            int ia = orderList.indexOf(a);
+            int ib = orderList.indexOf(b);
+            if (ia != -1 && ib != -1) {
+              return ia - ib;
+            }
+            return defaultComparator.compare(map.getOrDefault(a, a), map.getOrDefault(b, b));
+          };
         })
         .blockingGet();
   }

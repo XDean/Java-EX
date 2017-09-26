@@ -9,6 +9,9 @@ import xdean.jex.extra.RelativeComparator;
 import com.google.common.collect.Lists;
 
 public class ComparatorUtil {
+  public static <T> Comparator<T> notSort() {
+    return (a, b) -> 0;
+  }
 
   @SafeVarargs
   public static <T> Comparator<T> startWith(T... elements) {
