@@ -49,7 +49,7 @@ public class TestUnsafeUtil {
       assertSize(24, 32, sizeOf(new SizeC()));
       assertSize(24, 40, sizeOf(new SizeD()));
       assertSize(16, 24, sizeOf(new SizeE()));
-      assertSize(28, 36, sizeOf(new int[] { 1, 2, 3 }));
+      assertSize(32, 40, sizeOf(new int[] { 1, 2, 3 }));
       assertSize(56, 72, sizeOf(new Object[] { new Object(), new Object() }));
       assertSize(16, 24, sizeOf(Wrapper.empty()));
       assertSize(32, 40, sizeOf(Wrapper.of(new Object())));

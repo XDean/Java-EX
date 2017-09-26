@@ -87,7 +87,7 @@ public class UnsafeUtil {
       } else {
         maxOffset += refSizeOf(maxField.getType());
       }
-      return ((int) Math.ceil((double) maxOffset / ADDRESS_SIZE)) * ADDRESS_SIZE;
+      return regulateSize(maxOffset);
     }
   }
 
@@ -103,7 +103,7 @@ public class UnsafeUtil {
     Class<? extends Object> clz = o.getClass();
     if (clz.isArray()) {
       int len = Array.getLength(o);
-      return THE_UNSAFE.arrayBaseOffset(clz) + THE_UNSAFE.arrayIndexScale(clz) * len;
+      return regulateSize(THE_UNSAFE.arrayBaseOffset(clz) + THE_UNSAFE.arrayIndexScale(clz) * len);
     }
     return shallowSizeOf(clz);
   }
@@ -192,6 +192,10 @@ public class UnsafeUtil {
    */
   public static boolean isUsecompressedOops() {
     return useCompressedOops;
+  }
+
+  private static long regulateSize(long size) {
+    return size / ADDRESS_SIZE * ADDRESS_SIZE + (size % ADDRESS_SIZE == 0 ? 0 : ADDRESS_SIZE);
   }
 
   private static boolean initUseCompressedOops() {
