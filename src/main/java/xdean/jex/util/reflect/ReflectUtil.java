@@ -7,10 +7,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,6 +70,15 @@ public class ReflectUtil {
     return CLASS_GET_ROOT_FIELDS.apply(clz);
   }
 
+  /**
+   * Get field value by name
+   *
+   * @param clz
+   * @param t
+   * @param fieldName
+   * @return
+   * @throws NoSuchFieldException
+   */
   @SuppressWarnings("unchecked")
   public static <T, O> O getFieldValue(Class<T> clz, T t, String fieldName) throws NoSuchFieldException {
     Field field = clz.getDeclaredField(fieldName);
@@ -82,20 +92,85 @@ public class ReflectUtil {
   }
 
   /**
-   * Get both private and inherit fields
+   * Get all fields
+   *
+   * @param clz
+   * @param includeStatic include static fields or not
+   * @return
+   */
+  public static Field[] getAllFields(Class<?> clz, boolean includeStatic) {
+    return Arrays.stream(getAllFields(clz))
+        .filter(f -> includeStatic || !Modifier.isStatic(f.getModifiers()))
+        .toArray(Field[]::new);
+  }
+
+  /**
+   * Get all fields
    *
    * @param clz
    * @return
    */
-  public static Field[] getAllFields(Class<?> clz, boolean includeStatic) {
+  public static Field[] getAllFields(Class<?> clz) {
     List<Field> list = new ArrayList<>();
     do {
-      list.addAll(Arrays.asList(clz.getDeclaredFields())
-          .stream()
-          .filter(f -> includeStatic || !Modifier.isStatic(f.getModifiers()))
-          .collect(Collectors.toList()));
+      list.addAll(Arrays.asList(clz.getDeclaredFields()));
     } while ((clz = clz.getSuperclass()) != null);
     return list.toArray(new Field[list.size()]);
+  }
+
+  /**
+   * Get all methods
+   *
+   * @param clz
+   * @return
+   */
+  public static Method[] getAllMethods(Class<?> clz) {
+    Set<Method> set = new HashSet<>();
+    List<Class<?>> classes = new ArrayList<>();
+    classes.add(clz);
+    classes.addAll(Arrays.asList(getAllSuperClasses(clz)));
+    classes.addAll(Arrays.asList(getAllInterfaces(clz)));
+    for (Class<?> c : classes) {
+      set.addAll(Arrays.asList(c.getDeclaredMethods()));
+    }
+    return set.toArray(new Method[set.size()]);
+  }
+
+  /**
+   * Get all super classes
+   *
+   * @param clz
+   * @return
+   */
+  public static Class<?>[] getAllSuperClasses(Class<?> clz) {
+    List<Class<?>> list = new ArrayList<>();
+    while ((clz = clz.getSuperclass()) != null) {
+      list.add(clz);
+    }
+    return list.toArray(new Class<?>[list.size()]);
+  }
+
+  /**
+   * Get all interfaces
+   *
+   * @param clz
+   * @return
+   */
+  public static Class<?>[] getAllInterfaces(Class<?> clz) {
+    HashSet<Class<?>> set = new HashSet<>();
+    getAllInterfaces(clz, set);
+    return set.toArray(new Class<?>[set.size()]);
+  }
+
+  private static void getAllInterfaces(Class<?> clz, Set<Class<?>> visited) {
+    if (clz.getSuperclass() != null) {
+      getAllInterfaces(clz.getSuperclass(), visited);
+    }
+    for (Class<?> c : clz.getInterfaces()) {
+      if (visited.add(c)) {
+        getAllInterfaces(c, visited);
+      }
+    }
   }
 
   /**
