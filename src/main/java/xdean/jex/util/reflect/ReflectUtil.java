@@ -5,10 +5,15 @@ import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -89,6 +94,118 @@ public class ReflectUtil {
       log.error("Should not happen.", e);
       throw new IllegalStateException(e);
     }
+  }
+
+  class IntList extends ArrayList<Integer> {
+  }
+
+  /**
+   * Get the actual generic types.<br>
+   * For example:
+   *
+   * <pre>
+   * <code>
+   * class IntList extends ArrayList<Integer>{}
+   * getGenericType(IntList.class, List.class);// {Integer.class}
+   * getGenericType(IntList.class, Collection.class);// {Integer.class}
+   * getGenericType(Integer.class, Comparable.class);// {Integer.class}
+   * </code>
+   * </pre>
+   *
+   * And even nested situation
+   *
+   * <pre>
+   * <code>
+   * class A<E,T>{}
+   * class B<E> extends A<E,Integer>{}
+   * class C extends<Boolean>{}
+   * getGenericType(C.class, A.class);// {Boolean.class, Integer.class}
+   * getGenericType(B.class, A.class);// {null, Integer.class}
+   * </code>
+   * </pre>
+   *
+   * @param clz The implementation class.
+   * @param targetClass Find the actual generic type on this type.
+   * @return An array with Class object. Its length equals targetClass's generic parameters' length. If a generic
+   *         parameter is still generic, it will be null in the returned array.
+   */
+  public static Class<?>[] getGenericTypes(Class<?> clz, Class<?> targetClass) {
+    boolean isInterface = targetClass.isInterface();
+    TypeVariable<?>[] targetTypeParameters = targetClass.getTypeParameters();
+    log.debug("Type paramter length: {}", targetTypeParameters.length);
+    if (targetTypeParameters.length == 0) {
+      return new Class<?>[0];
+    }
+    List<TypeVariable<?>> leftTypeParameters = Arrays.asList(clz.getTypeParameters());
+    List<Class<?>> classes = new ArrayList<>();
+    classes.add(clz);
+    classes.addAll(Arrays.asList(getAllSuperClasses(clz)));
+    if (isInterface) {
+      classes.addAll(Arrays.asList(getAllInterfaces(clz)));
+    }
+    // Value is always Class or TypeVariable
+    Map<TypeVariable<?>, Type> actualTypeMap = new HashMap<>();
+    for (Class<?> c : classes) {
+      List<Type> generics = new ArrayList<>();
+      generics.add(c.getGenericSuperclass());
+      if (isInterface) {
+        generics.addAll(Arrays.asList(c.getGenericInterfaces()));
+      }
+      generics.removeIf(t -> t == null);
+      for (Type t : generics) {
+        if (t instanceof ParameterizedType) {
+          ParameterizedType parameterizedType = (ParameterizedType) t;
+          Type rawType = parameterizedType.getRawType();
+          if (!(rawType instanceof Class)) {
+            log.info("Unkown raw type: {} with type {}.", rawType, rawType.getClass());
+            continue;
+          }
+          Class<?> rawClz = (Class<?>) rawType;
+          Type[] genericTypes = parameterizedType.getActualTypeArguments();
+          if (rawClz.equals(targetClass)) {
+            log.debug("Find generic types: {}", (Object) genericTypes);
+            List<Class<?>> ret = new ArrayList<>();
+            for (Type type : genericTypes) {
+              if (type instanceof Class) {
+                ret.add((Class<?>) type);
+              } else if (type instanceof TypeVariable) {
+                if (leftTypeParameters.contains(type)) {
+                  ret.add(null);
+                } else {
+                  Type actualType = type;
+                  while (actualType instanceof TypeVariable) {
+                    actualType = actualTypeMap.get(actualType);
+                  }
+                  if (actualType != null) {
+                    ret.add((Class<?>) actualType);
+                  } else {
+                    ret.add(null);
+                    log.error("A type variable neither explicit or generic: {} with type {}", type, type.getClass());
+                  }
+                }
+              } else {
+                log.warn("Unknown actual type argument: {} with type {}", type.getClass());
+              }
+            }
+            return ret.toArray(new Class<?>[ret.size()]);
+          } else {
+            TypeVariable<?>[] typeParameters = rawClz.getTypeParameters();
+            for (int i = 0; i < typeParameters.length; i++) {
+              if ((genericTypes[i] instanceof Class<?>) || (genericTypes[i] instanceof TypeVariable)) {
+                Type previous = actualTypeMap.putIfAbsent(typeParameters[i], genericTypes[i]);
+                if (previous != null) {
+                  log.warn("There already has type map(which should not happen): {} -> {}", typeParameters[i], previous);
+                }
+              } else {
+              }
+            }
+          }
+        } else {
+          log.info("Unknown generic type: {} with type {}.", t, t.getClass());
+        }
+      }
+    }
+    return new Class<?>[0];
   }
 
   /**
@@ -216,7 +333,7 @@ public class ReflectUtil {
     int found = deep + 1;
     for (int i = 1; i < stElements.length; i++) {
       StackTraceElement nextStack = stElements[i];
-      if (nextStack.getClassName() == ReflectUtil.class.getName()) {
+      if (nextStack.getClassName().equals(ReflectUtil.class.getName())) {
         continue;
       }
       if (!ignoreSameClass || !currentStack.getClassName().equals(nextStack.getClassName())) {
