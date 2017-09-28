@@ -21,23 +21,23 @@ public class PrimitiveTypeUtil {
   }
 
   /**
-   * Get wrapper class of primitive type. Or null for other.
+   * Get wrapper class of primitive type. Or itself for other.
    *
    * @param primitiveType
    * @return
    */
   public static Class<?> toWrapper(final Class<?> primitiveType) {
-    return wrapperToPrimitive.inverse().get(primitiveType);
+    return wrapperToPrimitive.inverse().getOrDefault(primitiveType, primitiveType);
   }
 
   /**
-   * Get primitive type of wrapper class. Or null for other.
+   * Get primitive type of wrapper class. Or itself for other.
    *
    * @param wrapperType
    * @return
    */
   public static Class<?> toPrimitive(final Class<?> wrapperType) {
-    return wrapperToPrimitive.get(wrapperType);
+    return wrapperToPrimitive.getOrDefault(wrapperType, wrapperType);
   }
 
   /**
