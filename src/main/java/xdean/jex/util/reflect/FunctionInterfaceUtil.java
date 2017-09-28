@@ -40,6 +40,31 @@ public class FunctionInterfaceUtil {
     return ms[0];
   }
 
+  /**
+   * Adapt a method to a function interface.<br>
+   * For example:
+   *
+   * <pre>
+   * <code>
+   * static int increment(int i){
+   *  return i+1;
+   * }
+   * Method m = ...
+   * UnaryOperator<Integer> uo = methodToFunctionInterface(m, null, UnaryOperator.class);//work
+   * UnaryOperator<Integer> uo = methodToFunctionInterface(m, null, UnaryOperator.class, Integer.class);//work and more safe
+   * UnaryOperator<Integer> uo = methodToFunctionInterface(m, null, UnaryOperator.class, String.class);//return null
+   * </code>
+   * </pre>
+   *
+   * @param method The method to adapt. Ensure the method can be access.
+   * @param target The method's target. If the method is static, target should be null.
+   * @param functionInterfaceClass The function interface to adapt to.
+   * @param conflictGenericTypes If the function interface has generic type, you can specify them in order. If a
+   *          conflict type is null, it will be ignored.
+   * @return Instance of the function interface. Or null if can't adapt to. Note that returned object is raw type. If
+   *         you don't specify conflict generic types, IllegalArgumentException(type mismatch) may happen when you call
+   *         it.
+   */
   @SuppressWarnings("unchecked")
   public static <T> T methodToFunctionInterface(Method method, Object target, Class<T> functionInterfaceClass,
       Class<?>... conflictGenericTypes) {

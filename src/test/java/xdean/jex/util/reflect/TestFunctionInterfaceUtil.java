@@ -2,7 +2,6 @@ package xdean.jex.util.reflect;
 
 import static org.junit.Assert.*;
 import static xdean.jex.util.reflect.FunctionInterfaceUtil.*;
-import io.reactivex.functions.BiConsumer;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -35,13 +34,6 @@ public class TestFunctionInterfaceUtil {
   public void testStatic() throws Exception {
     Function<Integer, Integer> iuo = methodToFunctionInterface(get("staticIntToInt"), null, Function.class);
     assertEquals(2, iuo.apply(1).intValue());
-  }
-
-  @Test
-  public void testMethodToFunctionInterfaceGeneric() throws Exception {
-    BiConsumer<Number, Integer> iuo =
-        methodToFunctionInterface(get("objIntToVoid"), new A(), BiConsumer.class, Number.class, Integer.class);
-    iuo.accept(1, 2);
   }
 
   @Test(expected = NullPointerException.class)
@@ -88,16 +80,11 @@ public class TestFunctionInterfaceUtil {
   }
 
   static class A {
-
     public static void runnable() {
     }
 
     public static int staticIntToInt(int i) {
       return i + 1;
-    }
-
-    public void objIntToVoid(Number o, int i) {
-      System.out.println(o + ", " + i);
     }
 
     public static <T> T objToObj(T t) {
