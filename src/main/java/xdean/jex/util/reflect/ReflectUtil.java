@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
@@ -18,10 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 
 import lombok.extern.slf4j.Slf4j;
-import xdean.jex.util.lang.PrimitiveTypeUtil;
 
 @Slf4j
 public class ReflectUtil {
@@ -359,140 +356,5 @@ public class ReflectUtil {
       }
     }
     return null;
-  }
-
-  /**
-   * Get the method from a function interface
-   *
-   * @param clz
-   * @return null if the given class is not a function interface
-   */
-  public static <T> Method getFunctionInterfaceMethod(Class<?> clz) {
-    if (!clz.isInterface()) {
-      return null;
-    }
-    Method[] ms = Stream.of(clz.getMethods())
-        .filter(m -> !(m.isDefault() || Modifier.isStatic(m.getModifiers()) || Modifier.isPrivate(m.getModifiers())))
-        .toArray(Method[]::new);
-    if (ms.length != 1) {
-      return null;
-    }
-    return ms[0];
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T> T methodToFunctionInterface(Method method, Object target, Class<T> functionInterfaceClass,
-      Class<?>... conflictGenericTypes) {
-    Method functionMethod = getFunctionInterfaceMethod(functionInterfaceClass);
-    if (functionMethod == null) {
-      return null;
-    }
-    if (functionMethod.getParameterCount() != method.getParameterCount()) {
-      return null;
-    }
-    // Map the conflict type
-    TypeVariable<?> returnTypeVariable = null;
-    Map<TypeVariable<?>, Class<?>> conflictTypeMap = new HashMap<>();
-    TypeVariable<Class<T>>[] typeParameters = functionInterfaceClass.getTypeParameters();
-    if (conflictGenericTypes.length > typeParameters.length) {
-      throw new IllegalArgumentException("The conflict generic types are too many. Expect " + typeParameters.length);
-    }
-    for (int i = 0; i < conflictGenericTypes.length; i++) {
-      conflictTypeMap.put(typeParameters[i], conflictGenericTypes[i]);
-    }
-    Map<TypeVariable<?>, Class<?>> guessConflictTypeMap = new HashMap<>();
-    // Resolve return type
-    Class<?> returnType = PrimitiveTypeUtil.toWrapper(method.getReturnType());
-    Type functionGenericReturnType = functionMethod.getGenericReturnType();
-    if (returnType == void.class && functionGenericReturnType == void.class) {
-    } else if (functionGenericReturnType instanceof Class) {
-      if (!PrimitiveTypeUtil.toWrapper((Class<?>) functionGenericReturnType).isAssignableFrom(returnType)) {
-        return null;
-      }
-    } else if (functionGenericReturnType instanceof TypeVariable) {
-      TypeVariable<?> tv = (TypeVariable<?>) functionGenericReturnType;
-      if (!matchTypeBounds(returnType, tv, conflictTypeMap.get(tv), false)) {
-        return null;
-      }
-      returnTypeVariable = tv;
-    }
-    // Resolve parameters
-    Type[] functionParams = functionMethod.getGenericParameterTypes();
-    Class<?>[] params = method.getParameterTypes();
-    for (int i = 0; i < params.length; i++) {
-      Type fpt = functionParams[i];
-      Class<?> pt = params[i];
-      if (fpt instanceof Class) {
-        if (!PrimitiveTypeUtil.toWrapper(pt).isAssignableFrom(PrimitiveTypeUtil.toWrapper((Class<?>) fpt))) {
-          return null;
-        }
-      } else if (fpt instanceof TypeVariable) {
-        TypeVariable<?> tv = (TypeVariable<?>) fpt;
-        if (tv == returnTypeVariable && !returnType.isAssignableFrom(pt)) {
-          return null;
-        }
-        Class<?> conflictType = conflictTypeMap.get(tv);
-        if (!matchTypeBounds(pt, tv, conflictType, true)) {
-          return null;
-        }
-        if (conflictType == null) {
-          Class<?> guessType = guessConflictTypeMap.get(tv);
-          if (guessType == null || guessType.isAssignableFrom(pt)) {
-            guessConflictTypeMap.put(tv, pt);
-          } else if (!pt.isAssignableFrom(guessType)) {
-            return null;
-          }
-        }
-      } else {
-        log.warn("Can't handle GenericParameterType: {} with type {}", pt, pt.getClass());
-        return null;
-      }
-    }
-    // Resolve throws
-    List<Class<?>> functionExceptionTypes = Arrays.asList(functionMethod.getExceptionTypes());
-    for (Class<?> exceptionType : method.getExceptionTypes()) {
-      if (Exception.class.isAssignableFrom(exceptionType) && !RuntimeException.class.isAssignableFrom(exceptionType)
-          && !functionExceptionTypes.stream().anyMatch(fet -> fet.isAssignableFrom(exceptionType))) {
-        return null;
-      }
-    }
-    return (T) Proxy.newProxyInstance(functionInterfaceClass.getClassLoader(),
-        new Class[] { functionInterfaceClass }, (obj, m, args) -> {
-          if (m.equals(functionMethod)) {
-            return method.invoke(target, args);
-          }
-          return m.invoke(obj, args);
-        });
-  }
-
-  private static boolean matchTypeBounds(Class<?> clz, TypeVariable<?> tv, Class<?> conflictClz, boolean isInput) {
-    Class<?> wrapClz = PrimitiveTypeUtil.toWrapper(clz);
-    if (conflictClz != null) {
-      Class<?> wrapConflict = PrimitiveTypeUtil.toWrapper(conflictClz);
-      if (isInput) {
-        return wrapClz.isAssignableFrom(wrapConflict);
-      } else {
-        return wrapConflict.isAssignableFrom(wrapClz);
-      }
-    } else if (isInput) {
-      return getAllBounds(tv).anyMatch(
-          c -> c == Object.class || wrapClz.isAssignableFrom(PrimitiveTypeUtil.toWrapper(c)));
-    } else {
-      return getAllBounds(tv).allMatch(c -> PrimitiveTypeUtil.toWrapper(c).isAssignableFrom(wrapClz));
-    }
-  }
-
-  private static Stream<Class<?>> getAllBounds(TypeVariable<?> tv) {
-    return Stream.of(tv.getBounds())
-        .flatMap(t -> {
-          if (t instanceof Class) {
-            return Stream.of((Class<?>) t);
-          } else if (t instanceof TypeVariable) {
-            return getAllBounds(((TypeVariable<?>) t));
-          } else {
-            log.warn("Can't handle TypeVariable Bound: {} with type {}", t, t.getClass());
-            return Stream.empty();
-          }
-        });
   }
 }
