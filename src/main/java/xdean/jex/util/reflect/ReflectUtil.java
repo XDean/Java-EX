@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -344,6 +345,30 @@ public class ReflectUtil {
         return currentStack;
       }
     }
+    return null;
+  }
+
+  /**
+   * Get the method from a function interface
+   *
+   * @param clz
+   * @return
+   */
+  public static <T> Method getFunctionInterfaceMethod(Class<?> clz) {
+    if (clz.isInterface() == false) {
+      return null;
+    }
+    Method[] ms = Stream.of(clz.getMethods())
+        .filter(m -> !(m.isDefault() || Modifier.isStatic(m.getModifiers()) || Modifier.isPrivate(m.getModifiers())))
+        .toArray(Method[]::new);
+    if (ms.length != 1) {
+      return null;
+    }
+    return ms[0];
+  }
+
+  public static <T> T methodToFunctionInterface(Method m, Class<T> functionInterfaceClass) {
+
     return null;
   }
 }
