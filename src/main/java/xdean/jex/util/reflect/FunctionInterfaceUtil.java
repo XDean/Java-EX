@@ -32,7 +32,7 @@ public class FunctionInterfaceUtil {
       return null;
     }
     Method[] ms = Stream.of(clz.getMethods())
-        .filter(m -> !(m.isDefault() || Modifier.isStatic(m.getModifiers()) || Modifier.isPrivate(m.getModifiers())))
+        .filter(m -> !(m.isDefault() || m.isBridge() || m.isSynthetic() || Modifier.isStatic(m.getModifiers())))
         .toArray(Method[]::new);
     if (ms.length != 1) {
       return null;
@@ -55,6 +55,22 @@ public class FunctionInterfaceUtil {
    * UnaryOperator<Integer> uo = methodToFunctionInterface(m, null, UnaryOperator.class, String.class);//return null
    * </code>
    * </pre>
+   *
+   * Note that only indeed adapted method can be converted. <br>
+   * For example: {@code Integer function(Number)} can't adapt to {@code UnaryOperator<Integer>}, though any call to a
+   * {@code UnaryOperator<Integer>} can delegate by the function. Because you can't define like:
+   *
+   * <pre>
+   * <code>
+   * interface Function extends UnaryOperator&#60;Integer&#62 {
+   *   &#64;Override
+   *   public Integer apply(Number t);//error
+   * }
+   * </code>
+   * </pre>
+   *
+   * Now only ignored things is ParameterizedType. That means this method consider return type and parameter types as
+   * raw type.
    *
    * @param method The method to adapt. Ensure the method can be access.
    * @param target The method's target. If the method is static, target should be null.
@@ -102,6 +118,10 @@ public class FunctionInterfaceUtil {
     // Resolve return type
     Class<?> returnType = toWrapper(method.getReturnType());
     Type functionGenericReturnType = functionMethod.getGenericReturnType();
+    if (functionGenericReturnType instanceof ParameterizedType) {
+      // TODO handle and match ParameterizedType
+      functionGenericReturnType = ((ParameterizedType) functionGenericReturnType).getRawType();
+    }
     if (returnType == void.class && functionGenericReturnType == void.class) {
     } else if (functionGenericReturnType instanceof Class) {
       if (!toWrapper((Class<?>) functionGenericReturnType).isAssignableFrom(returnType)) {
@@ -119,6 +139,10 @@ public class FunctionInterfaceUtil {
       } else {
         return null;
       }
+    } else {
+      log.warn("Can't handle GenericReturnType: {} with type {}", functionGenericReturnType,
+          functionGenericReturnType.getClass());
+      return null;
     }
     // Resolve parameters
     Type[] functionParams = functionMethod.getGenericParameterTypes();
@@ -126,6 +150,10 @@ public class FunctionInterfaceUtil {
     for (int i = 0; i < params.length; i++) {
       Type functionParamType = functionParams[i];
       Class<?> paramType = toWrapper(params[i]);
+      if (functionParamType instanceof ParameterizedType) {
+        // TODO handle and match ParameterizedType
+        functionParamType = ((ParameterizedType) functionParamType).getRawType();
+      }
       if (functionParamType instanceof Class) {
         if (!paramType.isAssignableFrom(
             toWrapper((Class<?>) functionParamType))) {

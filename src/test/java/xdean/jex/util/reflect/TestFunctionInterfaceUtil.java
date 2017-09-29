@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")
@@ -20,6 +21,7 @@ public class TestFunctionInterfaceUtil {
     assertNotNull(getFunctionInterfaceMethod(Function.class));
     assertNotNull(getFunctionInterfaceMethod(Predicate.class));
     assertNotNull(getFunctionInterfaceMethod(Runnable.class));
+    assertNotNull(getFunctionInterfaceMethod(UnaryOperator.class));
     assertNull(getFunctionInterfaceMethod(Object.class));
     assertNull(getFunctionInterfaceMethod(List.class));
     assertNull(getFunctionInterfaceMethod(Cloneable.class));
@@ -68,6 +70,13 @@ public class TestFunctionInterfaceUtil {
     assertEquals(1, uo.apply(1d).intValue());
   }
 
+  @Ignore("Can't handle ParameterType mismatch now")
+  @Test(expected = NullPointerException.class)
+  public void testParameterTypes() throws Exception {
+    Function<List<Integer>, String> func = methodToFunctionInterface(get("stringList"), null, Function.class);
+    assertEquals("[1]", func.apply(Arrays.asList(1)));
+  }
+
   private static Method get(String name) {
     return Arrays.stream(A.class.getDeclaredMethods())
         .filter(m -> m.getName().equals(name))
@@ -101,6 +110,10 @@ public class TestFunctionInterfaceUtil {
 
     public static double mapDouble(Double d) {
       return d;
+    }
+
+    public static String stringList(List<String> list) {
+      return list.toString();
     }
   }
 }
