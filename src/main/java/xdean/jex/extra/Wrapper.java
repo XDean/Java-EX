@@ -2,7 +2,7 @@ package xdean.jex.extra;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import xdean.jex.extra.annotation.NotThreadSafe;
+import xdean.jex.extra.annotation.marker.NotThreadSafe;
 
 @NotThreadSafe
 @EqualsAndHashCode
