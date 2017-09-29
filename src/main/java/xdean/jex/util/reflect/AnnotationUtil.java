@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Change annotations in runtime.
@@ -197,7 +199,7 @@ public class AnnotationUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static Object /* AnnotationData */createAnnotationData(
+  private static Object /* AnnotationData */createAnnotationData(
       Class<?> c, Object /* AnnotationData */annotationData, Annotation annotation, int classRedefinedCount)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     Map<Class<? extends Annotation>, Annotation> annotations = (Map<Class<? extends Annotation>, Annotation>) AnnotationData_annotations
@@ -226,12 +228,20 @@ public class AnnotationUtil {
    */
   @SuppressWarnings("unchecked")
   public static <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
-    return AccessController.doPrivileged((PrivilegedAction<T>) () ->
+    Map<String, Object> map = getAnnotationDefaultMap(annotationClass);
+    map.putAll(valuesMap);
+    return AccessController
+        .doPrivileged((PrivilegedAction<T>) () ->
         (T) Proxy.newProxyInstance(
             annotationClass.getClassLoader(),
             new Class[] { annotationClass },
-            uncheck(() -> (InvocationHandler) AnnotationInvocationHandler_constructor.newInstance(annotationClass,
-                new HashMap<>(valuesMap)))
+            uncheck(() -> (InvocationHandler) AnnotationInvocationHandler_constructor.newInstance(annotationClass, map))
             ));
+  }
+
+  public static <T extends Annotation> Map<String, Object> getAnnotationDefaultMap(Class<T> annotationClass) {
+    return Stream.of(annotationClass.getDeclaredMethods())
+        .filter(m -> m.getDefaultValue() != null)
+        .collect(Collectors.toMap(m -> m.getName(), m -> m.getDefaultValue()));
   }
 }
