@@ -1,7 +1,7 @@
 # Java-EX
 Java Common Extension
 
-#Features
+# Features
 ## Lang
 - Finalize support. Attach clean up tasks on any object. Free from `Object.finalize`.
 - Size of object. Measure shallow and retained size of object or class by java code which is useful when debug.
