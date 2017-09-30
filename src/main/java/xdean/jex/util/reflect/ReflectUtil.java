@@ -142,6 +142,12 @@ public class ReflectUtil {
         clz = (Class<?>) rawType;
         Type[] actualTypes = ((ParameterizedType) sourceType).getActualTypeArguments();
         TypeVariable<?>[] typeParameters = ((Class<?>) rawType).getTypeParameters();
+        if (rawType.equals(targetClass)) {
+          return Arrays.stream(actualTypes)
+              .filter(t -> Class.class.isInstance(t))
+              .map(t -> (Class<?>) t)
+              .toArray(Class<?>[]::new);
+        }
         for (int i = 0; i < actualTypes.length; i++) {
           actualTypeMap.put(typeParameters[i], actualTypes[i]);
         }
