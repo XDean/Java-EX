@@ -74,6 +74,14 @@ public class TestGeneric {
         .assertValues(O1.class, O2.class);
   }
 
+  @Test
+  public void test5() {
+    Observable.fromArray(ReflectUtil.getGenericTypes(C3.class.getGenericSuperclass(), C1.class))
+        .test()
+        .assertValueCount(1)
+        .assertValues(O1.class);
+  }
+
   static class O1 {
   }
 

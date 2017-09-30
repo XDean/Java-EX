@@ -124,12 +124,33 @@ public class ReflectUtil {
    * </code>
    * </pre>
    *
-   * @param clz The implementation class.
+   * @param sourceType The type to find generic type.
    * @param targetClass Find the actual generic type on this type.
    * @return An array with Class object. Its length equals targetClass's generic parameters' length. If a generic
    *         parameter is still generic, it will be null in the returned array.
    */
-  public static Class<?>[] getGenericTypes(Class<?> clz, Class<?> targetClass) {
+  public static Class<?>[] getGenericTypes(Type sourceType, Class<?> targetClass) {
+    Class<?> clz;
+    // Map for type reference
+    // Value is always Class(the conflict type) or TypeVariable(the reference type)
+    Map<TypeVariable<?>, Type> actualTypeMap = new HashMap<>();
+    if (sourceType instanceof Class) {
+      clz = (Class<?>) sourceType;
+    } else if (sourceType instanceof ParameterizedType) {
+      Type rawType = ((ParameterizedType) sourceType).getRawType();
+      if (rawType instanceof Class) {
+        clz = (Class<?>) rawType;
+        Type[] actualTypes = ((ParameterizedType) sourceType).getActualTypeArguments();
+        TypeVariable<?>[] typeParameters = ((Class<?>) rawType).getTypeParameters();
+        for (int i = 0; i < actualTypes.length; i++) {
+          actualTypeMap.put(typeParameters[i], actualTypes[i]);
+        }
+      } else {
+        return new Class<?>[0];
+      }
+    } else {
+      return new Class<?>[0];
+    }
     boolean isInterface = targetClass.isInterface();
     TypeVariable<?>[] targetTypeParameters = targetClass.getTypeParameters();
     log.debug("Type paramter length: {}", targetTypeParameters.length);
@@ -137,7 +158,8 @@ public class ReflectUtil {
       return new Class<?>[0];
     }
     // Not conflict yet type parameters
-    List<TypeVariable<?>> leftTypeParameters = Arrays.asList(clz.getTypeParameters());
+    List<TypeVariable<?>> leftTypeParameters = new ArrayList<>(Arrays.asList(clz.getTypeParameters()));
+    leftTypeParameters.removeAll(actualTypeMap.keySet());
     // Possible class of conflict type definition
     List<Class<?>> classes = new ArrayList<>();
     classes.add(clz);
@@ -145,9 +167,6 @@ public class ReflectUtil {
     if (isInterface) {
       classes.addAll(Arrays.asList(getAllInterfaces(clz)));
     }
-    // Map for type reference
-    // Value is always Class(the conflict type) or TypeVariable(the reference type)
-    Map<TypeVariable<?>, Type> actualTypeMap = new HashMap<>();
     for (Class<?> c : classes) {
       List<Type> generics = new ArrayList<>();
       generics.add(c.getGenericSuperclass());
@@ -216,6 +235,7 @@ public class ReflectUtil {
         }
       }
     }
+    log.warn("{} is not subclass of {}.", clz, targetClass);
     return new Class<?>[0];
   }
 
