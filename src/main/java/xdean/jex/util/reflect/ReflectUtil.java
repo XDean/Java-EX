@@ -23,10 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReflectUtil {
 
-  public static final UnaryOperator<Method> METHOD_GET_ROOT;
-  public static final Function<Class<?>, Method[]> CLASS_GET_ROOT_METHODS;
-  public static final UnaryOperator<Field> FIELD_GET_ROOT;
-  public static final Function<Class<?>, Field[]> CLASS_GET_ROOT_FIELDS;
+  private static final UnaryOperator<Method> METHOD_GET_ROOT;
+  private static final Function<Class<?>, Method[]> CLASS_GET_ROOT_METHODS;
+  private static final UnaryOperator<Field> FIELD_GET_ROOT;
+  private static final Function<Class<?>, Field[]> CLASS_GET_ROOT_FIELDS;
   static {
     try {
       Method getRootMethod = Method.class.getDeclaredMethod("getRoot");

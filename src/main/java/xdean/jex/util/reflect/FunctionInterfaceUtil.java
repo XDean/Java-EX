@@ -3,6 +3,8 @@ package xdean.jex.util.reflect;
 import static xdean.jex.util.function.Predicates.not;
 import static xdean.jex.util.lang.PrimitiveTypeUtil.toWrapper;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -203,10 +205,25 @@ public class FunctionInterfaceUtil {
         return null;
       }
     }
-    return (T) Proxy.newProxyInstance(functionInterfaceClass.getClassLoader(),
-        new Class[] { functionInterfaceClass }, (obj, m, args) -> {
+    return (T) Proxy.newProxyInstance(
+        functionInterfaceClass.getClassLoader(),
+        new Class[] { functionInterfaceClass },
+        (obj, m, args) -> {
           if (m.equals(functionMethod)) {
             return method.invoke(target, args);
+          }
+          Class<?> declaringClass = m.getDeclaringClass();
+          if (m.isDefault() || declaringClass.equals(Object.class)) {
+            Object result;
+            Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(
+                Class.class, int.class);
+            constructor.setAccessible(true);
+            result = constructor
+                .newInstance(declaringClass, MethodHandles.Lookup.PRIVATE)
+                .unreflectSpecial(m, declaringClass)
+                .bindTo(obj)
+                .invokeWithArguments(args);
+            return (result);
           }
           return m.invoke(obj, args);
         });
