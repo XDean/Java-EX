@@ -20,6 +20,33 @@ public class PrimitiveTypeUtil {
     add(short.class, Short.class);
   }
 
+  public static Object toWrapper(Object o) {
+    return o;
+  }
+
+  /**
+   * Convert a primitive type array to wrapper type array.<br>
+   * If not primitive array, return itself.<br>
+   * If not array, throw IllegalArgumentException.
+   *
+   * @param array
+   * @return
+   */
+  public static Object toWrapperArray(Object array) {
+    if (!array.getClass().isArray()) {
+      throw new IllegalArgumentException("Must give array object.");
+    }
+    if (isPrimitiveArray(array.getClass())) {
+      int length = Array.getLength(array);
+      Object newArray = Array.newInstance(toWrapper(array.getClass().getComponentType()), length);
+      for (int i = 0; i < length; i++) {
+        Array.set(newArray, i, toWrapper(Array.get(array, i)));
+      }
+      return newArray;
+    }
+    return array;
+  }
+
   /**
    * Get wrapper class of primitive type. Or itself for other.
    *
