@@ -1,6 +1,5 @@
 package xdean.jex.util.reflect;
 
-import static xdean.jex.util.function.Predicates.not;
 import static xdean.jex.util.lang.PrimitiveTypeUtil.toWrapper;
 
 import java.lang.invoke.MethodHandles;
@@ -103,7 +102,7 @@ public class FunctionInterfaceUtil {
       conflictTypeMap.put(typeParameters[i], toWrapper(conflictGenericTypes[i]));
     }
     // Map the generic reference
-    Map<TypeVariable<?>, Type> typeVariableReference = getTypeVariableReference(functionInterfaceClass);
+    Map<TypeVariable<?>, Type> typeVariableReference = GenericUtil.getGenericReferenceMap(functionInterfaceClass);
     Function<TypeVariable<?>, Class<?>> getActualTypeVariable = tv -> {
       Type next;
       while (true) {
@@ -249,27 +248,27 @@ public class FunctionInterfaceUtil {
         });
   }
 
-  private static Map<TypeVariable<?>, Type> getTypeVariableReference(Class<?> clz) {
-    HashMap<TypeVariable<?>, Type> map = new HashMap<>();
-    if (clz.getSuperclass() != null) {
-      map.putAll(getTypeVariableReference(clz.getSuperclass()));
-    }
-    Arrays.asList(clz.getInterfaces()).forEach(c -> map.putAll(getTypeVariableReference(c)));
-    Stream.concat(Stream.of(clz.getGenericSuperclass()), Stream.of(clz.getGenericInterfaces()))
-        .filter(not(null))
-        .forEach(c -> {
-          if (c instanceof Class) {
-          } else if (c instanceof ParameterizedType) {
-            Type[] actualTypeArguments = ((ParameterizedType) c).getActualTypeArguments();
-            TypeVariable<?>[] implTypeParams = ((Class<?>) ((ParameterizedType) c).getRawType())
-                .getTypeParameters();
-            for (int i = 0; i < actualTypeArguments.length; i++) {
-              map.put(implTypeParams[i], actualTypeArguments[i]);
-            }
-          } else {
-            log.warn("Unknown Generic Type: {} with type {}", c, c.getClass());
-          }
-        });
-    return map;
-  }
+//  private static Map<TypeVariable<?>, Type> getTypeVariableReference(Class<?> clz) {
+//    HashMap<TypeVariable<?>, Type> map = new HashMap<>();
+//    if (clz.getSuperclass() != null) {
+//      map.putAll(getTypeVariableReference(clz.getSuperclass()));
+//    }
+//    Arrays.asList(clz.getInterfaces()).forEach(c -> map.putAll(getTypeVariableReference(c)));
+//    Stream.concat(Stream.of(clz.getGenericSuperclass()), Stream.of(clz.getGenericInterfaces()))
+//        .filter(not(null))
+//        .forEach(c -> {
+//          if (c instanceof Class) {
+//          } else if (c instanceof ParameterizedType) {
+//            Type[] actualTypeArguments = ((ParameterizedType) c).getActualTypeArguments();
+//            TypeVariable<?>[] implTypeParams = ((Class<?>) ((ParameterizedType) c).getRawType())
+//                .getTypeParameters();
+//            for (int i = 0; i < actualTypeArguments.length; i++) {
+//              map.put(implTypeParams[i], actualTypeArguments[i]);
+//            }
+//          } else {
+//            log.warn("Unknown Generic Type: {} with type {}", c, c.getClass());
+//          }
+//        });
+//    return map;
+//  }
 }
