@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import lombok.extern.slf4j.Slf4j;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
@@ -129,11 +128,12 @@ public class GenericUtil {
       return EMPTY_TYPE_ARRAY;
     }
     Map<TypeVariable<?>, Type> map = getGenericReferenceMap(sourceType);
-    return Stream.of(targetTypeParameters)
+    List<TypeVariable<?>> typeParameters = Arrays.asList(targetTypeParameters);
+    return typeParameters.stream()
         .map(tv -> {
           Type actualType = getActualType(map, tv);
           // If actualType equals tv, that means it doesn't implement the targetClass
-            return Objects.equals(actualType, tv) ? null : actualType;
+            return Objects.equals(actualType, tv) && !typeParameters.contains(actualType) ? null : actualType;
           })
         .toArray(Type[]::new);
   }
