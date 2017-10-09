@@ -96,11 +96,12 @@ public class ReflectUtil {
   }
 
   /**
-   * @see GenericUtil#getGenericTypes(Type, Class)
+   * @deprecated GenericUtil#getGenericTypes(Type, Class)
    * @param sourceType
    * @param targetClass
    * @return
    */
+  @Deprecated
   public static Type[] getGenericTypes(Type sourceType, Class<?> targetClass) {
     return GenericUtil.getGenericTypes(sourceType, targetClass);
   }

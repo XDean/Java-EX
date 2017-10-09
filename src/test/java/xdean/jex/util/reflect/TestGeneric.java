@@ -108,6 +108,19 @@ public class TestGeneric {
         .assertValues(GenericUtil.createParameterizedType(I2.class, null, C6.class, Object.class));
   }
 
+  @Test
+  public void test7() {
+    // I2<C5<? extends T>, Object>
+    Observable
+        .fromArray(handleNull(GenericUtil.getGenericTypes(C7.class, I1.class)))
+        .test()
+        .assertValueCount(1)
+        .assertValues(GenericUtil.createParameterizedType(I2.class, null,
+            GenericUtil.createParameterizedType(C5.class, null,
+                GenericUtil.createWildcardType(new Type[] { getTV(C7.class, 0) }, null)),
+            Object.class));
+  }
+
   private <T> TypeVariable<Class<T>> getTV(Class<T> clz, int i) {
     return clz.getTypeParameters()[i];
   }
@@ -143,5 +156,8 @@ public class TestGeneric {
   }
 
   static class C6 extends C5<C6> {
+  }
+
+  static class C7<T> extends C5<C5<? extends T>> {
   }
 }
