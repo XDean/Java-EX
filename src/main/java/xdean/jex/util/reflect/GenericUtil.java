@@ -8,6 +8,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,7 @@ public class GenericUtil {
    * </code>
    * </pre>
    *
-   * @param sourceType The type to find generic type.
+   * @param sourceType The type to find generic type. May Class or ParameterizedType
    * @param targetClass Find the actual generic type on this type.
    * @return A type array. Its length equals targetClass's generic parameters' length. Its elements can be
    *         {@code Class, TypeVariable, ParameterizedType}.
@@ -128,12 +129,15 @@ public class GenericUtil {
       return EMPTY_TYPE_ARRAY;
     }
     Map<TypeVariable<?>, Type> map = getGenericReferenceMap(sourceType);
-    List<TypeVariable<?>> typeParameters = Arrays.asList(targetTypeParameters);
-    return typeParameters.stream()
+    // If the sourceType is Class, there may left TypeVariable.
+    List<TypeVariable<?>> leftTypeParameters = sourceType instanceof Class ?
+        Arrays.asList(((Class<?>) sourceType).getTypeParameters()) :
+        Collections.emptyList();
+    return Arrays.stream(targetTypeParameters)
         .map(tv -> {
           Type actualType = getActualType(map, tv);
           // If actualType equals tv, that means it doesn't implement the targetClass
-            return Objects.equals(actualType, tv) && !typeParameters.contains(actualType) ? null : actualType;
+            return Objects.equals(actualType, tv) && !leftTypeParameters.contains(actualType) ? null : actualType;
           })
         .toArray(Type[]::new);
   }
