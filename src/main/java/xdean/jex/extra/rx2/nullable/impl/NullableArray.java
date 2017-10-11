@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import xdean.jex.extra.rx2.nullable.NullPolicy;
 import xdean.jex.extra.rx2.nullable.NullableSource;
+import xdean.jex.extra.rx2.nullable.ObservableFlowable;
 
 public class NullableArray<F> implements NullableSource<F> {
   private final F[] array;
@@ -17,10 +18,8 @@ public class NullableArray<F> implements NullableSource<F> {
   }
 
   @Override
-  public <T> Converter<T> policy(NullPolicy<F, T> policy) {
-    Converter<T> ob = new Converter<>();
-    ob.policy(policy);
-    return ob;
+  public <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy) {
+    return new Converter<T>().policy(policy);
   }
 
   public class Converter<T> extends OFWithPolicy<F, T> {

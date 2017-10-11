@@ -20,7 +20,7 @@ public class NullableCallable<F> implements NullableSource<F> {
 
   @Override
   public <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy) {
-    return null;
+    return new Converter<T>().policy(policy);
   }
 
   public class Converter<T> extends OFWithPolicy<F, T> {

@@ -8,15 +8,15 @@ import io.reactivex.Observable;
 public interface NullableSource<F> {
   <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy);
 
-  default ObservableFlowable<F> drop() {
+  default ObservableFlowable<F> onNullDrop() {
     return policy(NullPolicies.drop());
   }
 
-  default ObservableFlowable<Optional<F>> wrap() {
+  default ObservableFlowable<Optional<F>> onNullWrap() {
     return policy(NullPolicies.wrap());
   }
 
-  default ObservableFlowable<F> defaultValue(F defaultValue) {
+  default ObservableFlowable<F> onNullDefault(F defaultValue) {
     return policy(NullPolicies.defaultValue(defaultValue));
   }
 

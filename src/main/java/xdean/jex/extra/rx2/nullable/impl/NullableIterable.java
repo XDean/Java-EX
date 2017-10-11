@@ -20,9 +20,7 @@ public class NullableIterable<F> implements NullableSource<F> {
 
   @Override
   public <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy) {
-    Converter<T> ob = new Converter<>();
-    ob.policy(policy);
-    return ob;
+    return new Converter<T>().policy(policy);
   }
 
   public class Converter<T> extends OFWithPolicy<F, T> {
