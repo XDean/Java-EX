@@ -1,14 +1,11 @@
 package xdean.jex.extra.rx2.nullable;
 
 import xdean.jex.extra.rx2.nullable.impl.NullableArray;
-import io.reactivex.annotations.Experimental;
 
-@Experimental
 public class RxNullable {
   public static void main(String[] args) {
     RxNullable.fromArray(1, 2, 3, null, 4, null, 5)
-        .policy(NullPolicies.drop())
-        .observable()
+        .observable(NullPolicies.drop())
         .map(i -> i * 2)
         .forEach(System.out::println);
   }

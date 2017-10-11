@@ -4,20 +4,22 @@ import static xdean.jex.util.function.Predicates.not;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import xdean.jex.extra.rx2.nullable.NullPolicy;
 import xdean.jex.extra.rx2.nullable.NullableSource;
+import xdean.jex.extra.rx2.nullable.ObservableFlowable;
 
-public class NullableArray<F> implements NullableSource<F> {
-  private final F[] array;
+public class NullableIterable<F> implements NullableSource<F> {
+  private final Iterable<F> iterable;
 
-  public NullableArray(F[] array) {
-    this.array = array;
+  public NullableIterable(Iterable<F> iterable) {
+    this.iterable = iterable;
   }
 
   @Override
-  public <T> Converter<T> policy(NullPolicy<F, T> policy) {
+  public <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy) {
     Converter<T> ob = new Converter<>();
     ob.policy(policy);
     return ob;
@@ -26,20 +28,19 @@ public class NullableArray<F> implements NullableSource<F> {
   public class Converter<T> extends OFWithPolicy<F, T> {
     @Override
     public Observable<T> observable() {
-      return Observable.fromArray(get());
+      return Observable.fromIterable(get());
     }
 
     @Override
     public Flowable<T> flowable() {
-      return Flowable.fromArray(get());
+      return Flowable.fromIterable(get());
     }
 
-    @SuppressWarnings("unchecked")
-    private T[] get() {
-      return (T[]) Stream.of(array)
+    private Iterable<T> get() {
+      return StreamSupport.stream(iterable.spliterator(), false)
           .map(policy)
           .filter(not(null))
-          .toArray();
+          .collect(Collectors.toList());
     }
   }
 }
