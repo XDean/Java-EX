@@ -1,6 +1,8 @@
 # Java-EX
 Java Common Extension
 
+[![Build Status](https://travis-ci.org/XDean/Java-EX.svg?branch=master)](https://travis-ci.org/XDean/Java-EX)
+
 # Features
 ## Lang
 - Finalize support. Attach clean up tasks on any object. Free from `Object.finalize`.
