@@ -54,6 +54,42 @@ public class GenericUtil {
           return false;
         }
       }
+
+      @Override
+      public String toString() {
+        Type[] lowerBounds = getLowerBounds();
+        Type[] bounds = lowerBounds;
+        StringBuilder sb = new StringBuilder();
+
+        if (lowerBounds.length > 0) {
+          sb.append("? super ");
+        } else {
+          Type[] upperBounds = getUpperBounds();
+          if (upperBounds.length > 0 && !upperBounds[0].equals(Object.class)) {
+            bounds = upperBounds;
+            sb.append("? extends ");
+          } else {
+            return "?";
+          }
+        }
+
+        assert bounds.length > 0;
+
+        boolean first = true;
+        for (Type bound : bounds) {
+          if (!first) {
+            sb.append(" & ");
+          }
+
+          first = false;
+          if (bound instanceof Class) {
+            sb.append(((Class<?>) bound).getName());
+          } else {
+            sb.append(bound.toString());
+          }
+        }
+        return sb.toString();
+      }
     };
   }
 
@@ -113,8 +149,11 @@ public class GenericUtil {
    * class A&#60;E,T&#62;{}
    * class B&#60;E&#62; extends A&#60;E,Integer&#62;{}
    * class C extends B&#60;B&#60;Boolean&#62;&#62;{}
-   * getGenericType(C.class, A.class);// {B&#60;Boolean&#62;(ParameterizedType), Integer.class}
+   * class D&#60;T&#62; extends B&#60;B&#60;? extends T&#62;&#62;{}
+   * class E extends D&#60;Number&#62;{}
    * getGenericType(B.class, A.class);// {E(TypeVariable), Integer.class}
+   * getGenericType(C.class, A.class);// {B&#60;Boolean&#62;(ParameterizedType), Integer.class}
+   * getGenericType(E.class, A.class);// {B&#60;? extends Number&#62;(ParameterizedType), Integer.class}
    * </code>
    * </pre>
    *
