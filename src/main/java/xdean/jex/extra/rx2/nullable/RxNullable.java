@@ -1,6 +1,10 @@
 package xdean.jex.extra.rx2.nullable;
 
+import java.util.concurrent.Callable;
+
 import xdean.jex.extra.rx2.nullable.impl.NullableArray;
+import xdean.jex.extra.rx2.nullable.impl.NullableCallable;
+import xdean.jex.extra.rx2.nullable.impl.NullableIterable;
 
 public class RxNullable {
   public static void main(String[] args) {
@@ -11,7 +15,16 @@ public class RxNullable {
   }
 
   @SafeVarargs
-  public static <F> NullableArray<F> fromArray(F... items) {
-    return new NullableArray<F>(items);
+  public static <F> NullableSource<F> fromArray(F... items) {
+    return new NullableArray<>(items);
   }
+
+  public static <F> NullableSource<F> fromIterable(Iterable<F> iterable) {
+    return new NullableIterable<>(iterable);
+  }
+
+  public static <F> NullableSource<F> fromCallable(Callable<F> callable) {
+    return new NullableCallable<>(callable);
+  }
+
 }
