@@ -1,6 +1,20 @@
 package xdean.jex.extra.unit;
 
+/**
+ * Common Unit Interface
+ *
+ * @author XDean
+ *
+ * @param <T> The Unit can convert with. Usually the type itself.
+ */
 public interface Unit<T extends Unit<T>> {
+  /**
+   * Convert a long value with given unit to this unit.
+   *
+   * @param n
+   * @param fromUnit
+   * @return
+   */
   default long convert(long n, T fromUnit) {
     long m = multiple(fromUnit);
     if (m > 0) {
@@ -17,6 +31,13 @@ public interface Unit<T extends Unit<T>> {
     }
   }
 
+  /**
+   * Convert a double value with given unit to this unit.
+   *
+   * @param n
+   * @param fromUnit
+   * @return
+   */
   default double convert(double n, T fromUnit) {
     long m = multiple(fromUnit);
     if (m > 0) {

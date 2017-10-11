@@ -5,6 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Enum of length unit, from meter to femtometer.
+ *
+ * @author XDean
+ *
+ */
 public enum Length implements Unit<Length> {
   FM(0),
   PM(1),
@@ -13,6 +19,11 @@ public enum Length implements Unit<Length> {
   MM(4),
   M(5);
 
+  /**
+   * Annotation to mark the length value is which unit.
+   *
+   * @author XDean
+   */
   @Retention(RetentionPolicy.SOURCE)
   @Target({ METHOD, FIELD, PARAMETER, TYPE, TYPE_USE, LOCAL_VARIABLE })
   public @interface Unit {
