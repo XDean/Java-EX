@@ -76,15 +76,15 @@ public class FunctionInterfaceUtil {
    * @param method The method to adapt. Ensure the method can be access.
    * @param target The method's target. If the method is static, target should be null.
    * @param functionInterfaceClass The function interface to adapt to.
-   * @param conflictGenericTypes If the function interface has generic type, you can specify them in order. If a
-   *          conflict type is null, it will be ignored.
+   * @param explicitGenericTypes If the function interface has generic type, you can specify them in order. If a
+   *          explicit type is null, it will be ignored.
    * @return Instance of the function interface. Or null if can't adapt to. Note that returned object is raw type. If
-   *         you don't specify conflict generic types, IllegalArgumentException(type mismatch) may happen when you call
+   *         you don't specify explicit generic types, IllegalArgumentException(type mismatch) may happen when you call
    *         it.
    */
   @SuppressWarnings("unchecked")
   public static <T> T methodToFunctionInterface(Method method, Object target, Class<T> functionInterfaceClass,
-      Class<?>... conflictGenericTypes) {
+      Class<?>... explicitGenericTypes) {
     Method functionMethod = getFunctionInterfaceMethod(functionInterfaceClass);
     if (functionMethod == null) {
       return null;
@@ -92,14 +92,14 @@ public class FunctionInterfaceUtil {
     if (functionMethod.getParameterCount() != method.getParameterCount()) {
       return null;
     }
-    // Map the conflict type
-    Map<TypeVariable<?>, Class<?>> conflictTypeMap = new HashMap<>();
+    // Map the explicit type
+    Map<TypeVariable<?>, Class<?>> explicitTypeMap = new HashMap<>();
     TypeVariable<Class<T>>[] typeParameters = functionInterfaceClass.getTypeParameters();
-    if (conflictGenericTypes.length > typeParameters.length) {
-      throw new IllegalArgumentException("The conflict generic types are too many. Expect " + typeParameters.length);
+    if (explicitGenericTypes.length > typeParameters.length) {
+      throw new IllegalArgumentException("The explicit generic types are too many. Expect " + typeParameters.length);
     }
-    for (int i = 0; i < conflictGenericTypes.length; i++) {
-      conflictTypeMap.put(typeParameters[i], toWrapper(conflictGenericTypes[i]));
+    for (int i = 0; i < explicitGenericTypes.length; i++) {
+      explicitTypeMap.put(typeParameters[i], toWrapper(explicitGenericTypes[i]));
     }
     // Map the generic reference
     Map<TypeVariable<?>, Type> typeVariableReference = GenericUtil.getGenericReferenceMap(functionInterfaceClass);
@@ -108,7 +108,7 @@ public class FunctionInterfaceUtil {
       while (true) {
         next = typeVariableReference.get(tv);
         if (next == null) {
-          return conflictTypeMap.get(tv);
+          return explicitTypeMap.get(tv);
         }
         if (next instanceof Class<?>) {
           return (Class<?>) next;
@@ -130,13 +130,13 @@ public class FunctionInterfaceUtil {
       }
     } else if (functionGenericReturnType instanceof TypeVariable) {
       TypeVariable<?> tv = (TypeVariable<?>) functionGenericReturnType;
-      Class<?> conflictType = getActualTypeVariable.apply(tv);
-      if (conflictType != null) {
-        if (!conflictType.equals(returnType)) {
+      Class<?> explicitType = getActualTypeVariable.apply(tv);
+      if (explicitType != null) {
+        if (!explicitType.equals(returnType)) {
           return null;
         }
       } else if (FunctionInterfaceUtil.matchTypeBounds(returnType, tv)) {
-        conflictTypeMap.put(tv, returnType);
+        explicitTypeMap.put(tv, returnType);
       } else {
         return null;
       }
@@ -162,13 +162,13 @@ public class FunctionInterfaceUtil {
         }
       } else if (functionParamType instanceof TypeVariable) {
         TypeVariable<?> tv = (TypeVariable<?>) functionParamType;
-        Class<?> conflictType = getActualTypeVariable.apply(tv);
-        if (conflictType != null) {
-          if (!conflictType.equals(paramType)) {
+        Class<?> explicitType = getActualTypeVariable.apply(tv);
+        if (explicitType != null) {
+          if (!explicitType.equals(paramType)) {
             return null;
           }
         } else if (FunctionInterfaceUtil.matchTypeBounds(paramType, tv)) {
-          conflictTypeMap.put(tv, paramType);
+          explicitTypeMap.put(tv, paramType);
         } else {
           return null;
         }
@@ -188,11 +188,11 @@ public class FunctionInterfaceUtil {
                 if (functionThrowType instanceof Class) {
                   functionThrowClass = (Class<?>) functionThrowType;
                 } else if (functionThrowType instanceof TypeVariable) {
-                  Class<?> conflictType = conflictTypeMap.get(functionThrowType);
-                  if (conflictType == null) {
+                  Class<?> explicitType = explicitTypeMap.get(functionThrowType);
+                  if (explicitType == null) {
                     return FunctionInterfaceUtil.matchTypeBounds(exceptionType, (TypeVariable<?>) functionThrowType);
                   } else {
-                    functionThrowClass = conflictType;
+                    functionThrowClass = explicitType;
                   }
                 } else {
                   log.warn("Can't handle GenericException: {} with type {}", functionThrowType,

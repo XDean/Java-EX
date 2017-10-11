@@ -53,19 +53,19 @@ public class TestFunctionInterfaceUtil {
   }
 
   @Test
-  public void testConflictType() throws Exception {
+  public void testExplicitType() throws Exception {
     UnaryOperator<Integer> uo = methodToFunctionInterface(get("mapInt"), null, UnaryOperator.class, Integer.class);
     assertEquals(1, uo.apply(1).intValue());
   }
 
   @Test
-  public void testConflictTypeNull() throws Exception {
+  public void testExplicitTypeNull() throws Exception {
     UnaryOperator<Double> uo = methodToFunctionInterface(get("mapDouble"), null, UnaryOperator.class, (Class<?>) null);
     assertEquals(1d, uo.apply(1d).doubleValue(), 0);
   }
 
   @Test(expected = NullPointerException.class)
-  public void testConflictTypeFail() throws Exception {
+  public void testExplicitTypeFail() throws Exception {
     UnaryOperator<Double> uo = methodToFunctionInterface(get("mapDouble"), null, UnaryOperator.class, Integer.class);
     assertEquals(1, uo.apply(1d).intValue());
   }
