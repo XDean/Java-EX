@@ -2,6 +2,7 @@ package xdean.jex.extra.collection;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +25,7 @@ public class IntList implements RandomAccess, Cloneable, Serializable {
     return new IntList(initArray);
   }
 
-  public static IntList create(List<Integer> list) {
+  public static IntList create(Collection<Integer> list) {
     return create(list.stream().mapToInt(i -> i).toArray());
   }
 
