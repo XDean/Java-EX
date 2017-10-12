@@ -14,27 +14,27 @@ import xdean.jex.extra.rx2.nullable.impl.NullablePublisher;
 
 public interface RxNullable {
   @SafeVarargs
-  static <F> NullableSource<F> fromArray(F... items) {
+  static <F> NullableObservableFlowable<F> fromArray(F... items) {
     return new NullableArray<>(items);
   }
 
-  static <F> NullableSource<F> fromIterable(Iterable<F> iterable) {
+  static <F> NullableObservableFlowable<F> fromIterable(Iterable<F> iterable) {
     return new NullableIterable<>(iterable);
   }
 
-  static <F> NullableSource<F> fromCallable(Callable<F> callable) {
+  static <F> NullableObservableFlowable<F> fromCallable(Callable<F> callable) {
     return new NullableCallable<>(callable);
   }
 
-  static <F> NullableSource<F> fromPublisher(Publisher<F> publisher) {
+  static <F> NullableObservableFlowable<F> fromPublisher(Publisher<F> publisher) {
     return new NullablePublisher<>(publisher);
   }
 
-  static <F> NullableSource<F> fromFuture(Future<F> future) {
+  static <F> NullableObservableFlowable<F> fromFuture(Future<F> future) {
     return new NullableFuture<>(future);
   }
 
-  static <F> NullableSource<F> fromFuture(Future<F> future, long timeout, TimeUnit unit) {
+  static <F> NullableObservableFlowable<F> fromFuture(Future<F> future, long timeout, TimeUnit unit) {
     return new NullableFuture<>(future, timeout, unit);
   }
 }

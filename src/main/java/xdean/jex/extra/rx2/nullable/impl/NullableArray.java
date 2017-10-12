@@ -6,11 +6,11 @@ import io.reactivex.Observable;
 
 import java.util.stream.Stream;
 
-import xdean.jex.extra.rx2.nullable.NullPolicy;
-import xdean.jex.extra.rx2.nullable.NullableSource;
+import xdean.jex.extra.rx2.nullable.NullHandler;
+import xdean.jex.extra.rx2.nullable.NullableObservableFlowable;
 import xdean.jex.extra.rx2.nullable.ObservableFlowable;
 
-public class NullableArray<F> implements NullableSource<F> {
+public class NullableArray<F> implements NullableObservableFlowable<F> {
   private final F[] array;
 
   public NullableArray(F[] array) {
@@ -18,8 +18,8 @@ public class NullableArray<F> implements NullableSource<F> {
   }
 
   @Override
-  public <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy) {
-    return new Converter<T>().policy(policy);
+  public <T> ObservableFlowable<T> handler(NullHandler<F, T> handler) {
+    return new Converter<T>().handler(handler);
   }
 
   public class Converter<T> extends OFWithPolicy<F, T> {
@@ -36,7 +36,7 @@ public class NullableArray<F> implements NullableSource<F> {
     @SuppressWarnings("unchecked")
     private T[] get() {
       return (T[]) Stream.of(array)
-          .map(policy)
+          .map(handler)
           .filter(not(null))
           .toArray();
     }

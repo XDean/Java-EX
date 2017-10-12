@@ -7,11 +7,11 @@ import io.reactivex.Observable;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import xdean.jex.extra.rx2.nullable.NullPolicy;
-import xdean.jex.extra.rx2.nullable.NullableSource;
+import xdean.jex.extra.rx2.nullable.NullHandler;
+import xdean.jex.extra.rx2.nullable.NullableObservableFlowable;
 import xdean.jex.extra.rx2.nullable.ObservableFlowable;
 
-public class NullableIterable<F> implements NullableSource<F> {
+public class NullableIterable<F> implements NullableObservableFlowable<F> {
   private final Iterable<F> iterable;
 
   public NullableIterable(Iterable<F> iterable) {
@@ -19,8 +19,8 @@ public class NullableIterable<F> implements NullableSource<F> {
   }
 
   @Override
-  public <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy) {
-    return new Converter<T>().policy(policy);
+  public <T> ObservableFlowable<T> handler(NullHandler<F, T> handler) {
+    return new Converter<T>().handler(handler);
   }
 
   public class Converter<T> extends OFWithPolicy<F, T> {
@@ -36,7 +36,7 @@ public class NullableIterable<F> implements NullableSource<F> {
 
     private Iterable<T> get() {
       return StreamSupport.stream(iterable.spliterator(), false)
-          .map(policy)
+          .map(handler)
           .filter(not(null))
           .collect(Collectors.toList());
     }

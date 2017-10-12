@@ -5,21 +5,21 @@ import io.reactivex.Flowable;
 import java.util.Optional;
 
 public interface NullableFlowable<F> {
-  <T> Flowable<T> policy(NullPolicy<F, T> policy);
+  <T> Flowable<T> handler(NullHandler<F, T> handler);
 
   default Flowable<F> onNullDrop() {
-    return policy(NullPolicies.drop());
+    return handler(NullHandlers.drop());
   }
 
   default Flowable<Optional<F>> onNullWrap() {
-    return policy(NullPolicies.wrap());
+    return handler(NullHandlers.wrap());
   }
 
   default Flowable<F> onNullDefault(F defaultValue) {
-    return policy(NullPolicies.defaultValue(defaultValue));
+    return handler(NullHandlers.defaultValue(defaultValue));
   }
 
   default Flowable<F> onNullRun(Runnable action) {
-    return policy(NullPolicies.run(action));
+    return handler(NullHandlers.run(action));
   }
 }

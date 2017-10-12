@@ -2,14 +2,14 @@ package xdean.jex.extra.rx2.nullable;
 
 import java.util.Optional;
 
-public interface NullPolicies {
+public interface NullHandlers {
 
   /**
    * Drop null value
    *
    * @return
    */
-  static <T> NullPolicy<T, T> drop() {
+  static <T> NullHandler<T, T> drop() {
     return i -> i;
   }
 
@@ -18,7 +18,7 @@ public interface NullPolicies {
    *
    * @return
    */
-  static <T> NullPolicy<T, Optional<T>> wrap() {
+  static <T> NullHandler<T, Optional<T>> wrap() {
     return Optional::ofNullable;
   }
 
@@ -28,7 +28,7 @@ public interface NullPolicies {
    * @param defaultValue
    * @return
    */
-  static <T> NullPolicy<T, T> defaultValue(T defaultValue) {
+  static <T> NullHandler<T, T> defaultValue(T defaultValue) {
     return i -> i == null ? defaultValue : i;
   }
 
@@ -38,7 +38,7 @@ public interface NullPolicies {
    * @param action
    * @return
    */
-  static <T> NullPolicy<T, T> run(Runnable action) {
+  static <T> NullHandler<T, T> run(Runnable action) {
     return i -> {
       action.run();
       return i;

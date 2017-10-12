@@ -5,21 +5,21 @@ import io.reactivex.Observable;
 import java.util.Optional;
 
 public interface NullableObservable<F> {
-  <T> Observable<T> policy(NullPolicy<F, T> policy);
+  <T> Observable<T> handler(NullHandler<F, T> handler);
 
   default Observable<F> onNullDrop() {
-    return policy(NullPolicies.drop());
+    return handler(NullHandlers.drop());
   }
 
   default Observable<Optional<F>> onNullWrap() {
-    return policy(NullPolicies.wrap());
+    return handler(NullHandlers.wrap());
   }
 
   default Observable<F> onNullDefault(F defaultValue) {
-    return policy(NullPolicies.defaultValue(defaultValue));
+    return handler(NullHandlers.defaultValue(defaultValue));
   }
 
   default Observable<F> onNullRun(Runnable action) {
-    return policy(NullPolicies.run(action));
+    return handler(NullHandlers.run(action));
   }
 }

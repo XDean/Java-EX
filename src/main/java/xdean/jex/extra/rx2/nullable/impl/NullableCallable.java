@@ -6,11 +6,11 @@ import io.reactivex.Observable;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import xdean.jex.extra.rx2.nullable.NullPolicy;
-import xdean.jex.extra.rx2.nullable.NullableSource;
+import xdean.jex.extra.rx2.nullable.NullHandler;
+import xdean.jex.extra.rx2.nullable.NullableObservableFlowable;
 import xdean.jex.extra.rx2.nullable.ObservableFlowable;
 
-public class NullableCallable<F> implements NullableSource<F> {
+public class NullableCallable<F> implements NullableObservableFlowable<F> {
 
   private final Callable<F> callable;
 
@@ -19,8 +19,8 @@ public class NullableCallable<F> implements NullableSource<F> {
   }
 
   @Override
-  public <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy) {
-    return new Converter<T>().policy(policy);
+  public <T> ObservableFlowable<T> handler(NullHandler<F, T> handler) {
+    return new Converter<T>().handler(handler);
   }
 
   public class Converter<T> extends OFWithPolicy<F, T> {
@@ -39,7 +39,7 @@ public class NullableCallable<F> implements NullableSource<F> {
     }
 
     private Callable<Optional<T>> get() {
-      return () -> Optional.ofNullable(policy.apply(callable.call()));
+      return () -> Optional.ofNullable(handler.apply(callable.call()));
     }
   }
 }

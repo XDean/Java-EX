@@ -8,18 +8,18 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
-import xdean.jex.extra.rx2.nullable.NullPolicies;
+import xdean.jex.extra.rx2.nullable.NullHandlers;
 import xdean.jex.extra.rx2.nullable.RxNullable;
 
 public class RxNullableTest {
   @Test
   public void testDrop() throws Exception {
     RxNullable.fromArray(1, null, 2, null, 3)
-        .observable(NullPolicies.drop())
+        .observable(NullHandlers.drop())
         .test()
         .assertValues(1, 2, 3);
     RxNullable.fromArray(1, null, 2, null, 3)
-        .flowable(NullPolicies.drop())
+        .flowable(NullHandlers.drop())
         .test()
         .assertValues(1, 2, 3);
   }

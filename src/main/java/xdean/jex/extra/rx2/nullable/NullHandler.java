@@ -10,7 +10,7 @@ import java.util.function.Function;
  * @param <F>
  * @param <T>
  */
-public interface NullPolicy<F, T> extends Function<F, T> {
+public interface NullHandler<F, T> extends Function<F, T> {
   @Override
   T apply(F originValue);
 }

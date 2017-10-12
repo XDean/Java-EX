@@ -6,11 +6,11 @@ import io.reactivex.subscribers.DefaultSubscriber;
 
 import org.reactivestreams.Publisher;
 
-import xdean.jex.extra.rx2.nullable.NullPolicy;
-import xdean.jex.extra.rx2.nullable.NullableSource;
+import xdean.jex.extra.rx2.nullable.NullHandler;
+import xdean.jex.extra.rx2.nullable.NullableObservableFlowable;
 import xdean.jex.extra.rx2.nullable.ObservableFlowable;
 
-public class NullablePublisher<F> implements NullableSource<F> {
+public class NullablePublisher<F> implements NullableObservableFlowable<F> {
   private final Publisher<F> publisher;
 
   public NullablePublisher(Publisher<F> publisher) {
@@ -18,8 +18,8 @@ public class NullablePublisher<F> implements NullableSource<F> {
   }
 
   @Override
-  public <T> ObservableFlowable<T> policy(NullPolicy<F, T> policy) {
-    return new Converter<T>().policy(policy);
+  public <T> ObservableFlowable<T> handler(NullHandler<F, T> handler) {
+    return new Converter<T>().handler(handler);
   }
 
   public class Converter<T> extends OFWithPolicy<F, T> {
@@ -41,7 +41,7 @@ public class NullablePublisher<F> implements NullableSource<F> {
 
         @Override
         public void onNext(F f) {
-          T t = policy.apply(f);
+          T t = handler.apply(f);
           if (t == null) {
             request(1);
           } else {
