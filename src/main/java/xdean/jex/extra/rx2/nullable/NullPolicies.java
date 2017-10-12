@@ -31,4 +31,17 @@ public interface NullPolicies {
   static <T> NullPolicy<T, T> defaultValue(T defaultValue) {
     return i -> i == null ? defaultValue : i;
   }
+
+  /**
+   * Do something on null value
+   *
+   * @param action
+   * @return
+   */
+  static <T> NullPolicy<T, T> run(Runnable action) {
+    return i -> {
+      action.run();
+      return i;
+    };
+  }
 }
