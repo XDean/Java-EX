@@ -4,25 +4,25 @@ import io.reactivex.Flowable;
 
 import java.util.Optional;
 
+import org.reactivestreams.Subscriber;
+
 import xdean.jex.extra.rx2.nullable.handler.NullHandler;
-import xdean.jex.extra.rx2.nullable.handler.NullHandlers;
 
-public interface NullableFlowable<F> {
-  <T> Flowable<T> handler(NullHandler<F, T> handler);
+public interface NullableFlowable<F> extends NullableSource<F, GenericFlowable<F>, GenericFlowable<Optional<F>>> {
+  @Override
+  <T> GenericFlowable<T> handler(NullHandler<F, T> handler);
+}
 
-  default Flowable<F> onNullDrop() {
-    return handler(NullHandlers.drop());
+class GenericFlowable<F> extends Flowable<F> implements Generic<F> {
+
+  private final Flowable<F> actual;
+
+  public GenericFlowable(Flowable<F> actual) {
+    this.actual = actual;
   }
 
-  default Flowable<Optional<F>> onNullWrap() {
-    return handler(NullHandlers.wrap());
-  }
-
-  default Flowable<F> onNullDefault(F defaultValue) {
-    return handler(NullHandlers.defaultValue(defaultValue));
-  }
-
-  default Flowable<F> onNullRun(Runnable action) {
-    return handler(NullHandlers.run(action));
+  @Override
+  protected void subscribeActual(Subscriber<? super F> s) {
+    actual.subscribe(s);
   }
 }

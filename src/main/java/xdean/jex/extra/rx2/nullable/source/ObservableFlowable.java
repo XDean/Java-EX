@@ -10,7 +10,7 @@ import io.reactivex.Observable;
  *
  * @param <T>
  */
-public interface ObservableFlowable<T> {
+public interface ObservableFlowable<T> extends Generic<T> {
   Observable<T> observable();
 
   Flowable<T> flowable();

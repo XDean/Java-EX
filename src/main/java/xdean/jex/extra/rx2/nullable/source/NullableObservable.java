@@ -1,28 +1,27 @@
 package xdean.jex.extra.rx2.nullable.source;
 
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 
 import java.util.Optional;
 
 import xdean.jex.extra.rx2.nullable.handler.NullHandler;
-import xdean.jex.extra.rx2.nullable.handler.NullHandlers;
 
-public interface NullableObservable<F> {
-  <T> Observable<T> handler(NullHandler<F, T> handler);
+public interface NullableObservable<F> extends NullableSource<F, GenericObservable<F>, GenericObservable<Optional<F>>> {
+  @Override
+  <T> GenericObservable<T> handler(NullHandler<F, T> handler);
+}
 
-  default Observable<F> onNullDrop() {
-    return handler(NullHandlers.drop());
+class GenericObservable<F> extends Observable<F> implements Generic<F> {
+
+  private final Observable<F> actual;
+
+  public GenericObservable(Observable<F> actual) {
+    this.actual = actual;
   }
 
-  default Observable<Optional<F>> onNullWrap() {
-    return handler(NullHandlers.wrap());
-  }
-
-  default Observable<F> onNullDefault(F defaultValue) {
-    return handler(NullHandlers.defaultValue(defaultValue));
-  }
-
-  default Observable<F> onNullRun(Runnable action) {
-    return handler(NullHandlers.run(action));
+  @Override
+  protected void subscribeActual(Observer<? super F> observer) {
+    actual.subscribe(observer);
   }
 }
