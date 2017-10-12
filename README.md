@@ -34,6 +34,7 @@ Java Common Extension
 
 ## RxJava Extension
 - From java functions to Rx functions.
+- Use `RxNullable` to handle null value easily! ([RxJava2 don't support null value more](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#nulls) and use `Irrelevant` or `Optional` everywhere is so ugly).
 - From `Observable`/`Flowable` to `Iterator`.
 - `RandomOperator`. Easy to shuffle.
 
