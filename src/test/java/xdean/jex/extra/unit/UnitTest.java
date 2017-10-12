@@ -5,7 +5,7 @@ import static xdean.jex.extra.unit.Length.*;
 
 import org.junit.Test;
 
-public class TestUnit {
+public class UnitTest {
   @Test
   public void testLength() throws Exception {
     assertEquals(1, PM.toPM(1));

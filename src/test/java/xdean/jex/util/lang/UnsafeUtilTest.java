@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import xdean.jex.extra.Wrapper;
 
-public class TestUnsafeUtil {
+public class UnsafeUtilTest {
 
   @Test
   public void testGetUnsafe() {

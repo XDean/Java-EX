@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import xdean.jex.util.reflect.AnnotationUtil;
 
-public class TestAnnotationUtil {
+public class AnnotationUtilTest {
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
   public @interface TestAnnotation {

@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import xdean.jex.util.lang.ExceptionUtil;
 
-public class TestFileUtil {
-  private static final URI CP = ExceptionUtil.uncheck(() -> TestFileUtil.class.getResource(".").toURI());
+public class FileUtilTest {
+  private static final URI CP = ExceptionUtil.uncheck(() -> FileUtilTest.class.getResource(".").toURI());
 
   @Test
   public void testDeepTraversal() {

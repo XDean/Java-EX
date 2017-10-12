@@ -14,7 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")
-public class TestFunctionInterfaceUtil {
+public class FunctionInterfaceUtilTest {
 
   @Test
   public void testFunctionInterface() throws Exception {

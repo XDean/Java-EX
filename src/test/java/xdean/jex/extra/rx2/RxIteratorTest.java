@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-public class TestRxIterator {
+public class RxIteratorTest {
   @Test
   public void testFlowable() throws Exception {
     Iterator<Integer> iterator = Flowable.range(0, 10)

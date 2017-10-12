@@ -11,7 +11,7 @@ import org.junit.Test;
 import xdean.jex.extra.rx2.nullable.NullPolicies;
 import xdean.jex.extra.rx2.nullable.RxNullable;
 
-public class TestRxNullable {
+public class RxNullableTest {
   @Test
   public void testDrop() throws Exception {
     RxNullable.fromArray(1, null, 2, null, 3)

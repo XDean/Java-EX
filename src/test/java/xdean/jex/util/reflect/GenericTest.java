@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-public class TestGeneric {
+public class GenericTest {
 
   private static Type NULL = new Type() {
     @Override

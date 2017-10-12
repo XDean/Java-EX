@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
-public class TestIf {
+public class IfTest {
   @Test
   public void testNormal() {
     assertEquals(1, If.that(true).tobe(1).orbe(2).result());

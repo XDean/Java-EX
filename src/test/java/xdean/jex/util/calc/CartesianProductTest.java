@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import rx.Observable;
 
-public class TestCartesianProduct {
+public class CartesianProductTest {
 
   @Test
   public void test() {

@@ -4,7 +4,7 @@ import io.reactivex.Flowable;
 
 import org.junit.Test;
 
-public class TestRelativeComparator {
+public class RelativeComparatorTest {
   @Test
   public void test1() throws Exception {
     Flowable.range(0, 6)

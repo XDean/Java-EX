@@ -12,7 +12,7 @@ import org.junit.experimental.theories.suppliers.TestedOn;
 import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
-public class TestStringUtil {
+public class StringUtilTest {
 
   @Test
   public void firstIndexOf() {

@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import static xdean.jex.util.lang.PrimitiveTypeUtil.*;
 import org.junit.Test;
 
-public class TestPrimitiveTypeUtil {
+public class PrimitiveTypeUtilTest {
   @Test
   public void testIsPrimitive() {
     assertTrue(isPrimitive(int.class));
@@ -16,7 +16,7 @@ public class TestPrimitiveTypeUtil {
     assertTrue(isPrimitive(double.class));
     assertTrue(isPrimitive(short.class));
     assertFalse(isPrimitive(String.class));
-    assertFalse(isPrimitive(TestPrimitiveTypeUtil.class));
+    assertFalse(isPrimitive(PrimitiveTypeUtilTest.class));
   }
 
   @Test
@@ -30,7 +30,7 @@ public class TestPrimitiveTypeUtil {
     assertTrue(isPrimitiveArray(double[].class));
     assertTrue(isPrimitiveArray(short[].class));
     assertFalse(isPrimitiveArray(String[].class));
-    assertFalse(isPrimitiveArray(TestPrimitiveTypeUtil[].class));
+    assertFalse(isPrimitiveArray(PrimitiveTypeUtilTest[].class));
   }
 
   @Test

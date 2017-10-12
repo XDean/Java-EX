@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import xdean.jex.extra.collection.Traverse;
 
-public class TestTraverse {
+public class TraverseTest {
 
   @Test
   public void testPreOrderTraversal() throws Exception {

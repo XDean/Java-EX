@@ -11,7 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("unused")
-public class TestGetAll {
+public class GetAllTest {
 
   @Test
   public void testGetAllFields() {

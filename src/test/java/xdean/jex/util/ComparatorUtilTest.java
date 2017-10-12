@@ -5,7 +5,7 @@ import io.reactivex.Flowable;
 
 import org.junit.Test;
 
-public class TestComparatorUtil {
+public class ComparatorUtilTest {
   @Test
   public void testStartWith() throws Exception {
     Flowable.range(0, 10)

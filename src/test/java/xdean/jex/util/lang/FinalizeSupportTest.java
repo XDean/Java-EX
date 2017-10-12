@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import xdean.jex.util.task.If;
 
-public class TestFinalizeSupport {
+public class FinalizeSupportTest {
   @Test
   public void test() throws Exception {
     AtomicBoolean called = new AtomicBoolean(false);
