@@ -38,14 +38,14 @@ public class NullableFuture<F> implements NullableSource<F> {
   public class Converter<T> extends OFWithPolicy<F, T> {
     @Override
     public Observable<T> observable() {
-      return Observable.fromFuture(get(), timeout, unit)
+      return (unit == null ? Observable.fromFuture(get()) : Observable.fromFuture(get(), timeout, unit))
           .filter(Optional::isPresent)
           .map(Optional::get);
     }
 
     @Override
     public Flowable<T> flowable() {
-      return Flowable.fromFuture(get(), timeout, unit)
+      return (unit == null ? Flowable.fromFuture(get()) : Flowable.fromFuture(get(), timeout, unit))
           .filter(Optional::isPresent)
           .map(Optional::get);
     }
