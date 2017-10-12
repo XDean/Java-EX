@@ -1,8 +1,11 @@
-package xdean.jex.extra.rx2.nullable;
+package xdean.jex.extra.rx2.nullable.source;
 
 import io.reactivex.Observable;
 
 import java.util.Optional;
+
+import xdean.jex.extra.rx2.nullable.handler.NullHandler;
+import xdean.jex.extra.rx2.nullable.handler.NullHandlers;
 
 public interface NullableObservable<F> {
   <T> Observable<T> handler(NullHandler<F, T> handler);

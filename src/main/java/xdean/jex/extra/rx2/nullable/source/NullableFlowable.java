@@ -1,8 +1,11 @@
-package xdean.jex.extra.rx2.nullable;
+package xdean.jex.extra.rx2.nullable.source;
 
 import io.reactivex.Flowable;
 
 import java.util.Optional;
+
+import xdean.jex.extra.rx2.nullable.handler.NullHandler;
+import xdean.jex.extra.rx2.nullable.handler.NullHandlers;
 
 public interface NullableFlowable<F> {
   <T> Flowable<T> handler(NullHandler<F, T> handler);

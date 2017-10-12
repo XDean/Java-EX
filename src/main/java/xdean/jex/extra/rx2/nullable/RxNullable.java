@@ -11,6 +11,7 @@ import xdean.jex.extra.rx2.nullable.impl.NullableCallable;
 import xdean.jex.extra.rx2.nullable.impl.NullableFuture;
 import xdean.jex.extra.rx2.nullable.impl.NullableIterable;
 import xdean.jex.extra.rx2.nullable.impl.NullablePublisher;
+import xdean.jex.extra.rx2.nullable.source.NullableObservableFlowable;
 
 public interface RxNullable {
   @SafeVarargs

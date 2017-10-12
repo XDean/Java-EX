@@ -8,8 +8,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
-import xdean.jex.extra.rx2.nullable.NullHandlers;
 import xdean.jex.extra.rx2.nullable.RxNullable;
+import xdean.jex.extra.rx2.nullable.handler.NullHandlers;
 
 public class RxNullableTest {
   @Test
