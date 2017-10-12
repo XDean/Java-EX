@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import xdean.jex.extra.collection.TreeNode;
+import xdean.jex.extra.collection.Tree;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableMap;
@@ -39,11 +39,11 @@ public class RelativeComparator<T> {
   }
 
   Comparator<T> defaultComparator;
-  TreeNode<T> root;
+  Tree<T> root;
 
   public RelativeComparator(Comparator<T> defaultComparator) {
     this.defaultComparator = defaultComparator;
-    this.root = new TreeNode<>(null);
+    this.root = new Tree<>(null);
   }
 
   @SuppressWarnings("unchecked")
@@ -55,18 +55,18 @@ public class RelativeComparator<T> {
   }
 
   public RelativeComparator<T> addOrder(T small, T big) {
-    Optional<TreeNode<T>> oSmallNode = root.deepChild(small);
-    TreeNode<T> smallNode;
+    Optional<Tree<T>> oSmallNode = root.deepChild(small);
+    Tree<T> smallNode;
     if (oSmallNode.isPresent()) {
       smallNode = oSmallNode.get();
     } else {
       smallNode = root.add(small);
     }
 
-    Optional<TreeNode<T>> oBigNode = root.deepChild(big);
+    Optional<Tree<T>> oBigNode = root.deepChild(big);
     if (oBigNode.isPresent()) {
-      TreeNode<T> bigNode = oBigNode.get();
-      TreeNode<T> commonParent = smallNode.commonParent(bigNode).get();
+      Tree<T> bigNode = oBigNode.get();
+      Tree<T> commonParent = smallNode.commonParent(bigNode).get();
       if (commonParent == smallNode) {
         return this;
       } else if (commonParent == bigNode) {
@@ -88,7 +88,7 @@ public class RelativeComparator<T> {
   public Comparator<T> toComparator() {
     return root.breadthFirstTraversal()
         .skip(1)
-        .map(TreeNode::getValue)
+        .map(Tree::getValue)
         .toList()
         .<Comparator<T>> map(orderList -> {
           List<T> target = new ArrayList<>(orderList);

@@ -17,12 +17,12 @@ import xdean.jex.extra.collection.Traverse.Traverser;
 import com.google.common.collect.Lists;
 
 @Getter
-public class TreeNode<T> implements Traversable<TreeNode<T>> {
-  private TreeNode<T> parent;
-  private List<TreeNode<T>> children = new ArrayList<>();
+public class Tree<T> implements Traversable<Tree<T>> {
+  private Tree<T> parent;
+  private List<Tree<T>> children = new ArrayList<>();
   private T value;
 
-  public TreeNode(T value) {
+  public Tree(T value) {
     this.value = value;
   }
 
@@ -32,8 +32,8 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param value
    * @return the child node
    */
-  public TreeNode<T> add(T value) {
-    return add(new TreeNode<>(value));
+  public Tree<T> add(T value) {
+    return add(new Tree<>(value));
   }
 
   /**
@@ -42,7 +42,7 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param node
    * @return the child node
    */
-  public TreeNode<T> add(TreeNode<T> node) {
+  public Tree<T> add(Tree<T> node) {
     node.removeFromParent();
     node.parent = this;
     children.add(node);
@@ -67,7 +67,7 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param node
    * @return has removed
    */
-  public boolean remove(TreeNode<T> node) {
+  public boolean remove(Tree<T> node) {
     return getChild(node)
         .map(function(n -> n.parent = null))
         .map(children::remove)
@@ -79,8 +79,8 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    *
    * @return the old parent
    */
-  public Optional<TreeNode<T>> removeFromParent() {
-    TreeNode<T> theParent = this.parent;
+  public Optional<Tree<T>> removeFromParent() {
+    Tree<T> theParent = this.parent;
     if (parent != null) {
       parent.remove(this);
     }
@@ -112,7 +112,7 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param value
    * @return
    */
-  public Optional<TreeNode<T>> getChild(T value) {
+  public Optional<Tree<T>> getChild(T value) {
     return children.stream().filter(its(n -> n.value, isEquals(value))).findFirst();
   }
 
@@ -122,7 +122,7 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param node
    * @return
    */
-  public Optional<TreeNode<T>> getChild(TreeNode<T> node) {
+  public Optional<Tree<T>> getChild(Tree<T> node) {
     return children.stream().filter(is(node)).findFirst();
   }
 
@@ -132,9 +132,9 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param value
    * @return
    */
-  public Optional<TreeNode<T>> deepChild(T value) {
+  public Optional<Tree<T>> deepChild(T value) {
     return breadthFirstTraversal()
-        .filter(rx(its(TreeNode::getValue, isEquals(value))))
+        .filter(rx(its(Tree::getValue, isEquals(value))))
         .map(Optional::of)
         .blockingFirst(Optional.empty());
   }
@@ -145,7 +145,7 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param node
    * @return
    */
-  public Optional<TreeNode<T>> deepChild(TreeNode<T> node) {
+  public Optional<Tree<T>> deepChild(Tree<T> node) {
     return breadthFirstTraversal()
         .filter(rx(is(node)))
         .map(Optional::of)
@@ -158,8 +158,8 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param other
    * @return the common parent
    */
-  public Optional<TreeNode<T>> commonParent(TreeNode<T> other) {
-    List<TreeNode<T>> myParents = parents().startWith(this).toList().blockingGet();
+  public Optional<Tree<T>> commonParent(Tree<T> other) {
+    List<Tree<T>> myParents = parents().startWith(this).toList().blockingGet();
     return other.parents()
         .startWith(other)
         .filter(myParents::contains)
@@ -167,7 +167,7 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
         .blockingFirst(Optional.empty());
   }
 
-  public Optional<Flowable<TreeNode<T>>> pathTo(TreeNode<T> node) {
+  public Optional<Flowable<Tree<T>>> pathTo(Tree<T> node) {
     if (deepChild(node).isPresent()) {
       return Optional.of(
           path(node, this)
@@ -185,9 +185,9 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    * @param upNode
    * @return from downNode to upNode's path
    */
-  private static <T> Flowable<TreeNode<T>> path(TreeNode<T> downNode, TreeNode<T> upNode) {
+  private static <T> Flowable<Tree<T>> path(Tree<T> downNode, Tree<T> upNode) {
     return Flowable.generate(() -> Wrapper.of(downNode), (w, e) -> {
-      TreeNode<T> node = w.get();
+      Tree<T> node = w.get();
       if (node == null) {
         e.onComplete();
       } else {
@@ -195,7 +195,7 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
         if (node == upNode) {
           w.set(null);
         } else {
-          TreeNode<T> parent = node.getParent();
+          Tree<T> parent = node.getParent();
           w.set(parent);
         }
       }
@@ -207,9 +207,9 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    *
    * @param node
    */
-  public void swap(TreeNode<T> node) {
-    TreeNode<T> thisParent = this.parent;
-    List<TreeNode<T>> thisChildren = new ArrayList<>(this.children);
+  public void swap(Tree<T> node) {
+    Tree<T> thisParent = this.parent;
+    List<Tree<T>> thisChildren = new ArrayList<>(this.children);
 
     this.removeFromParent();
     if (node.parent != null) {
@@ -233,9 +233,9 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
    *
    * @return
    */
-  public Flowable<TreeNode<T>> parents() {
+  public Flowable<Tree<T>> parents() {
     return Flowable.generate(() -> Wrapper.of(this), (n, e) -> {
-      TreeNode<T> parent = n.get().getParent();
+      Tree<T> parent = n.get().getParent();
       if (parent != null) {
         e.onNext(parent);
         n.set(parent);
@@ -246,8 +246,8 @@ public class TreeNode<T> implements Traversable<TreeNode<T>> {
   }
 
   @Override
-  public Flowable<TreeNode<T>> traverse(Traverser traverser) {
-    return traverser.travese(this, TreeNode::getChildren);
+  public Flowable<Tree<T>> traverse(Traverser traverser) {
+    return traverser.travese(this, Tree::getChildren);
   }
 
   @Override
