@@ -1,7 +1,7 @@
 # Java-EX
-Java Common Extension
-
 [![Build Status](https://travis-ci.org/XDean/Java-EX.svg?branch=master)](https://travis-ci.org/XDean/Java-EX)
+
+Java Common Extension
 
 # Features
 ## Lang
