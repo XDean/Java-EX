@@ -1,10 +1,13 @@
 package xdean.jex.extra.rx2;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
@@ -51,6 +54,37 @@ public class RxNullableTest {
         .flowable()
         .test()
         .assertValues(1, 10, 2, 10, 3);
+  }
+
+  @Test
+  public void testRun() throws Exception {
+    AtomicInteger count = new AtomicInteger(0);
+    RxNullable.fromArray(1, null, 2, null, 3)
+        .onNullRun(() -> count.incrementAndGet())
+        .observable()
+        .test()
+        .assertValues(1, 2, 3);
+    assertEquals(2, count.get());
+    RxNullable.fromArray(1, null, 2, null, 3)
+        .onNullRun(() -> count.incrementAndGet())
+        .flowable()
+        .test()
+        .assertValues(1, 2, 3);
+    assertEquals(4, count.get());
+  }
+
+  @Test
+  public void testNullableSource() throws Exception {
+    RxNullable.fromArray(1, null, 2, null, 3)
+        .observable()
+        .onNullDrop()
+        .test()
+        .assertValues(1, 2, 3);
+    RxNullable.fromArray(1, null, 2, null, 3)
+        .flowable()
+        .onNullDrop()
+        .test()
+        .assertValues(1, 2, 3);
   }
 
   @Test

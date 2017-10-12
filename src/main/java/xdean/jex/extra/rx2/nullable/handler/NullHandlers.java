@@ -40,7 +40,9 @@ public interface NullHandlers {
    */
   static <T> NullHandler<T, T> run(Runnable action) {
     return i -> {
-      action.run();
+      if (i == null) {
+        action.run();
+      }
       return i;
     };
   }
