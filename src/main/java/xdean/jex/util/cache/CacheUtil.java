@@ -1,5 +1,6 @@
 package xdean.jex.util.cache;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -12,6 +13,20 @@ import xdean.jex.util.collection.MapUtil;
 public class CacheUtil {
 
   private static final Map<Class<?>, Map<Object, Map<Object, Object>>> CACHE_MAP = createMap();
+
+  public static <V> V cacheWeak(Object key, Supplier<V> factory) {
+    return cacheWeak(key.getClass(), key, factory);
+  }
+
+  public static <V> V cacheWeak(Object owner, Object key, Supplier<V> factory) {
+    WeakReference<V> ref = cache(owner, key, () -> new WeakReference<>(factory.get()));
+    V v = ref.get();
+    if (v == null) {
+      v = factory.get();
+      set(owner, key, new WeakReference<V>(v));
+    }
+    return v;
+  }
 
   public static <V> V cache(Object key, Supplier<V> factory) {
     return cache(key.getClass(), key, factory);
