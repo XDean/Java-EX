@@ -130,6 +130,7 @@ public class IntList implements RandomAccess, Cloneable, Serializable {
     if (numMoved > 0) {
       System.arraycopy(elementData, index + 1, elementData, index, numMoved);
     }
+    size--;
     return oldValue;
   }
 
