@@ -1,18 +1,10 @@
 package xdean.jex.util.collection;
 
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 
-import xdean.jex.extra.function.BiConsumerThrow;
-
 public class MapUtil {
-  public static <K, V> HashMap<K, V> newHashMap() {
-    return new HashMap<>();
-  }
-
   public static <K, V> HashMap<K, V> newHashMap(K[] keys, V[] values) {
     if (keys.length > values.length) {
       throw new IllegalArgumentException("Values is less than keys");
@@ -22,21 +14,6 @@ public class MapUtil {
       map.put(keys[i], values[i]);
     }
     return map;
-  }
-
-  public static <K, V, T extends Exception> void forEach(Map<K, V> map, BiConsumerThrow<K, V, T> action) throws T {
-    Objects.requireNonNull(action);
-    for (Map.Entry<K, V> entry : map.entrySet()) {
-      K k;
-      V v;
-      try {
-        k = entry.getKey();
-        v = entry.getValue();
-      } catch (IllegalStateException ise) {
-        throw new ConcurrentModificationException(ise);
-      }
-      action.accept(k, v);
-    }
   }
 
   /**
