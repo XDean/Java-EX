@@ -1,5 +1,7 @@
 package xdean.jex.util.file;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -46,5 +48,11 @@ public class FileUtilTest {
     Assert.assertEquals(
         "01e8f91c94041493aaddc6dee5aeffc7",
         FileUtil.md5(Paths.get(CP).resolve("md5")));
+  }
+
+  @Test
+  public void testGetNameWithoutSuffix() throws Exception {
+    assertEquals("file", FileUtil.getNameWithoutSuffix(Paths.get(CP).resolve("file.txt")));
+    assertEquals("file1", FileUtil.getNameWithoutSuffix(Paths.get(CP).resolve("file1")));
   }
 }

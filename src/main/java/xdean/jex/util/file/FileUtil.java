@@ -23,7 +23,11 @@ public class FileUtil {
 
   public static String getNameWithoutSuffix(Path path) {
     String name = path.getFileName().toString();
-    return name.substring(0, name.lastIndexOf('.'));
+    int index = name.lastIndexOf('.');
+    if (index == -1) {
+      return name;
+    }
+    return name.substring(0, index);
   }
 
   public static void createDirectory(Path path) throws IOException {
