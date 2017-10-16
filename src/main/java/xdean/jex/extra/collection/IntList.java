@@ -116,6 +116,7 @@ public class IntList implements RandomAccess, Cloneable, Serializable {
     for (int index = 0; index < size; index++) {
       if (i == elementData[index]) {
         fastRemove(index);
+        size--;
         return true;
       }
     }
