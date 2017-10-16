@@ -1,6 +1,5 @@
 package xdean.jex.util.calc;
 
-import rx.Observable;
 
 public class MathUtil {
 
@@ -34,9 +33,5 @@ public class MathUtil {
 
   public static boolean inRange(int value, int min, int max) {
     return toRange(value, min, max) == value;
-  }
-
-  public static Observable<int[]> cartesianProduct(Observable<Observable<Integer>> sources) {
-    return CartesianProduct.cartesianProduct(sources);
   }
 }
