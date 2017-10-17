@@ -26,7 +26,10 @@ comment:
   require_changes: no
   
 ignore:
-  - "src\main\java\xdean\jex\extra\collection\LinkedList.java"
-  - "**/function/EmptyFunction.java"
-  - "**/function/FunctionAdapter.java"
-  - "**/log/*.java"
+#generated
+  - "src/main/java/xdean/jex/extra/collection/LinkedList.java"
+  - "src/main/java/xdean/jex/util/function/EmptyFunction.java"
+  - "src/main/java/xdean/jex/util/function/FunctionAdapter.java"
+  - "src/main/java/xdean/jex/util/log/Logable.java"
+  - "src/main/java/xdean/jex/util/log/LogUtil.java"
+#end

@@ -10,7 +10,9 @@ import xdean.jex.extra.Wrapper;
 import xdean.jex.extra.function.ConsumerThrow;
 import xdean.jex.extra.function.RunnableThrow;
 import xdean.jex.extra.function.SupplierThrow;
+import xdean.jex.internal.codecov.CodecovIgnore;
 
+@CodecovIgnore
 public class FunctionAdapter {
 
   public static <T> Supplier<T> supplier(T t) {

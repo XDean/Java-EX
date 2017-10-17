@@ -41,6 +41,8 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 
+import xdean.jex.internal.codecov.CodecovIgnore;
+
 /**
  * Copy from system library, jdk 1.8.0_112u
  *
@@ -92,7 +94,7 @@ import java.util.function.Consumer;
  * @since 1.2
  * @param <E> the type of elements held in this collection
  */
-
+@CodecovIgnore
 class LinkedList<E>
     extends AbstractSequentialList<E>
     implements List<E>, Deque<E>, Cloneable, java.io.Serializable

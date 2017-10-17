@@ -3,8 +3,10 @@ package xdean.jex.util.log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import xdean.jex.internal.codecov.CodecovIgnore;
 import xdean.jex.util.reflect.ReflectUtil;
 
+@CodecovIgnore
 public class LogUtil {
 
   public static Logger log() {

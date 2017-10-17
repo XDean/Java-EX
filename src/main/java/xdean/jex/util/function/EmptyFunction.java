@@ -5,6 +5,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import xdean.jex.internal.codecov.CodecovIgnore;
+
+@CodecovIgnore
 public class EmptyFunction {
   public static Runnable runnable() {
     return () -> {
