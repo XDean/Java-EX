@@ -73,18 +73,14 @@ public class TaskUtil {
    * @param tasks
    * @return the exception
    */
-  @SuppressWarnings("unchecked")
   @SafeVarargs
+  @SuppressWarnings("unchecked")
   public static <T extends Exception> Optional<T> firstFail(RunnableThrow<T>... tasks) {
     for (RunnableThrow<T> task : tasks) {
       try {
         task.run();
-      } catch (Throwable t) {
-        try {
-          return Optional.of((T) t);
-        } catch (ClassCastException cce) {
-          throw new RuntimeException("An unexcepted exception thrown.", t);
-        }
+      } catch (Exception t) {
+        return Optional.of((T) t);
       }
     }
     return Optional.empty();
