@@ -6,7 +6,6 @@ import io.reactivex.Notification;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.SchedulerSupport;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -48,14 +47,13 @@ public class RxIterator {
     return toIterator(ob, Schedulers.io());
   }
 
-  public static final class ObservableIterator<T> implements Iterator<T>, AutoCloseable {
+  public static final class ObservableIterator<T> implements Iterator<T> {
     private LinkedBlockingQueue<Notification<T>> queue = new LinkedBlockingQueue<>();
     private Notification<T> next = null;
     private boolean completed = false;
-    private Disposable disposable;
 
     public ObservableIterator(Observable<T> source, Scheduler scheduler) {
-      disposable = source
+      source
           .materialize()
           .subscribeOn(scheduler)
           .subscribe(queue::put);
@@ -94,16 +92,9 @@ public class RxIterator {
         }
       }
     }
-
-    @Override
-    public void close() throws Exception {
-      disposable.dispose();
-      completed = true;
-      next = null;
-    }
   }
 
-  public static final class FlowableIterator<T> implements Iterator<T>, AutoCloseable {
+  public static final class FlowableIterator<T> implements Iterator<T> {
     private Notification<T> next = null;
     private LinkedBlockingQueue<Notification<T>> queue = new LinkedBlockingQueue<>(1);
     private boolean completed = false;
@@ -153,13 +144,6 @@ public class RxIterator {
           completed = true;
         }
       }
-    }
-
-    @Override
-    public void close() throws Exception {
-      subscription.cancel();
-      completed = true;
-      next = null;
     }
   }
 }
