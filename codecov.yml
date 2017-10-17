@@ -28,6 +28,7 @@ comment:
 ignore:
 #generated
   - "src/main/java/xdean/jex/extra/collection/LinkedList.java"
+  - "src/main/java/xdean/jex/internal/codecov/CodecovIgnoreHandler.java"
   - "src/main/java/xdean/jex/util/function/EmptyFunction.java"
   - "src/main/java/xdean/jex/util/function/FunctionAdapter.java"
   - "src/main/java/xdean/jex/util/log/Logable.java"
