@@ -27,6 +27,10 @@ public class CodecovIgnoreHandler {
   private static final String GENERATED = "#generated";
 
   public static void main(String[] args) {
+    updateCodecovIgnore();
+  }
+
+  public static void updateCodecovIgnore() {
     Path codecov = Paths.get("codecov.yml");
     if (!Files.exists(codecov)) {
       log.error("Can't find codecov.yml");
@@ -40,14 +44,12 @@ public class CodecovIgnoreHandler {
     FileUtil.deepTraversal(sourcePath)
         .filter(p -> !Files.isDirectory(p))
         .filter(p -> {
-          System.out.println(p.toAbsolutePath());
           String name = StreamSupport.stream(p.spliterator(), false)
               .skip(3)
               .map(Path::toString)
               .collect(Collectors.joining("."));
           String clzName = name.substring(0, name.length() - 5);
           Class<?> clz = Class.forName(clzName);
-          System.out.println(clz);
           return clz.getAnnotation(CodecovIgnore.class) != null;
         })
         .doOnNext(p -> log.debug("Find file to ignore: " + p))
