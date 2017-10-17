@@ -19,7 +19,7 @@ public class ExceptionUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T extends Throwable> void throwAsUncheck(Throwable t) throws T {
+  public static <T extends Throwable, R> R throwAsUncheck(Throwable t) throws T {
     throw (T) t;
   }
 

@@ -1,13 +1,13 @@
 package xdean.jex.util.task;
 
 import static xdean.jex.util.lang.ExceptionUtil.*;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
 import xdean.jex.extra.Either;
 import xdean.jex.extra.function.RunnableThrow;
 import xdean.jex.extra.function.SupplierThrow;

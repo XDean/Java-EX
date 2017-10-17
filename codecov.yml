@@ -27,5 +27,6 @@ comment:
   
 ignore:
   - "**/collection/LinkedList.java"
-  - "EmptyFunction.java"
-  - "FunctionAdapter.java"
+  - "**/function/EmptyFunction.java"
+  - "**/function/FunctionAdapter.java"
+  - "**/log/*.java"

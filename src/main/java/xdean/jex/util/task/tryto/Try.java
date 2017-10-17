@@ -14,7 +14,7 @@ import xdean.jex.extra.function.SupplierThrow;
 
 /**
  * Try pattern, similar to Optional (learn from Scala)
- * 
+ *
  * @author liuwenzhe2008@qq.com
  *
  */
@@ -107,11 +107,7 @@ public abstract class Try<T> {
    * Returns this `Try` if it's a `Success` or the given `default` argument if this is a `Failure`.
    */
   public Try<T> orElse(Try<T> defaultValue) {
-    try {
-      return isSuccess() ? this : defaultValue;
-    } catch (RuntimeException e) {
-      return new Failure<>(e);
-    }
+    return isSuccess() ? this : defaultValue;
   }
 
   /**

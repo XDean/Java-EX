@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 /**
  * Simple fixed length list with just {@link #add(Object)} and {@link #get(int)}
- * 
+ *
  * @author XDean
  *
  * @param <T>
