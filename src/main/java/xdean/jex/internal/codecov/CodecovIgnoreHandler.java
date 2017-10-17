@@ -33,15 +33,21 @@ public class CodecovIgnoreHandler {
       return;
     }
     Path path = Paths.get("src", "main", "java");
-    FileUtil.deepTraversal(path)
+    updateCodecovIgnore(codecov, path);
+  }
+
+  public static void updateCodecovIgnore(Path codecov, Path sourcePath) {
+    FileUtil.deepTraversal(sourcePath)
         .filter(p -> !Files.isDirectory(p))
         .filter(p -> {
+          System.out.println(p.toAbsolutePath());
           String name = StreamSupport.stream(p.spliterator(), false)
               .skip(3)
               .map(Path::toString)
               .collect(Collectors.joining("."));
           String clzName = name.substring(0, name.length() - 5);
           Class<?> clz = Class.forName(clzName);
+          System.out.println(clz);
           return clz.getAnnotation(CodecovIgnore.class) != null;
         })
         .doOnNext(p -> log.debug("Find file to ignore: " + p))
