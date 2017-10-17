@@ -22,7 +22,7 @@ public class TaskUtilTest {
       assertNotEquals(Thread.currentThread(), out);
       done.countDown();
     });
-    done.await(10, TimeUnit.MILLISECONDS);
+    assertTrue(done.await(100, TimeUnit.MILLISECONDS));
   }
 
   @Test

@@ -2,12 +2,14 @@ package xdean.jex.extra.rx2;
 
 import java.util.concurrent.Callable;
 
+import xdean.jex.internal.codecov.CodecovIgnore;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
+@CodecovIgnore
 public class RxFunctions {
   public static Action rx(java.lang.Runnable java) {
     return java::run;
