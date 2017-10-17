@@ -6,7 +6,6 @@ import static xdean.jex.util.lang.ExceptionUtil.*;
 import static xdean.jex.util.task.tryto.Try.*;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
@@ -14,7 +13,7 @@ import xdean.jex.extra.function.RunnableThrow;
 import xdean.jex.util.task.tryto.Try;
 
 public class TryTest {
-  AtomicInteger count = new AtomicInteger(0);
+  int hitCount;
 
   @Test
   public void testFail() throws Exception {
@@ -24,14 +23,14 @@ public class TryTest {
 
   @Test
   public void testTo() throws Exception {
-    assertTrue(to((RunnableThrow<Exception>) (() -> count.incrementAndGet())).isSuccess());
-    assertEquals(1, count.get());
-    assertTrue(to(() -> count.incrementAndGet()).isSuccess());
-    assertEquals(2, count.get());
-    assertTrue(to(() -> throwIt(new Exception()), () -> count.addAndGet(10)).isFailure());
-    assertEquals(12, count.get());
+    assertTrue(to((RunnableThrow<Exception>) (() -> hitCount++)).isSuccess());
+    assertEquals(1, hitCount);
+    assertTrue(to(() -> hitCount++).isSuccess());
+    assertEquals(2, hitCount);
+    assertTrue(to(() -> throwIt(new Exception()), () -> hitCount += 10).isFailure());
+    assertEquals(12, hitCount);
     assertTrue(to(() -> throwIt(new Exception()), () -> throwIt(new Exception())).isFailure());
-    assertEquals(12, count.get());
+    assertEquals(12, hitCount);
   }
 
   @Test
@@ -80,10 +79,10 @@ public class TryTest {
 
   @Test
   public void testOnException() throws Exception {
-    of(1).onException(e -> count.incrementAndGet());
-    assertEquals(0, count.get());
-    error(1).onException(e -> count.incrementAndGet());
-    assertEquals(1, count.get());
+    of(1).onException(e -> hitCount++);
+    assertEquals(0, hitCount);
+    error(1).onException(e -> hitCount++);
+    assertEquals(1, hitCount);
   }
 
   @Test

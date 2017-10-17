@@ -26,7 +26,7 @@ comment:
   require_changes: no
   
 ignore:
-  - "**/collection/LinkedList.java"
+  - "src\main\java\xdean\jex\extra\collection\LinkedList.java"
   - "**/function/EmptyFunction.java"
   - "**/function/FunctionAdapter.java"
   - "**/log/*.java"
