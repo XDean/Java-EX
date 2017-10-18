@@ -1,5 +1,7 @@
 package xdean.jex.internal.codecov;
 
+import static xdean.jex.util.lang.ExceptionUtil.uncatch;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,14 +45,14 @@ public class CodecovIgnoreHandler {
   public static void updateCodecovIgnore(Path codecov, Path sourcePath) {
     FileUtil.deepTraversal(sourcePath)
         .filter(p -> !Files.isDirectory(p))
+        .filter(p -> p.getFileName().toString().endsWith(".java"))
         .filter(p -> {
           String name = StreamSupport.stream(p.spliterator(), false)
               .skip(3)
               .map(Path::toString)
               .collect(Collectors.joining("."));
           String clzName = name.substring(0, name.length() - 5);
-          Class<?> clz = Class.forName(clzName);
-          return clz.getAnnotation(CodecovIgnore.class) != null;
+          return uncatch(() -> Class.forName(clzName).getAnnotation(CodecovIgnore.class)) != null;
         })
         .doOnNext(p -> log.debug("Find file to ignore: " + p))
         .toList()

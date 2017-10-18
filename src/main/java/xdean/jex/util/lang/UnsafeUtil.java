@@ -25,9 +25,9 @@ public class UnsafeUtil {
   private static final boolean useCompressedOops = initUseCompressedOops();
   private static final Logger LOGGER = LogUtil.log();
   static {
-    LOGGER.debug("address size: {}", ADDRESS_SIZE);
-    LOGGER.debug("header size: {}", HEADER_SIZE);
-    LOGGER.debug("useCompressedOops: {}", useCompressedOops);
+    LOGGER.trace("address size: {}", ADDRESS_SIZE);
+    LOGGER.trace("header size: {}", HEADER_SIZE);
+    LOGGER.trace("useCompressedOops: {}", useCompressedOops);
   }
 
   public static Unsafe getUnsafe() {
