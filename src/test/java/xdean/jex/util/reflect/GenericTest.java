@@ -97,11 +97,13 @@ public class GenericTest {
 
   @Test
   public void test6() {
+    // I2<A, Object>
     Observable.fromArray(handleNull(GenericUtil.getGenericTypes(C5.class, I1.class)))
         .test()
         .assertValueCount(1)
         .assertValues(
             GenericUtil.createParameterizedType(I2.class, null, getTV(C5.class, 0), Object.class));
+    // I2<C6, Object>
     Observable.fromArray(handleNull(GenericUtil.getGenericTypes(C6.class, I1.class)))
         .test()
         .assertValueCount(1)

@@ -2,6 +2,7 @@ package xdean.jex.util.reflect;
 
 import static xdean.jex.util.function.Predicates.not;
 
+import java.lang.reflect.MalformedParameterizedTypeException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -20,7 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 public class GenericUtil {
   private static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
-  public static ParameterizedType createParameterizedType(Class<?> rawType, Type ownerType, Type... actualTypeArguments) {
+  public static ParameterizedType createParameterizedType(Class<?> rawType, Type owner, Type... actualTypeArguments) {
+    Type ownerType = owner == null ? rawType.getDeclaringClass() : owner;
+    TypeVariable<?>[] formals = rawType.getTypeParameters();
+    if (formals.length != actualTypeArguments.length) {
+      throw new MalformedParameterizedTypeException();
+    }
     return new ParameterizedType() {
       @Override
       public Type getRawType() {
@@ -34,7 +40,7 @@ public class GenericUtil {
 
       @Override
       public Type[] getActualTypeArguments() {
-        return actualTypeArguments;
+        return actualTypeArguments.clone();
       }
 
       @Override
@@ -46,8 +52,8 @@ public class GenericUtil {
           }
           Type thatOwner = that.getOwnerType();
           Type thatRawType = that.getRawType();
-          return (ownerType == null ? thatOwner == null : ownerType.equals(thatOwner)) &&
-              (rawType == null ? thatRawType == null : rawType.equals(thatRawType)) &&
+          return Objects.equals(ownerType, thatOwner) &&
+              Objects.equals(rawType, thatRawType) &&
               Arrays.equals(actualTypeArguments, that.getActualTypeArguments());
         } else {
           return false;
