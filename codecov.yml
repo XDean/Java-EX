@@ -34,4 +34,7 @@ ignore:
   - "src/main/java/xdean/jex/util/function/FunctionAdapter.java"
   - "src/main/java/xdean/jex/util/log/Logable.java"
   - "src/main/java/xdean/jex/util/log/LogUtil.java"
+  - "src/main/java/xdean/jex/util/reflect/model/GenericArrayTypeImpl.java"
+  - "src/main/java/xdean/jex/util/reflect/model/ParameterizedTypeImpl.java"
+  - "src/main/java/xdean/jex/util/reflect/model/WildcardTypeImpl.java"
 #end
