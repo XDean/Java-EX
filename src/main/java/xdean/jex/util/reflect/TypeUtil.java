@@ -14,14 +14,14 @@ public class TypeUtil {
    * @return
    */
   public static boolean isAssignableFrom(Type from, Class<?> to) {
-    return TypeVisitor.<Boolean> create(from)
+    return TypeVisitor.of(from, b -> b
         .onClass(to::isAssignableFrom)
-        .onParameterizedType(pt -> TypeVisitor.<Boolean> create(pt.getRawType())
+        .onParameterizedType(pt -> TypeVisitor.of(pt.getRawType(), bb -> bb
             .onClass(to::isAssignableFrom)
-            .result())
+            .result()))
         .onTypeVariable(tv -> isAssignableFrom(tv.getBounds(), to))
         .onWildcardType(tv -> isAssignableFrom(tv.getUpperBounds(), to))
-        .result();
+        .result());
   }
 
   private static boolean isAssignableFrom(Type[] fromBounds, Class<?> to) {

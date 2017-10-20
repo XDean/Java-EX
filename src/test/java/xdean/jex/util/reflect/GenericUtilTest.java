@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-public class GenericTest {
+public class GenericUtilTest {
 
   private static Type NULL = new Type() {
     @Override
@@ -132,6 +132,25 @@ public class GenericTest {
             Object.class));
   }
 
+  @Test
+  public void test8() {
+    // C7<T>[]
+    Observable
+        .fromArray(handleNull(GenericUtil.getGenericTypes(C9.class, C7.class)))
+        .test()
+        .assertValueCount(1)
+        .assertValues(GenericUtil.createGenericArrayType(
+            GenericUtil.createParameterizedType(C7.class, null, getTV(C9.class, 0))));
+    // C7<T[]>[]
+    Observable
+        .fromArray(handleNull(GenericUtil.getGenericTypes(C10.class, C7.class)))
+        .test()
+        .assertValueCount(1)
+        .assertValues(GenericUtil.createGenericArrayType(
+            GenericUtil.createParameterizedType(C7.class, null,
+                GenericUtil.createGenericArrayType(getTV(C10.class, 0)))));
+  }
+
   private <T> TypeVariable<Class<T>> getTV(Class<T> clz, int i) {
     return clz.getTypeParameters()[i];
   }
@@ -173,5 +192,11 @@ public class GenericTest {
   }
 
   static class C8 extends C7<C8> {
+  }
+
+  static class C9<T> extends C7<C7<T>[]> {
+  }
+
+  static class C10<T> extends C9<T[]> {
   }
 }

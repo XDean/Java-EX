@@ -2,7 +2,7 @@ package xdean.jex.util.reflect;
 
 import static xdean.jex.util.function.Predicates.not;
 
-import java.lang.reflect.MalformedParameterizedTypeException;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -15,189 +15,47 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import lombok.extern.slf4j.Slf4j;
+import xdean.jex.util.reflect.model.GenericArrayTypeImpl;
+import xdean.jex.util.reflect.model.ParameterizedTypeImpl;
+import xdean.jex.util.reflect.model.WildcardTypeImpl;
 
-@Slf4j
 public class GenericUtil {
+
   private static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
-  public static ParameterizedType createParameterizedType(Class<?> rawType, Type owner, Type... actualTypeArguments) {
-    Type ownerType = owner == null ? rawType.getDeclaringClass() : owner;
-    TypeVariable<?>[] formals = rawType.getTypeParameters();
-    if (formals.length != actualTypeArguments.length) {
-      throw new MalformedParameterizedTypeException();
-    }
-    return new ParameterizedType() {
-      @Override
-      public Type getRawType() {
-        return rawType;
-      }
-
-      @Override
-      public Type getOwnerType() {
-        return ownerType;
-      }
-
-      @Override
-      public Type[] getActualTypeArguments() {
-        return actualTypeArguments.clone();
-      }
-
-      @Override
-      public boolean equals(Object o) {
-        if (o instanceof ParameterizedType) {
-          ParameterizedType that = (ParameterizedType) o;
-          if (this == that) {
-            return true;
-          }
-          Type thatOwner = that.getOwnerType();
-          Type thatRawType = that.getRawType();
-          return Objects.equals(ownerType, thatOwner) &&
-              Objects.equals(rawType, thatRawType) &&
-              Arrays.equals(actualTypeArguments, that.getActualTypeArguments());
-        } else {
-          return false;
-        }
-      }
-
-      @Override
-      public int hashCode() {
-        return Arrays.hashCode(actualTypeArguments) ^
-            (ownerType == null ? 0 : ownerType.hashCode()) ^
-            (rawType == null ? 0 : rawType.hashCode());
-      }
-
-      @Override
-      public String toString() {
-        StringBuilder sb = new StringBuilder();
-        if (ownerType != null) {
-          if (ownerType instanceof Class) {
-            sb.append(((Class<?>) ownerType).getName());
-          } else {
-            sb.append(ownerType.toString());
-          }
-          sb.append(".");
-          if (ownerType instanceof ParameterizedType) {
-            sb.append(rawType.getName().replace(
-                ((Class<?>) ((ParameterizedType) ownerType).getRawType()).getName() + "$", ""));
-          } else {
-            sb.append(rawType.getName());
-          }
-        } else {
-          sb.append(rawType.getName());
-        }
-        if (actualTypeArguments != null && actualTypeArguments.length > 0) {
-          sb.append("<");
-          boolean first = true;
-          for (Type t : actualTypeArguments) {
-            if (!first) {
-              sb.append(", ");
-            }
-            if (t instanceof Class) {
-              sb.append(((Class<?>) t).getName());
-            } else {
-              sb.append(t.toString());
-            }
-            first = false;
-          }
-          sb.append(">");
-        }
-        return sb.toString();
-      }
-    };
+  public static ParameterizedType createParameterizedType(Class<?> rawType, Type ownerType,
+      Type... actualTypeArguments) {
+    return new ParameterizedTypeImpl(rawType, ownerType, actualTypeArguments);
   }
 
   public static WildcardType createWildcardType(Type[] upperBounds, Type[] lowerBounds) {
-    Type[] up = nullToEmpty(upperBounds);
-    Type[] low = nullToEmpty(lowerBounds);
-    return new WildcardType() {
-      @Override
-      public Type[] getUpperBounds() {
-        return up;
-      }
+    return new WildcardTypeImpl(nullToEmpty(lowerBounds), nullToEmpty(upperBounds));
+  }
 
-      @Override
-      public Type[] getLowerBounds() {
-        return low;
-      }
-
-      @Override
-      public int hashCode() {
-        return Arrays.hashCode(low) ^ Arrays.hashCode(up);
-      }
-
-      @Override
-      public boolean equals(Object o) {
-        if (o instanceof WildcardType) {
-          WildcardType that = (WildcardType) o;
-          return Arrays.equals(this.getLowerBounds(), that.getLowerBounds()) && Arrays.equals(this.getUpperBounds(),
-              that.getUpperBounds());
-        } else {
-          return false;
-        }
-      }
-
-      @Override
-      public String toString() {
-        Type[] lowerBounds = getLowerBounds();
-        Type[] bounds = lowerBounds;
-        StringBuilder sb = new StringBuilder();
-
-        if (lowerBounds.length > 0) {
-          sb.append("? super ");
-        } else {
-          Type[] upperBounds = getUpperBounds();
-          if (upperBounds.length > 0 && !upperBounds[0].equals(Object.class)) {
-            bounds = upperBounds;
-            sb.append("? extends ");
-          } else {
-            return "?";
-          }
-        }
-
-        assert bounds.length > 0;
-
-        boolean first = true;
-        for (Type bound : bounds) {
-          if (!first) {
-            sb.append(" & ");
-          }
-
-          first = false;
-          if (bound instanceof Class) {
-            sb.append(((Class<?>) bound).getName());
-          } else {
-            sb.append(bound.toString());
-          }
-        }
-        return sb.toString();
-      }
-    };
+  public static GenericArrayType createGenericArrayType(Type componentType) {
+    return new GenericArrayTypeImpl(componentType);
   }
 
   public static Map<TypeVariable<?>, Type> getGenericReferenceMap(Type type) {
-    if (type instanceof Class) {
-      return getGenericReferenceMap((Class<?>) type);
-    } else if (type instanceof ParameterizedType) {
-      return getGenericReferenceMap((ParameterizedType) type);
-    } else {
-      log.warn("Unknown Generic Type: {} with type {}", type, type.getClass());
-    }
-    return null;
+    return TypeVisitor.of(type, b -> b
+        .onClass(GenericUtil::getGenericReferenceMap)
+        .onParameterizedType(GenericUtil::getGenericReferenceMap)
+        .result(Collections::emptyMap));
   }
 
   public static Map<TypeVariable<?>, Type> getGenericReferenceMap(ParameterizedType parameterizedType) {
-    HashMap<TypeVariable<?>, Type> map = new HashMap<>();
-    Type rawType = parameterizedType.getRawType();
-    if (rawType instanceof Class) {
-      map.putAll(getGenericReferenceMap((Class<?>) rawType));
-      Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-      TypeVariable<?>[] implTypeParams = ((Class<?>) rawType).getTypeParameters();
-      for (int i = 0; i < actualTypeArguments.length; i++) {
-        map.put(implTypeParams[i], actualTypeArguments[i]);
-      }
-    }
-    return map;
+    return TypeVisitor.of(parameterizedType.getRawType(), b -> b
+        .onClass(c -> {
+          HashMap<TypeVariable<?>, Type> map = new HashMap<>();
+          map.putAll(getGenericReferenceMap(c));
+          Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+          TypeVariable<?>[] implTypeParams = (c).getTypeParameters();
+          for (int i = 0; i < actualTypeArguments.length; i++) {
+            map.put(implTypeParams[i], actualTypeArguments[i]);
+          }
+          return map;
+        })
+        .result(Collections::emptyMap));
   }
 
   public static Map<TypeVariable<?>, Type> getGenericReferenceMap(Class<?> clz) {
@@ -207,7 +65,8 @@ public class GenericUtil {
     allTypes.addAll(Arrays.asList(clz.getGenericInterfaces()));
     allTypes.stream()
         .filter(not(null))
-        .forEach(c -> map.putAll(getGenericReferenceMap(c)));
+        .map(GenericUtil::getGenericReferenceMap)
+        .forEach(map::putAll);
     return map;
   }
 
@@ -251,40 +110,38 @@ public class GenericUtil {
     }
     Map<TypeVariable<?>, Type> map = getGenericReferenceMap(sourceType);
     // If the sourceType is Class, there may left TypeVariable.
-    List<TypeVariable<?>> leftTypeParameters = sourceType instanceof Class ?
-        Arrays.asList(((Class<?>) sourceType).getTypeParameters()) :
-        Collections.emptyList();
+    List<TypeVariable<?>> leftTypeParameters = sourceType instanceof Class
+        ? Arrays.asList(((Class<?>) sourceType).getTypeParameters())
+        : Collections.emptyList();
     return Arrays.stream(targetTypeParameters)
         .map(tv -> {
           Type actualType = getActualType(map, tv);
           // If actualType equals tv, that means it doesn't implement the targetClass
-            return Objects.equals(actualType, tv) && !leftTypeParameters.contains(actualType) ? null : actualType;
-          })
+          return Objects.equals(actualType, tv) && !leftTypeParameters.contains(actualType) ? null : actualType;
+        })
         .toArray(Type[]::new);
   }
 
+  /**
+   * Get actual type by the type map.
+   *
+   * @param map
+   * @param type
+   * @return The actual type. Return itself if it's already the most explicit type.
+   */
   private static Type getActualType(Map<TypeVariable<?>, Type> map, Type type) {
-    if (type instanceof TypeVariable) {
-      Type mapped = map.get(type);
-      return mapped == null ? type : getActualType(map, mapped);
-    } else if (type instanceof ParameterizedType) {
-      return createParameterizedType((Class<?>) ((ParameterizedType) type).getRawType(),
-          ((ParameterizedType) type).getOwnerType(),
-          Arrays.stream(((ParameterizedType) type).getActualTypeArguments())
-              .map(t -> getActualType(map, t))
-              .toArray(Type[]::new));
-    } else if (type instanceof WildcardType) {
-      return createWildcardType(
-          Arrays.stream(((WildcardType) type).getUpperBounds())
-              .map(t -> getActualType(map, t))
-              .toArray(Type[]::new),
-          Arrays.stream(((WildcardType) type).getLowerBounds())
-              .map(t -> getActualType(map, t))
-              .toArray(Type[]::new));
-    } else {
-      // Class
-      return type;
-    }
+    return TypeVisitor.of(type, b -> b
+        .onClass(c -> c)
+        .onTypeVariable(tv -> map.containsKey(tv) ? getActualType(map, map.get(tv)) : tv)
+        .onParameterizedType(pt -> TypeVisitor.of(pt.getRawType(), bb -> bb
+            .onClass(c -> createParameterizedType(c, pt.getOwnerType(),
+                Arrays.stream(pt.getActualTypeArguments()).map(t -> getActualType(map, t)).toArray(Type[]::new)))
+            .result()))
+        .onWildcardType(wt -> createWildcardType(
+            Arrays.stream(wt.getUpperBounds()).map(t -> getActualType(map, t)).toArray(Type[]::new),
+            Arrays.stream(wt.getLowerBounds()).map(t -> getActualType(map, t)).toArray(Type[]::new)))
+        .onGenericArrayType(gat -> createGenericArrayType(getActualType(map, gat.getGenericComponentType())))
+        .result(type));
   }
 
   private static Type[] nullToEmpty(Type[] upperBounds) {
