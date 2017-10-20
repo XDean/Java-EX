@@ -27,16 +27,16 @@ import java.util.stream.Stream;
  */
 public class AnnotationUtil {
 
-  public static final Constructor<?> AnnotationInvocationHandler_constructor;
-  public static final Constructor<?> AnnotationData_constructor;
-  public static final Method Class_annotationData;
-  public static final Field Class_classRedefinedCount;
-  public static final Field AnnotationData_annotations;
-  public static final Field AnnotationData_declaredAnotations;
-  public static final Method Atomic_casAnnotationData;
-  public static final Class<?> Atomic_class;
-  public static final Field Field_Excutable_DeclaredAnnotations;
-  public static final Field Field_Field_DeclaredAnnotations;
+  private static final Constructor<?> AnnotationInvocationHandler_constructor;
+  private static final Constructor<?> AnnotationData_constructor;
+  private static final Method Class_annotationData;
+  private static final Field Class_classRedefinedCount;
+  private static final Field AnnotationData_annotations;
+  private static final Field AnnotationData_declaredAnotations;
+  private static final Method Atomic_casAnnotationData;
+  private static final Class<?> Atomic_class;
+  private static final Field Field_Excutable_DeclaredAnnotations;
+  private static final Field Field_Field_DeclaredAnnotations;
 
   static {
     // static initialization of necessary reflection Objects
