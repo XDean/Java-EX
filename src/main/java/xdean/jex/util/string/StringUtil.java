@@ -10,6 +10,14 @@ import xdean.jex.util.cache.CacheUtil;
 import com.google.common.collect.Ordering;
 
 public class StringUtil {
+  public static String replaceExcept(String origin, String from, String to, String except) {
+    if (except.contains(from)) {
+      String holder = notExistChars(origin).next().toString();
+      return origin.replace(except, holder).replace(from, to).replace(holder, except);
+    } else {
+      return origin.replace(from, to);
+    }
+  }
 
   /**
    * Get a list of not exist chars in given string. You can use these chars as placeholder to replace string safety.
