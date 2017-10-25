@@ -6,6 +6,18 @@ import java.lang.reflect.Array;
 
 public class ArrayUtil {
 
+  public static Object deepClone(Object array) {
+    if (array == null || array.getClass().isArray() == false) {
+      return array;
+    }
+    int len = Array.getLength(array);
+    Object newArray = Array.newInstance(array.getClass().getComponentType(), len);
+    for (int i = 0; i < len; i++) {
+      Array.set(newArray, i, deepClone(Array.get(array, i)));
+    }
+    return newArray;
+  }
+
   public static int[][] transpose(int[][] origin) {
     return (int[][]) toPrimitiveArray(transpose((Integer[][]) toWrapperArray(origin)));
   }

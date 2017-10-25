@@ -6,6 +6,20 @@ import static xdean.jex.util.lang.ArrayUtil.*;
 import org.junit.Test;
 
 public class ArrayUtilTest {
+
+  @Test
+  public void testDeepClone() throws Exception {
+    int[][] origin = {
+        { 1, 2, 3 },
+        { 4, 5, 6 },
+        { 7, 8, 9 }
+    };
+    int[][] clone = (int[][]) deepClone(origin);
+    assertArrayEquals(origin, clone);
+    origin[2][2] = 100;
+    assertEquals(9, clone[2][2]);
+  }
+
   @Test
   public void testTransposeSquare() throws Exception {
     int[][] origin = {
