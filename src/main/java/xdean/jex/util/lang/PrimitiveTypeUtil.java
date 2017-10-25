@@ -8,7 +8,7 @@ import com.google.common.collect.HashBiMap;
 public class PrimitiveTypeUtil {
 
   private static final BiMap<Class<?>, Class<?>> wrapperToPrimitive = HashBiMap.create();
-  private static final BiMap<Class<?>, Class<?>> arrayToPrimitive = HashBiMap.create();
+  private static final BiMap<Class<?>, Class<?>> wrapperArrayToPrimitiveArray = HashBiMap.create();
   static {
     add(boolean.class, Boolean.class);
     add(byte.class, Byte.class);
@@ -20,12 +20,38 @@ public class PrimitiveTypeUtil {
     add(short.class, Short.class);
   }
 
-  public static Object toWrapper(Object o) {
-    return o;
+  /**
+   * Convert a wrapper type array(any dimension) to primitive type array.<br>
+   * If not primitive array, return itself.<br>
+   * If not array, throw IllegalArgumentException.
+   *
+   * @param array
+   * @return
+   */
+  public static Object toPrimitiveArray(Object array) {
+    if (!array.getClass().isArray()) {
+      throw new IllegalArgumentException("Must give array object.");
+    }
+    if (isWrapperArray(array.getClass())) {
+      int length = Array.getLength(array);
+      Object newArray = Array.newInstance(toPrimitive(array.getClass().getComponentType()), length);
+      for (int i = 0; i < length; i++) {
+        Array.set(newArray, i, Array.get(array, i));
+      }
+      return newArray;
+    } else if (array.getClass().getComponentType().isArray()) {
+      int length = Array.getLength(array);
+      Object newArray = Array.newInstance(toPrimitiveArray(array.getClass().getComponentType()), length);
+      for (int i = 0; i < length; i++) {
+        Array.set(newArray, i, toPrimitiveArray(Array.get(array, i)));
+      }
+      return newArray;
+    }
+    return array;
   }
 
   /**
-   * Convert a primitive type array to wrapper type array.<br>
+   * Convert a primitive type array(any dimension) to wrapper type array.<br>
    * If not primitive array, return itself.<br>
    * If not array, throw IllegalArgumentException.
    *
@@ -43,8 +69,19 @@ public class PrimitiveTypeUtil {
         Array.set(newArray, i, toWrapper(Array.get(array, i)));
       }
       return newArray;
+    } else if (array.getClass().getComponentType().isArray()) {
+      int length = Array.getLength(array);
+      Object newArray = Array.newInstance(toWrapperArray(array.getClass().getComponentType()), length);
+      for (int i = 0; i < length; i++) {
+        Array.set(newArray, i, toWrapperArray(Array.get(array, i)));
+      }
+      return newArray;
     }
     return array;
+  }
+
+  public static Object toWrapper(Object o) {
+    return o;
   }
 
   /**
@@ -74,17 +111,7 @@ public class PrimitiveTypeUtil {
    * @return
    */
   public static boolean isPrimitive(Class<?> clz) {
-    return wrapperToPrimitive.inverse().keySet().contains(clz);
-  }
-
-  /**
-   * Determine the class is primitive array or not.
-   *
-   * @param clz
-   * @return
-   */
-  public static boolean isPrimitiveArray(Class<?> clz) {
-    return arrayToPrimitive.keySet().contains(clz);
+    return clz.isPrimitive();
   }
 
   /**
@@ -95,6 +122,40 @@ public class PrimitiveTypeUtil {
    */
   public static boolean isWrapper(Class<?> clz) {
     return wrapperToPrimitive.keySet().contains(clz);
+  }
+
+  /**
+   * Get wrapper array class by primitive array type. Or itself for other.
+   *
+   * @param primitiveArrayType
+   * @return
+   */
+  public static Class<?> toWrapperArray(final Class<?> primitiveArrayType) {
+    return wrapperArrayToPrimitiveArray.inverse().getOrDefault(primitiveArrayType, primitiveArrayType);
+  }
+
+  /**
+   * Get primitive array type by wrapper array class. Or itself for other.
+   *
+   * @param wrapperArrayType
+   * @return
+   */
+  public static Class<?> toPrimitiveArray(final Class<?> wrapperArrayType) {
+    return wrapperArrayToPrimitiveArray.getOrDefault(wrapperArrayType, wrapperArrayType);
+  }
+
+  /**
+   * Determine the class is primitive array or not.
+   *
+   * @param clz
+   * @return
+   */
+  public static boolean isPrimitiveArray(Class<?> clz) {
+    return clz.isArray() && clz.getComponentType().isPrimitive();
+  }
+
+  public static boolean isWrapperArray(Class<?> clz) {
+    return clz.isArray() && isWrapper(clz.getComponentType());
   }
 
   /**
@@ -174,6 +235,7 @@ public class PrimitiveTypeUtil {
 
   private static void add(final Class<?> primitiveType, final Class<?> wrapperType) {
     wrapperToPrimitive.put(wrapperType, primitiveType);
-    arrayToPrimitive.put(Array.newInstance(primitiveType, 1).getClass(), primitiveType);
+    wrapperArrayToPrimitiveArray.put(
+        Array.newInstance(wrapperType, 0).getClass(), Array.newInstance(primitiveType, 0).getClass());
   }
 }

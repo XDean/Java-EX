@@ -1,6 +1,41 @@
 package xdean.jex.util.lang;
 
+import static xdean.jex.util.lang.PrimitiveTypeUtil.*;
+
+import java.lang.reflect.Array;
+
 public class ArrayUtil {
+
+  public static int[][] transpose(int[][] origin) {
+    return (int[][]) toPrimitiveArray(transpose((Integer[][]) toWrapperArray(origin)));
+  }
+
+  public static long[][] transpose(long[][] origin) {
+    return (long[][]) toPrimitiveArray(transpose((Long[][]) toWrapperArray(origin)));
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T[][] transpose(T[][] origin) {
+    Class<? extends T[][]> clz = (Class<? extends T[][]>) origin.getClass();
+    T[][] ret = (T[][]) Array.newInstance(clz.getComponentType(), origin[0].length);
+    int created = 0;
+    int len = 0;
+    for (int i = origin.length - 1; i >= 0; i--) {
+      if (origin[i].length < len) {
+        throw new IllegalArgumentException();
+      }
+      len = origin[i].length;
+      for (int m = created; m < len; m++) {
+        ret[m] = (T[]) Array.newInstance(clz.getComponentType().getComponentType(), i + 1);
+      }
+      created = len;
+      for (int m = 0; m < origin[i].length; m++) {
+        ret[m][i] = origin[i][m];
+      }
+    }
+    return ret;
+  }
+
   public static int compare(int[] a, int[] b) {
     if (a.length != b.length) {
       throw new IllegalArgumentException("Can't compare different length arrays");
