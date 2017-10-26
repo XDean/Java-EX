@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import xdean.jex.extra.Pair;
+
 /**
  * Change annotations in runtime.
  *
@@ -139,6 +141,21 @@ public class AnnotationUtil {
     annos.put(annotation.annotationType(), annotation);
   }
 
+  @SuppressWarnings("unchecked")
+  public static <T extends Annotation> T removeAnnotation(Executable ex, Class<T> annotationType) {
+    if (ex.getAnnotation(annotationType) == null) {
+      return null;
+    }
+    ex.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
+    Map<Class<? extends Annotation>, Annotation> annos;
+    try {
+      annos = (Map<Class<? extends Annotation>, Annotation>) Field_Excutable_DeclaredAnnotations.get(ex);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException(e);
+    }
+    return (T) annos.remove(annotationType);
+  }
+
   /**
    * Add annotation to Field<br>
    * Note that you may need to give the root field.
@@ -170,6 +187,21 @@ public class AnnotationUtil {
     annos.put(annotation.annotationType(), annotation);
   }
 
+  @SuppressWarnings("unchecked")
+  public static <T extends Annotation> T removeAnnotation(Field field, Class<T> annotationType) {
+    if (field.getAnnotation(annotationType) == null) {
+      return null;
+    }
+    field.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
+    Map<Class<? extends Annotation>, Annotation> annos;
+    try {
+      annos = (Map<Class<? extends Annotation>, Annotation>) Field_Field_DeclaredAnnotations.get(field);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException(e);
+    }
+    return (T) annos.remove(annotationType);
+  }
+
   /**
    * @param c
    * @param annotation
@@ -178,14 +210,15 @@ public class AnnotationUtil {
    * @see java.lang.Class
    * @see #createAnnotationFromMap(Class, Map)
    */
-  public static void addAnnotation(Class<?> c, Annotation annotation) {
+  @SuppressWarnings("unchecked")
+  public static <T extends Annotation> void addAnnotation(Class<?> c, T annotation) {
     try {
       while (true) { // retry loop
         int classRedefinedCount = Class_classRedefinedCount.getInt(c);
-        Object /* AnnotationData */annotationData = Class_annotationData.invoke(c);
+        Object /* AnnotationData */ annotationData = Class_annotationData.invoke(c);
         // null or stale annotationData -> optimistically create new instance
-        Object newAnnotationData = createAnnotationData(c, annotationData, annotation,
-            classRedefinedCount);
+        Object newAnnotationData = changeClassAnnotationData(c, annotationData, (Class<T>) annotation.annotationType(),
+            annotation, classRedefinedCount, true).getLeft();
         // try to install it
         if ((boolean) Atomic_casAnnotationData.invoke(Atomic_class, c, annotationData, newAnnotationData)) {
           // successfully installed new AnnotationData
@@ -195,12 +228,31 @@ public class AnnotationUtil {
     } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
       throw new IllegalStateException(e);
     }
+  }
 
+  public static <T extends Annotation> T removeAnnotation(Class<?> c, Class<T> annotationType) {
+    if (c.getAnnotation(annotationType) == null) {
+      return null;
+    }
+    try {
+      while (true) {
+        int classRedefinedCount = Class_classRedefinedCount.getInt(c);
+        Object annotationData = Class_annotationData.invoke(c);
+        Pair<Object, T> pair = changeClassAnnotationData(c, annotationData, annotationType, null,
+            classRedefinedCount, false);
+        Object newAnnotationData = pair.getLeft();
+        if ((boolean) Atomic_casAnnotationData.invoke(Atomic_class, c, annotationData, newAnnotationData)) {
+          return pair.getRight();
+        }
+      }
+    } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   @SuppressWarnings("unchecked")
-  private static Object /* AnnotationData */createAnnotationData(
-      Class<?> c, Object /* AnnotationData */annotationData, Annotation annotation, int classRedefinedCount)
+  private static <T extends Annotation> Pair<Object, T> changeClassAnnotationData(Class<?> c, Object annotationData,
+      Class<T> annotationType, T annotation, int classRedefinedCount, boolean isAdd)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     Map<Class<? extends Annotation>, Annotation> annotations = (Map<Class<? extends Annotation>, Annotation>) AnnotationData_annotations
         .get(annotationData);
@@ -208,15 +260,25 @@ public class AnnotationUtil {
         .get(annotationData);
 
     Map<Class<? extends Annotation>, Annotation> newDeclaredAnnotations = new LinkedHashMap<>(annotations);
-    newDeclaredAnnotations.put(annotation.annotationType(), annotation);
+    T removed = null;
+    if (isAdd) {
+      newDeclaredAnnotations.put(annotationType, annotation);
+    } else {
+      removed = (T) newDeclaredAnnotations.remove(annotationType);
+    }
     Map<Class<? extends Annotation>, Annotation> newAnnotations;
     if (declaredAnnotations == annotations) {
       newAnnotations = newDeclaredAnnotations;
     } else {
       newAnnotations = new LinkedHashMap<>(annotations);
-      newAnnotations.put(annotation.annotationType(), annotation);
+      if (isAdd) {
+        newAnnotations.put(annotationType, annotation);
+      } else {
+        newAnnotations.remove(annotationType);
+      }
     }
-    return AnnotationData_constructor.newInstance(newAnnotations, newDeclaredAnnotations, classRedefinedCount);
+    return Pair.of(AnnotationData_constructor.newInstance(newAnnotations, newDeclaredAnnotations, classRedefinedCount),
+        removed);
   }
 
   /**
@@ -227,16 +289,16 @@ public class AnnotationUtil {
    * @return
    */
   @SuppressWarnings("unchecked")
-  public static <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
+  public static <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass,
+      Map<String, Object> valuesMap) {
     Map<String, Object> map = getAnnotationDefaultMap(annotationClass);
     map.putAll(valuesMap);
     return AccessController
-        .doPrivileged((PrivilegedAction<T>) () ->
-        (T) Proxy.newProxyInstance(
+        .doPrivileged((PrivilegedAction<T>) () -> (T) Proxy.newProxyInstance(
             annotationClass.getClassLoader(),
             new Class[] { annotationClass },
-            uncheck(() -> (InvocationHandler) AnnotationInvocationHandler_constructor.newInstance(annotationClass, map))
-            ));
+            uncheck(
+                () -> (InvocationHandler) AnnotationInvocationHandler_constructor.newInstance(annotationClass, map))));
   }
 
   public static <T extends Annotation> Map<String, Object> getAnnotationDefaultMap(Class<T> annotationClass) {
