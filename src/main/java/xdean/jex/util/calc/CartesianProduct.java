@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CartesianProduct {
 
-  static Flowable<int[]> cartesianProduct(Flowable<Flowable<Integer>> sources) {
+  public static Flowable<int[]> cartesianProduct(Flowable<Flowable<Integer>> sources) {
     return sources.toList().<int[]> flatMapPublisher(list -> cartesian(list));
   }
 
@@ -17,7 +17,7 @@ public class CartesianProduct {
    * @param sources
    * @return
    */
-  static Flowable<int[]> cartesian(List<Flowable<Integer>> sources) {
+  public static Flowable<int[]> cartesian(List<Flowable<Integer>> sources) {
     if (sources.size() == 0) {
       return Flowable.empty();
     }
