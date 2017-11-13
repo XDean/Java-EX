@@ -1,12 +1,6 @@
 package xdean.jex.extra.rx2.op;
 
 import static io.reactivex.internal.util.BackpressureHelper.*;
-import io.reactivex.FlowableOperator;
-import io.reactivex.FlowableSubscriber;
-import io.reactivex.ObservableOperator;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +8,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+
+import io.reactivex.FlowableOperator;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.ObservableOperator;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public class RandomOperator<T> {
 
@@ -24,7 +25,7 @@ public class RandomOperator<T> {
   }
 
   public static <T> ObservableOperator<T, T> observable(int cacheSize) {
-    return actual -> new RandomObserver<T>(actual, cacheSize);
+    return actual -> new RandomObserver<>(actual, cacheSize);
   }
 
   public static <T> FlowableOperator<T, T> flowable() {
@@ -32,7 +33,7 @@ public class RandomOperator<T> {
   }
 
   public static <T> FlowableOperator<T, T> flowable(int cacheSize) {
-    return actual -> new RandomSubscriber<T>(actual, cacheSize);
+    return actual -> new RandomSubscriber<>(actual, cacheSize);
   }
 
   private static final class RandomObserver<T> implements Observer<T> {
@@ -126,7 +127,7 @@ public class RandomOperator<T> {
     @Override
     public void request(long n) {
       if (add(this, n) == 0) {
-        s.request(1);
+        s.request(n);
       }
     }
 
@@ -141,7 +142,7 @@ public class RandomOperator<T> {
     }
 
     private void emitAll() {
-      while (!elements.isEmpty()) {
+      while (!elements.isEmpty() && get() > 0) {
         emitOne();
       }
     }

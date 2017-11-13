@@ -7,10 +7,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import xdean.jex.internal.codecov.CodecovIgnore;
 import xdean.jex.util.cache.CacheUtil;
 
 import com.google.common.base.Stopwatch;
 
+@CodecovIgnore
 public class TimingUtil {
   public static void timeThen(Runnable r, Consumer<Long> then) {
     Stopwatch s = getShareStopwatch();

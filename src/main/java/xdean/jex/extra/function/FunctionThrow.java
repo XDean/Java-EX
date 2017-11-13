@@ -2,7 +2,10 @@ package xdean.jex.extra.function;
 
 import java.util.Objects;
 
+import xdean.jex.internal.codecov.CodecovIgnore;
+
 @FunctionalInterface
+@CodecovIgnore
 public interface FunctionThrow<F, R, T extends Exception> {
 
   R apply(F f) throws T;

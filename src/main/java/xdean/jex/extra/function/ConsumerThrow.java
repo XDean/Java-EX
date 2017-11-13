@@ -2,7 +2,10 @@ package xdean.jex.extra.function;
 
 import java.util.Objects;
 
+import xdean.jex.internal.codecov.CodecovIgnore;
+
 @FunctionalInterface
+@CodecovIgnore
 public interface ConsumerThrow<T, E extends Exception> {
 
   void accept(T t) throws E;

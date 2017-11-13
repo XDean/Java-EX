@@ -5,6 +5,7 @@ import static xdean.jex.util.function.FunctionAdapter.supplierToRunnable;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
+import java.util.function.Function;
 
 import lombok.extern.slf4j.Slf4j;
 import xdean.jex.extra.Either;
@@ -14,19 +15,19 @@ import xdean.jex.extra.function.SupplierThrow;
 
 @Slf4j
 public class ExceptionUtil {
-  public static <T extends Throwable, R> R throwIt(T t) throws T {
+  public static <T extends Exception, R> R throwIt(T t) throws T {
     throw t;
   }
 
   @SuppressWarnings("unchecked")
-  public static <T extends Throwable, R> R throwAsUncheck(Throwable t) throws T {
+  public static <T extends Exception, R> R throwAsUncheck(Exception t) throws T {
     throw (T) t;
   }
 
   public static void uncheck(RunnableThrow<?> task) {
     try {
       task.run();
-    } catch (Throwable t) {
+    } catch (Exception t) {
       throwAsUncheck(t);
     }
   }
@@ -39,7 +40,7 @@ public class ExceptionUtil {
     try {
       task.run();
       return true;
-    } catch (Throwable t) {
+    } catch (Exception t) {
       log.trace("Dont catch", t);
       return false;
     }
@@ -57,7 +58,7 @@ public class ExceptionUtil {
   public static <E extends Exception> Optional<E> throwToReturn(RunnableThrow<E> task) {
     try {
       task.run();
-    } catch (Throwable t) {
+    } catch (Exception t) {
       try {
         return Optional.of((E) t);
       } catch (ClassCastException cce) {
@@ -68,7 +69,7 @@ public class ExceptionUtil {
   }
 
   public static <T, E extends Exception> Either<T, E> throwToReturn(SupplierThrow<T, E> task) {
-    Wrapper<T> w = new Wrapper<T>(null);
+    Wrapper<T> w = new Wrapper<>(null);
     return Either.rightOrDefault(throwToReturn(() -> w.set(task.get())), w.get());
   }
 
@@ -85,5 +86,14 @@ public class ExceptionUtil {
     t.printStackTrace(pw);
     pw.flush();
     return sw.toString();
+  }
+
+  public static <E extends Exception> void wrapException(Function<Exception, E> wrapper, RunnableThrow<?> task)
+      throws E {
+    try {
+      task.run();
+    } catch (Exception e) {
+      throw wrapper.apply(e);
+    }
   }
 }

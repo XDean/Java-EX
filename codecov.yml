@@ -28,6 +28,9 @@ comment:
 ignore:
 #generated
   - "src/main/java/xdean/jex/extra/collection/LinkedList.java"
+  - "src/main/java/xdean/jex/extra/function/BiConsumerThrow.java"
+  - "src/main/java/xdean/jex/extra/function/ConsumerThrow.java"
+  - "src/main/java/xdean/jex/extra/function/FunctionThrow.java"
   - "src/main/java/xdean/jex/extra/rx2/RxFunctions.java"
   - "src/main/java/xdean/jex/internal/codecov/CodecovIgnoreHandler.java"
   - "src/main/java/xdean/jex/util/function/EmptyFunction.java"
@@ -37,4 +40,5 @@ ignore:
   - "src/main/java/xdean/jex/util/reflect/model/GenericArrayTypeImpl.java"
   - "src/main/java/xdean/jex/util/reflect/model/ParameterizedTypeImpl.java"
   - "src/main/java/xdean/jex/util/reflect/model/WildcardTypeImpl.java"
+  - "src/main/java/xdean/jex/util/TimingUtil.java"
 #end
