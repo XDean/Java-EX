@@ -63,7 +63,7 @@ public class FunctionInterfaceUtil {
    *
    * <pre>
    * <code>
-   * interface Function extends UnaryOperator&#60;Integer&#62 {
+   * interface Function extends UnaryOperator&#60;Integer&#62; {
    *   &#64;Override
    *   public Integer apply(Number t);//error
    * }

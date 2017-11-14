@@ -38,10 +38,9 @@ public class TimingUtil {
   }
 
   /**
-   *
-   * @param uniqueKey
-   * @param r
-   * @param then (this time, total time) -> {...}
+   * @param uniqueKey unique key
+   * @param r the task
+   * @param then (this time, total time) -&#62; {...}
    */
   public static void seriesTimeThen(Object uniqueKey, Runnable r, BiConsumer<Long, Long> then) {
     Stopwatch total = CacheUtil.cache(TimingUtil.class, uniqueKey, () -> Stopwatch.createUnstarted());

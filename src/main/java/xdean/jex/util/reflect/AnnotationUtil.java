@@ -83,8 +83,9 @@ public class AnnotationUtil {
    * Changes the annotation value for the given key of the given annotation to newValue and returns the previous value.
    *
    * @author Balder@stackoverflow
-   * @see https://stackoverflow.com/a/28118436/7803527
-   * @see sun.reflect.annotation.AnnotationInvocationHandler
+   * @see <a href="https://stackoverflow.com/a/28118436/7803527">Origin code on Stackoverflow</a>
+   * @see <a href=
+   *      "http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/file/c46daef6edb5/src/share/classes/sun/reflect/annotation/AnnotationInvocationHandler.java">sun.reflect.annotation.AnnotationInvocationHandler</a>
    */
   @SuppressWarnings("unchecked")
   public static Object changeAnnotationValue(Annotation annotation, String key, Object newValue) {
@@ -117,7 +118,7 @@ public class AnnotationUtil {
    * @param ex
    * @param annotation
    * @author XDean
-   * @see java.lang.reflect.Excutable
+   * @see Executable
    * @see #createAnnotationFromMap(Class, Map)
    * @see ReflectUtil#getRootMethods(Class)
    */
@@ -206,7 +207,7 @@ public class AnnotationUtil {
    * @param c
    * @param annotation
    * @author Balder@stackoverflow
-   * @see https://stackoverflow.com/a/30287201/7803527
+   * @see <a href="https://stackoverflow.com/a/30287201/7803527">Origin code on stackoverflow</a>
    * @see java.lang.Class
    * @see #createAnnotationFromMap(Class, Map)
    */

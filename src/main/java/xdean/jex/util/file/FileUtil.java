@@ -46,11 +46,6 @@ public class FileUtil {
 
   /**
    * Test if the both paths are same file
-   *
-   * @param p1
-   * @param p2
-   * @return
-   * @throws IOException
    */
   public static boolean equals(Path p1, Path p2) throws IOException {
     if (Files.size(p1) != Files.size(p2)) {

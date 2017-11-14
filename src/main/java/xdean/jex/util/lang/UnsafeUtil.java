@@ -159,8 +159,7 @@ public class UnsafeUtil {
    * Get the size of reference.(considered UseCompressedOops)<br>
    * If you want to get the actual address size, use {@link Unsafe#addressSize()}
    *
-   * @param clz
-   * @return
+   * @return ref size
    */
   public static long refSize() {
     return useCompressedOops ? 4 : ADDRESS_SIZE;
