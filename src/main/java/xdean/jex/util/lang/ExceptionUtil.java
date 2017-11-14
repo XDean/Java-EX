@@ -15,12 +15,12 @@ import xdean.jex.extra.function.SupplierThrow;
 
 @Slf4j
 public class ExceptionUtil {
-  public static <T extends Exception, R> R throwIt(T t) throws T {
+  public static <T extends Throwable, R> R throwIt(T t) throws T {
     throw t;
   }
 
   @SuppressWarnings("unchecked")
-  public static <T extends Exception, R> R throwAsUncheck(Exception t) throws T {
+  public static <T extends Throwable, R> R throwAsUncheck(Throwable t) throws T {
     throw (T) t;
   }
 
