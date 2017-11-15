@@ -79,8 +79,9 @@ public class AnnotationUtil {
    * Changes the annotation value for the given key of the given annotation to newValue and returns the previous value.
    *
    * @author Balder@stackoverflow
-   * @see https://stackoverflow.com/a/28118436/7803527
-   * @see sun.reflect.annotation.AnnotationInvocationHandler
+   * @see <a href="https://stackoverflow.com/a/28118436/7803527">Origin code on Stackoverflow</a>
+   * @see <a href=
+   *      "http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/file/c46daef6edb5/src/share/classes/sun/reflect/annotation/AnnotationInvocationHandler.java">sun.reflect.annotation.AnnotationInvocationHandler</a>
    */
   @SuppressWarnings("unchecked")
   public static Object changeAnnotationValue(Annotation annotation, String key, Object newValue) {
@@ -113,7 +114,7 @@ public class AnnotationUtil {
    * @param ex
    * @param annotation
    * @author XDean
-   * @see java.lang.reflect.Excutable
+   * @see Executable
    * @see #createAnnotationFromMap(Class, Map)
    * @see ReflectUtil#getRootMethods(Class)
    */
@@ -172,7 +173,7 @@ public class AnnotationUtil {
    * @param c
    * @param annotation
    * @author Balder@stackoverflow
-   * @see https://stackoverflow.com/a/30287201/7803527
+   * @see <a href="https://stackoverflow.com/a/30287201/7803527">Origin code on stackoverflow</a>
    * @see java.lang.Class
    * @see #createAnnotationFromMap(Class, Map)
    */
@@ -180,7 +181,7 @@ public class AnnotationUtil {
     try {
       while (true) { // retry loop
         int classRedefinedCount = Class_classRedefinedCount.getInt(c);
-        Object /* AnnotationData */annotationData = Class_annotationData.invoke(c);
+        Object /* AnnotationData */ annotationData = Class_annotationData.invoke(c);
         // null or stale annotationData -> optimistically create new instance
         Object newAnnotationData = createAnnotationData(c, annotationData, annotation,
             classRedefinedCount);
@@ -197,8 +198,8 @@ public class AnnotationUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static Object /* AnnotationData */createAnnotationData(
-      Class<?> c, Object /* AnnotationData */annotationData, Annotation annotation, int classRedefinedCount)
+  public static Object /* AnnotationData */ createAnnotationData(
+      Class<?> c, Object /* AnnotationData */ annotationData, Annotation annotation, int classRedefinedCount)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     Map<Class<? extends Annotation>, Annotation> annotations = (Map<Class<? extends Annotation>, Annotation>) AnnotationData_annotations
         .get(annotationData);
@@ -225,13 +226,12 @@ public class AnnotationUtil {
    * @return
    */
   @SuppressWarnings("unchecked")
-  public static <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass, Map<String, Object> valuesMap) {
-    return AccessController.doPrivileged((PrivilegedAction<T>) () ->
-        (T) Proxy.newProxyInstance(
-            annotationClass.getClassLoader(),
-            new Class[] { annotationClass },
-            uncheck(() -> (InvocationHandler) AnnotationInvocationHandler_constructor.newInstance(annotationClass,
-                new HashMap<>(valuesMap)))
-            ));
+  public static <T extends Annotation> T createAnnotationFromMap(Class<T> annotationClass,
+      Map<String, Object> valuesMap) {
+    return AccessController.doPrivileged((PrivilegedAction<T>) () -> (T) Proxy.newProxyInstance(
+        annotationClass.getClassLoader(),
+        new Class[] { annotationClass },
+        uncheck(() -> (InvocationHandler) AnnotationInvocationHandler_constructor.newInstance(annotationClass,
+            new HashMap<>(valuesMap)))));
   }
 }

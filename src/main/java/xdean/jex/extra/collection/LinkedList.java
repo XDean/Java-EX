@@ -43,9 +43,9 @@ import java.util.function.Consumer;
 
 /**
  * Copy from system library, jdk 1.8.0_112u
- * 
- * 
- * 
+ *
+ *
+ *
  * Doubly-linked list implementation of the {@code List} and {@code Deque} interfaces. Implements all optional list
  * operations, and permits all elements (including {@code null}).
  *
@@ -63,7 +63,7 @@ import java.util.function.Consumer;
  * If no such object exists, the list should be "wrapped" using the {@link Collections#synchronizedList
  * Collections.synchronizedList} method. This is best done at creation time, to prevent accidental unsynchronized access
  * to the list:
- * 
+ *
  * <pre>
  *   List list = Collections.synchronizedList(new LinkedList(...));
  * </pre>
@@ -1214,7 +1214,7 @@ public class LinkedList<E>
    * The {@code Spliterator} reports {@link Spliterator#SIZED} and {@link Spliterator#ORDERED}. Overriding
    * implementations should document the reporting of additional characteristic values.
    *
-   * @implNote The {@code Spliterator} additionally reports {@link Spliterator#SUBSIZED} and implements {@code trySplit}
+   * The {@code Spliterator} additionally reports {@link Spliterator#SUBSIZED} and implements {@code trySplit}
    *           to permit limited parallelism..
    *
    * @return a {@code Spliterator} over the elements in this list
@@ -1222,7 +1222,7 @@ public class LinkedList<E>
    */
   @Override
   public Spliterator<E> spliterator() {
-    return new LLSpliterator<E>(this, -1, 0);
+    return new LLSpliterator<>(this, -1, 0);
   }
 
   /** A customized variant of Spliterators.IteratorSpliterator */

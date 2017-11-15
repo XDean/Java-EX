@@ -39,7 +39,7 @@ public class TimeUtil {
    *
    * @param uniqueKey
    * @param r
-   * @param then (this time, total time) -> {...}
+   * @param then (this time, total time) -&#62; {...}
    */
   public static void seriesTimeThen(Object uniqueKey, Runnable r, BiConsumer<Long, Long> then) {
     Stopwatch total = CacheUtil.cache(TimeUtil.class, uniqueKey, () -> Stopwatch.createUnstarted());

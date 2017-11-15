@@ -1,18 +1,17 @@
 package xdean.jex.util.reflect;
 
-import io.reactivex.Observable;
-
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 import org.junit.Test;
+
+import rx.Observable;
 
 @SuppressWarnings("unused")
 public class TestReflectUtil {
 
   @Test
   public void testGetAllMethod() {
-    Observable.fromArray(ReflectUtil.getAllFields(B.class, false))
+    Observable.from(ReflectUtil.getAllFields(B.class, false))
         .map(Field::getName)
         .test()
         .assertValueCount(2)
@@ -21,7 +20,7 @@ public class TestReflectUtil {
 
   @Test
   public void testGetAllMethodStatic() {
-    Observable.fromArray(ReflectUtil.getAllFields(B.class, true))
+    Observable.from(ReflectUtil.getAllFields(B.class, true))
         .map(Field::getName)
         .test()
         .assertValueCount(3)
