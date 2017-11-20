@@ -4,6 +4,18 @@
 
 Java Common Extension
 
+# Get it
+
+To add a dependency on Java-EX using Maven, use the following:
+
+```xml
+<dependency>
+    <groupId>com.github.XDean</groupId>
+    <artifactId>Java-EX</artifactId>
+    <version>0.0.6</version>
+</dependency>
+```
+
 # Features
 ## Lang
 - Finalize support. Attach clean up tasks on any object. Free from `Object.finalize`.
