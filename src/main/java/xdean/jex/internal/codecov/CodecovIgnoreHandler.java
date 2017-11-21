@@ -16,10 +16,8 @@ import xdean.jex.util.file.FileUtil;
 import com.google.common.base.Charsets;
 
 /**
- * TODO add test
  *
  * @author XDean
- *
  */
 @Slf4j
 @CodecovIgnore
