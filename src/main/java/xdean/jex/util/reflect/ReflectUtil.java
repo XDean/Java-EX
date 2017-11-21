@@ -35,9 +35,9 @@ public class ReflectUtil {
       Field getRootField = Field.class.getDeclaredField("root");
       getRootField.setAccessible(true);
       FIELD_GET_ROOT = f -> uncheck(() -> (Field) getRootField.get(f));
-      Method getRootFields = Class.class.getDeclaredMethod("privateGetPublicMethods");
+      Method getRootFields = Class.class.getDeclaredMethod("privateGetPublicFields", Set.class);
       getRootFields.setAccessible(true);
-      CLASS_GET_ROOT_FIELDS = c -> uncheck(() -> (Field[]) getRootFields.invoke(c));
+      CLASS_GET_ROOT_FIELDS = c -> uncheck(() -> (Field[]) getRootFields.invoke(c, new Object[] { null }));
     } catch (NoSuchMethodException | SecurityException | NoSuchFieldException e) {
       throw new IllegalStateException("ReflectUtil init fail, check your java version.", e);
     }
@@ -51,7 +51,7 @@ public class ReflectUtil {
   }
 
   /**
-   * Get root methods of the class.
+   * Get root public methods of the class.
    */
   public static Method[] getRootMethods(Class<?> clz) {
     return CLASS_GET_ROOT_METHODS.apply(clz);
@@ -65,7 +65,7 @@ public class ReflectUtil {
   }
 
   /**
-   * Get root fields of the class.
+   * Get root public fields of the class.
    */
   public static Field[] getRootFields(Class<?> clz) {
     return CLASS_GET_ROOT_FIELDS.apply(clz);

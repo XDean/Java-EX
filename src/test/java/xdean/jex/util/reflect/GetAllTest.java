@@ -59,6 +59,27 @@ public class GetAllTest {
         .assertValueSet(Arrays.asList(I.class, M.class));
   }
 
+  @Test
+  public void testGetRootFields() throws Exception {
+    Observable.fromArray(ReflectUtil.getRootFields(C.class))
+        .filter(f -> ReflectUtil.getRootField(f) == null)
+        .map(Field::getName)
+        .test()
+        .assertValueCount(1)
+        .assertValues("a");
+  }
+
+  @Test
+  public void testGetRootMethods() throws Exception {
+    Observable.fromArray(ReflectUtil.getRootMethods(D.class))
+        .filter(m -> ReflectUtil.getRootMethod(m) == null)
+        .filter(m -> m.getDeclaringClass() != Object.class)
+        .map(Method::getName)
+        .test()
+        .assertValueCount(2)
+        .assertValueSet(Arrays.asList("bar", "funcM"));
+  }
+
   interface I {
     default void funcI() {
     }
@@ -84,6 +105,22 @@ public class GetAllTest {
     @Override
     void func() {
 
+    }
+  }
+
+  static class C {
+    public int a;
+    private int b;
+
+    void bar() {
+    }
+  }
+
+  static class D extends C implements M {
+    public int c;
+
+    @Override
+    public void bar() {
     }
   }
 }
