@@ -1,6 +1,7 @@
 # Java-EX
 [![Build Status](https://travis-ci.org/XDean/Java-EX.svg?branch=master)](https://travis-ci.org/XDean/Java-EX)
 [![codecov.io](http://codecov.io/github/XDean/Java-EX/coverage.svg?branch=master)](https://codecov.io/gh/XDean/Java-EX/branch/master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.XDean/Java-EX/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.XDean/Java-EX)
 
 Java Common Extension
 
