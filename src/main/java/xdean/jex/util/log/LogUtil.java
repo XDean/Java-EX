@@ -1,6 +1,5 @@
 package xdean.jex.util.log;
 
-import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -12,14 +11,35 @@ import xdean.jex.util.reflect.ReflectUtil;
 
 @CodecovIgnore
 public class LogUtil {
+  static {
+    String property = System.getProperty("xdean.jex.log.level");
+    property = property == null ? "" : property;
+    switch (property.toLowerCase()) {
+    case "trace":
+      setGlobalLevel(Level.FINEST);
+      break;
+    case "debug":
+      setGlobalLevel(Level.FINER);
+      break;
+    case "info":
+      setGlobalLevel(Level.INFO);
+      break;
+    case "warning":
+      setGlobalLevel(Level.WARNING);
+      break;
+    case "error":
+      setGlobalLevel(Level.SEVERE);
+      break;
+    default:
+      setGlobalLevel(Level.INFO);
+    }
+  }
 
-  public static void setGlobalLevel(Level newLvl) {
+  public static void setGlobalLevel(Level newLevel) {
     Logger rootLogger = LogManager.getLogManager().getLogger("");
-    rootLogger.setLevel(newLvl);
+    rootLogger.setLevel(newLevel);
     for (Handler h : rootLogger.getHandlers()) {
-      if (h instanceof FileHandler) {
-        h.setLevel(newLvl);
-      }
+      h.setLevel(newLevel);
     }
   }
 

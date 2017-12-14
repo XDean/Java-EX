@@ -1,6 +1,6 @@
 package xdean.jex.util.task.tryto;
 
-import static xdean.jex.util.log.LogUtil.debug;
+import static xdean.jex.util.log.LogUtil.trace;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -32,7 +32,7 @@ public abstract class Try<T>{
         try {
           onFinally.run();
         } catch (Exception e) {
-          debug().log(e.getMessage(), e);
+          trace().log(e.getMessage(), e);
         }
       }
     }
