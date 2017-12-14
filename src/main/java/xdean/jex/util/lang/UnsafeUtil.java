@@ -11,9 +11,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-
 import sun.misc.Unsafe;
+import xdean.jex.util.log.Log;
 import xdean.jex.util.log.LogUtil;
 import xdean.jex.util.reflect.ReflectUtil;
 
@@ -23,11 +22,11 @@ public class UnsafeUtil {
   private static final int ADDRESS_SIZE = THE_UNSAFE.addressSize();
   private static final long HEADER_SIZE = initHeaderSize();
   private static final boolean useCompressedOops = initUseCompressedOops();
-  private static final Logger LOGGER = LogUtil.log();
+  private static final Log LOGGER = LogUtil.log();
   static {
-    LOGGER.trace("address size: {}", ADDRESS_SIZE);
-    LOGGER.trace("header size: {}", HEADER_SIZE);
-    LOGGER.trace("useCompressedOops: {}", useCompressedOops);
+    LOGGER.trace().log("address size: {}", ADDRESS_SIZE);
+    LOGGER.trace().log("header size: {}", HEADER_SIZE);
+    LOGGER.trace().log("useCompressedOops: {}", useCompressedOops);
   }
 
   public static Unsafe getUnsafe() {

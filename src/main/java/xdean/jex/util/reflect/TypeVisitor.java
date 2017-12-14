@@ -67,7 +67,7 @@ public class TypeVisitor<T> implements Logable {
 
   public T result(T defaultValue) {
     if (!visited) {
-      log().debug("The type haven't been visited: " + type);
+      trace().log("The type haven't been visited: " + type);
       return defaultValue;
     }
     return result;
@@ -75,7 +75,7 @@ public class TypeVisitor<T> implements Logable {
 
   public T result(Supplier<T> defaultValueSupplier) {
     if (!visited) {
-      log().debug("The type haven't been visited: " + type);
+      trace().log("The type haven't been visited: " + type);
       return defaultValueSupplier.get();
     }
     return result;
