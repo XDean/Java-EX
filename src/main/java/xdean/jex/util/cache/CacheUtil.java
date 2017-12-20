@@ -4,8 +4,9 @@ import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
 import java.util.function.Supplier;
+
+import com.google.common.collect.MapMaker;
 
 import xdean.jex.util.collection.MapUtil;
 
@@ -23,7 +24,7 @@ public class CacheUtil {
     V v = ref.get();
     if (v == null) {
       v = factory.get();
-      set(owner, key, new WeakReference<V>(v));
+      set(owner, key, new WeakReference<>(v));
     }
     return v;
   }
@@ -86,7 +87,7 @@ public class CacheUtil {
   }
 
   private static <K, V> Map<K, V> createMap() {
-    return new WeakHashMap<>();// XXX:Synchronize?
+    return new MapMaker().weakKeys().makeMap();// XXX:Synchronize?
   }
 
   public Map<Class<?>, Map<Object, Map<Object, Object>>> getAllCache() {
