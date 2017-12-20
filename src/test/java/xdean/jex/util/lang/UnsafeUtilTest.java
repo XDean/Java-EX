@@ -19,9 +19,9 @@ public class UnsafeUtilTest {
   @Ignore("not implement yet")
   @Test
   public void testAddressOf() {
-    System.out.printf("%s\n", Long.toHexString(addressOf(new Object())));
-    System.out.printf("%s\n", Long.toHexString(addressOf(new Object())));
-    System.out.printf("%s\n", Long.toHexString(addressOf(new Object())));
+    // System.out.printf("%s\n", Long.toHexString(addressOf(new Object())));
+    // System.out.printf("%s\n", Long.toHexString(addressOf(new Object())));
+    // System.out.printf("%s\n", Long.toHexString(addressOf(new Object())));
   }
 
   @Test
