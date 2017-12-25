@@ -14,9 +14,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class ReflectUtil {
 
   private static final UnaryOperator<Method> METHOD_GET_ROOT;
@@ -87,7 +84,6 @@ public class ReflectUtil {
     try {
       return (O) field.get(t);
     } catch (IllegalAccessException e) {
-      log.error("Should not happen.", e);
       throw new IllegalStateException(e);
     }
   }

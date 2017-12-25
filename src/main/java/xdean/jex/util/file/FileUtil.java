@@ -1,6 +1,6 @@
 package xdean.jex.util.file;
 
-import io.reactivex.Flowable;
+import static xdean.jex.util.log.LogUtil.debug;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,14 +11,13 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 
-import lombok.extern.slf4j.Slf4j;
+import com.google.common.base.Stopwatch;
+
+import io.reactivex.Flowable;
 import xdean.jex.extra.collection.Traverse;
 import xdean.jex.util.security.SecurityUtil;
 import xdean.jex.util.task.TaskUtil;
 
-import com.google.common.base.Stopwatch;
-
-@Slf4j
 public class FileUtil {
 
   public static String getNameWithoutSuffix(Path path) {
@@ -78,12 +77,12 @@ public class FileUtil {
   }
 
   public static String digest(Path path, String algorithm) throws NoSuchAlgorithmException, IOException {
-    log.debug("To calc {}'s {}, its size is: {}", path.getFileName(), algorithm, Files.size(path));
+    debug().log("To calc {0}''s {1}, its size is: {2}", path.getFileName(), algorithm, Files.size(path));
     Stopwatch s = Stopwatch.createStarted();
     try {
       return SecurityUtil.digest(Files.newInputStream(path), algorithm);
     } finally {
-      log.debug("Calc end, use {} ms", s.elapsed(TimeUnit.MILLISECONDS));
+      debug().log("Calc end, use {0} ms", s.elapsed(TimeUnit.MILLISECONDS));
     }
   }
 }

@@ -17,10 +17,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import lombok.extern.slf4j.Slf4j;
+import xdean.jex.util.log.Log;
+import xdean.jex.util.log.LogUtil;
 
-@Slf4j
 public class FunctionInterfaceUtil {
+
+  private static final Log LOG = LogUtil.log();
 
   /**
    * Get the method from a function interface
@@ -141,7 +143,7 @@ public class FunctionInterfaceUtil {
         return null;
       }
     } else {
-      log.warn("Can't handle GenericReturnType: {} with type {}", functionGenericReturnType,
+      LOG.warning().log("Can't handle GenericReturnType: {} with type {}", functionGenericReturnType,
           functionGenericReturnType.getClass());
       return null;
     }
@@ -173,7 +175,7 @@ public class FunctionInterfaceUtil {
           return null;
         }
       } else {
-        log.warn("Can't handle GenericParameterType: {} with type {}", paramType, paramType.getClass());
+        LOG.warning().log("Can't handle GenericParameterType: {} with type {}", paramType, paramType.getClass());
         return null;
       }
     }
@@ -195,7 +197,7 @@ public class FunctionInterfaceUtil {
                     functionThrowClass = explicitType;
                   }
                 } else {
-                  log.warn("Can't handle GenericException: {} with type {}", functionThrowType,
+                  LOG.warning().log("Can't handle GenericException: {} with type {}", functionThrowType,
                       functionThrowType.getClass());
                   return false;
                 }
@@ -242,7 +244,7 @@ public class FunctionInterfaceUtil {
           } else if (t instanceof TypeVariable) {
             return getAllBounds(((TypeVariable<?>) t));
           } else {
-            log.warn("Can't handle TypeVariable Bound: {} with type {}", t, t.getClass());
+            LOG.warning().log("Can't handle TypeVariable Bound: {} with type {}", t, t.getClass());
             return Stream.empty();
           }
         });

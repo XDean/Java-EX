@@ -1,13 +1,12 @@
 package xdean.jex.util.task.tryto;
 
+import static xdean.jex.util.log.LogUtil.trace;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import xdean.jex.extra.function.RunnableThrow;
 import xdean.jex.extra.function.SupplierThrow;
@@ -18,9 +17,7 @@ import xdean.jex.extra.function.SupplierThrow;
  * @author liuwenzhe2008@qq.com
  *
  */
-public abstract class Try<T> {
-
-  private static final Logger LOG = LoggerFactory.getLogger(Try.class);
+public abstract class Try<T>{
 
   /**
    * Constructs a `Try` using a code as a supplier.
@@ -35,7 +32,7 @@ public abstract class Try<T> {
         try {
           onFinally.run();
         } catch (Exception e) {
-          LOG.debug(e.getMessage(), e);
+          trace().log(e.getMessage(), e);
         }
       }
     }

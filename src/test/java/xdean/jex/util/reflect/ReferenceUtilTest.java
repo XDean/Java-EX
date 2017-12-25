@@ -7,8 +7,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import xdean.jex.util.lang.UnsafeUtil;
-
 public class ReferenceUtilTest {
   @Test
   public void testReference() throws Exception {
@@ -18,8 +16,6 @@ public class ReferenceUtilTest {
     a.b.c.get(0).d = new D[] { new D() };
     assertTrue(ReferenceUtil.isReferencing(a, a.b.c.get(0).d[0]));
     assertFalse(ReferenceUtil.isReferencing(a, new D()));
-    System.out.println(UnsafeUtil.sizeOf(Thread.currentThread()));
-    System.out.println(ReferenceUtil.isReferencing(Thread.currentThread(), a));
   }
 
   static class A {

@@ -1,6 +1,7 @@
 package xdean.jex.internal.codecov;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncatch;
+import static xdean.jex.util.log.LogUtil.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,17 +10,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import xdean.jex.util.file.FileUtil;
-
 import com.google.common.base.Charsets;
+
+import lombok.SneakyThrows;
+import xdean.jex.util.file.FileUtil;
 
 /**
  *
  * @author XDean
  */
-@Slf4j
 @CodecovIgnore
 public class CodecovIgnoreHandler {
   private static final String END = "#end";
@@ -33,7 +32,7 @@ public class CodecovIgnoreHandler {
   public static void updateCodecovIgnore() {
     Path codecov = Paths.get("codecov.yml");
     if (!Files.exists(codecov)) {
-      log.error("Can't find codecov.yml");
+      error().log("Can't find codecov.yml");
       return;
     }
     Path path = Paths.get("src", "main", "java");
@@ -52,7 +51,7 @@ public class CodecovIgnoreHandler {
           String clzName = name.substring(0, name.length() - 5);
           return uncatch(() -> Class.forName(clzName).getAnnotation(CodecovIgnore.class)) != null;
         })
-        .doOnNext(p -> log.debug("Find file to ignore: " + p))
+        .doOnNext(p -> debug().log("Find file to ignore: " + p))
         .toList()
         .subscribe(ignores -> writeIgnore(codecov, ignores));
   }
@@ -74,7 +73,7 @@ public class CodecovIgnoreHandler {
       lines.addAll(ignoreLines);
     } else {
       if (generateLine == -1 ^ endLine == -1) {
-        log.error("'#generated' and '#end' tags are not synchronized, correct the file manually.");
+        error().log("'#generated' and '#end' tags are not synchronized, correct the file manually.");
         return;
       } else if (generateLine == -1) {
         lines.addAll(ignoreLine + 1, ignoreLines);
@@ -86,6 +85,6 @@ public class CodecovIgnoreHandler {
       }
     }
     Files.write(codecov, lines);
-    log.info("codecov.yml has been updated!");
+    info().log("codecov.yml has been updated!");
   }
 }

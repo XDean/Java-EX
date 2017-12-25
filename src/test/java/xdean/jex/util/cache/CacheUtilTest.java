@@ -13,8 +13,9 @@ import xdean.jex.util.reflect.ReflectUtil;
 public class CacheUtilTest {
   @Test
   public void testGetSet() throws Exception {
-    set(key(), 123);
-    assertEquals(123, get(key()).get());
+    Object key = key();
+    set(key, 123);
+    assertEquals(123, get(key).get());
   }
 
   @Test
@@ -30,12 +31,17 @@ public class CacheUtilTest {
   @Test
   public void testCacheGC() throws Exception {
     AtomicInteger call = new AtomicInteger(0);
-    cache(key(), () -> call.incrementAndGet());
+    Object key = key();
+    cache(key, () -> call.incrementAndGet());
+    key = null;
     System.gc();
-    cache(key(), () -> call.incrementAndGet());
-    cache(key(), () -> call.incrementAndGet());
+    key = key();
+    cache(key, () -> call.incrementAndGet());
+    cache(key, () -> call.incrementAndGet());
+    key = null;
     System.gc();
-    cache(key(), () -> call.incrementAndGet());
+    key = key();
+    cache(key, () -> call.incrementAndGet());
     assertEquals(3, call.get());
   }
 
@@ -64,8 +70,9 @@ public class CacheUtilTest {
 
   @Test
   public void testRemove() throws Exception {
-    set(key(), 123);
-    assertEquals(123, remove(key()).get());
+    Object key = key();
+    set(key, 123);
+    assertEquals(123, remove(key).get());
     assertFalse(remove(new Object()).isPresent());
   }
 
