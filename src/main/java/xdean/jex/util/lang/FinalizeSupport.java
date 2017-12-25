@@ -7,33 +7,36 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import xdean.jex.util.reflect.ReflectUtil;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
+/**
+ * Provide a convenient way to do something on the moment when an object be collected by gc.
+ *
+ * @author Dean Xu (XDean@github.com)
+ *
+ */
 public class FinalizeSupport {
 
-  private static Map<Reference<?>, Runnable> map = new ConcurrentHashMap<>();
-  private static ReferenceQueue<Object> queue = new ReferenceQueue<>();
-  private static Object lock;
+  private static final Map<Reference<?>, Runnable> FINALIZE_TASK_MAP = new ConcurrentHashMap<>();
+  private static final ReferenceQueue<Object> QUEUE = new ReferenceQueue<>();
 
   static {
-    try {
-      lock = ReflectUtil.getFieldValue(ReferenceQueue.class, queue, "lock");
-    } catch (NoSuchFieldException e) {
-      throw new Error("Can't find ReferenceQueue's lock, Check code and java version");
-    }
-
     ThreadGroup tg = Thread.currentThread().getThreadGroup();
     for (ThreadGroup tgn = tg; tgn != null; tg = tgn, tgn = tg.getParent()) {
-      ;
     }
-    Thread handler = new FinalizeHandler(tg, "Finalize Support");
-    handler.setPriority(Thread.MAX_PRIORITY);
+    Thread handler = new FinalizeHandler(tg, "FinalizeSupport");
+    handler.setPriority(Thread.MAX_PRIORITY - 2);
     handler.setDaemon(true);
     handler.start();
   }
 
   public static void finalize(Object o, Runnable r) {
-    map.put(new PhantomReference<>(o, queue), r);
+    finalize(o, r, Schedulers.io());
+  }
+
+  public static void finalize(Object o, Runnable r, Scheduler s) {
+    FINALIZE_TASK_MAP.put(new PhantomReference<>(o, QUEUE), () -> s.createWorker().schedule(r));
   }
 
   private static class FinalizeHandler extends Thread {
@@ -43,18 +46,14 @@ public class FinalizeSupport {
 
     @Override
     public void run() {
-      synchronized (lock) {
-        while (!Thread.interrupted()) {
-          Reference<? extends Object> ref = queue.poll();
-          if (ref == null) {
-            try {
-              lock.wait();
-            } catch (InterruptedException e) {
-              Thread.currentThread().interrupt();
-            }
-          } else {
-            Optional.ofNullable(map.remove(ref)).ifPresent(r -> r.run());
+      while (!Thread.interrupted()) {
+        try {
+          Reference<? extends Object> ref = QUEUE.remove();
+          if (ref != null) {
+            Optional.ofNullable(FINALIZE_TASK_MAP.remove(ref)).ifPresent(r -> r.run());
           }
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
         }
       }
     }
