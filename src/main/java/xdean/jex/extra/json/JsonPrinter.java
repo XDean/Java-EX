@@ -2,12 +2,15 @@ package xdean.jex.extra.json;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -36,22 +39,21 @@ import xdean.jex.util.reflect.ReflectUtil;
 public class JsonPrinter {
   @SuppressWarnings("unchecked")
   public static JsonPrinter getDefault() {
+    return getJava()
+        .addObjectClassHandler(Either.class, e -> e.unify(a -> a, b -> b))
+        .addObjectClassHandler(Multimap.class, m -> m.asMap())
+        .addObjectClassHandler(Table.class, t -> t.rowMap());
+  }
+
+  public static JsonPrinter getJava() {
     return new JsonPrinter()
-        .addClassHandler(Enum.class, e -> e.name())
-        .addClassHandler(Optional.class, o -> o.orElse(null))
-        .addClassHandler(OptionalInt.class, i -> i.isPresent() ? i.getAsInt() : null)
-        .addClassHandler(OptionalDouble.class, i -> i.isPresent() ? i.getAsDouble() : null)
-        .addClassHandler(OptionalLong.class, i -> i.isPresent() ? i.getAsLong() : null)
-        .addClassHandler(Either.class, e -> e.unify(a -> a, b -> b))
-        .addClassHandler(Class.class, c -> c.getName())
-        .addClassHandler(Path.class, p -> p.toString())
-        .addClassHandler(File.class, f -> f.toString())
-        .addClassHandler(Multimap.class, m -> m.asMap())
-        .addClassHandler(Table.class, t -> t.rowMap())
+        .addJavaHandlers()
+        .filterTransient()
         .printId(true)
         .printClass(true)
-        .idFunction(autoIncreaseId(0))
-        .tab("  ");
+        .printStructedList(true)
+        .printStructedMap(true)
+        .idFunction(autoIncreaseId(0));
   }
 
   public static JsonPrinter getEmpty() {
@@ -64,19 +66,27 @@ public class JsonPrinter {
     return o -> map.computeIfAbsent(o, e -> id.getAndIncrement());
   }
 
-  private final List<Pair<Predicate<Object>, Function<Object, Object>>> handlers = new LinkedList<>();
-  private String tabCharacter = "\t";
+  private final List<Pair<Predicate<Object>, Function<Object, Object>>> objectHandlers = new LinkedList<>();
+  private final List<Predicate<Field>> fieldFilters = new LinkedList<>();
+  private String tabCharacter = "  ";
   private boolean printClass = false;
   private boolean printId = false;
+  private boolean printStructedList = false;
+  private boolean printStructedMap = false;
   private Function<Object, Integer> idFunction = System::identityHashCode;
 
   @SuppressWarnings("unchecked")
-  public <T> JsonPrinter addClassHandler(Class<T> clz, Function<T, Object> f) {
-    return addHandler(o -> clz.isInstance(o), o -> f.apply((T) o));
+  public <T> JsonPrinter addObjectClassHandler(Class<T> clz, Function<T, Object> f) {
+    return addObjectHandler(o -> clz.isInstance(o), o -> f.apply((T) o));
   }
 
-  public JsonPrinter addHandler(Predicate<Object> p, Function<Object, Object> f) {
-    handlers.add(Pair.of(p, f));
+  public JsonPrinter addObjectHandler(Predicate<Object> p, Function<Object, Object> f) {
+    objectHandlers.add(Pair.of(p, f));
+    return this;
+  }
+
+  public JsonPrinter addFieldFilter(Predicate<Field> p) {
+    fieldFilters.add(p);
     return this;
   }
 
@@ -95,9 +105,36 @@ public class JsonPrinter {
     return this;
   }
 
+  public JsonPrinter printStructedList(boolean b) {
+    printStructedList = b;
+    return this;
+  }
+
+  public JsonPrinter printStructedMap(boolean b) {
+    printStructedMap = b;
+    return this;
+  }
+
   public JsonPrinter idFunction(Function<Object, Integer> idFunction) {
     this.idFunction = idFunction;
     return this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public JsonPrinter addJavaHandlers() {
+    return this
+        .addObjectClassHandler(Enum.class, e -> e.name())
+        .addObjectClassHandler(Optional.class, o -> o.orElse(null))
+        .addObjectClassHandler(OptionalInt.class, i -> i.isPresent() ? i.getAsInt() : null)
+        .addObjectClassHandler(OptionalDouble.class, i -> i.isPresent() ? i.getAsDouble() : null)
+        .addObjectClassHandler(OptionalLong.class, i -> i.isPresent() ? i.getAsLong() : null)
+        .addObjectClassHandler(Class.class, c -> c.getName())
+        .addObjectClassHandler(Path.class, p -> p.toString())
+        .addObjectClassHandler(File.class, f -> f.toString());
+  }
+
+  public JsonPrinter filterTransient() {
+    return this.addFieldFilter(f -> !Modifier.isTransient(f.getModifiers()));
   }
 
   public void print(Object o, PrintStream ps) {
@@ -107,6 +144,12 @@ public class JsonPrinter {
   public void println(Object o, PrintStream ps) {
     print(o, ps);
     ps.println();
+  }
+
+  public String toString(Object o) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    print(o, new PrintStream(baos));
+    return baos.toString();
   }
 
   private class InnerPrinter {
@@ -129,18 +172,18 @@ public class JsonPrinter {
       } else if (clz == String.class) {
         out.print(wrap((String) o));
       } else if (clz.isArray()) {
-        List<Object> l = new LinkedList<>();
         int length = Array.getLength(o);
+        List<Object> l = new ArrayList<>(length);
         for (int i = 0; i < length; i++) {
           l.add(Array.get(o, i));
         }
         printList(l);
-      } else if (List.class.isAssignableFrom(clz)) {
-        printList((List<?>) o);
-      } else if (Map.class.isAssignableFrom(clz)) {
+      } else if (printStructedMap && Map.class.isAssignableFrom(clz)) {
         printMap((Map<?, ?>) o);
+      } else if (printStructedList && Collection.class.isAssignableFrom(clz)) {
+        printList((Collection<?>) o);
       } else {
-        Optional<Function<Object, Object>> toString = handlers.stream()
+        Optional<Function<Object, Object>> toString = objectHandlers.stream()
             .filter(p -> p.getLeft().test(o))
             .map(Pair::getRight)
             .findFirst();
@@ -157,7 +200,7 @@ public class JsonPrinter {
       }
     }
 
-    void printList(List<?> l) {
+    void printList(Collection<?> l) {
       Iterator<?> i = l.iterator();
       if (i.hasNext()) {
         out.println('[');
@@ -216,7 +259,7 @@ public class JsonPrinter {
         map.put("class", o.getClass());
       }
       for (Field f : allFields) {
-        if (Modifier.isTransient(f.getModifiers())) {
+        if (!fieldFilters.stream().allMatch(p -> p.test(f))) {
           continue;
         }
         f.setAccessible(true);
