@@ -129,8 +129,8 @@ public class JsonPrinter {
         .addObjectClassHandler(OptionalDouble.class, i -> i.isPresent() ? i.getAsDouble() : null)
         .addObjectClassHandler(OptionalLong.class, i -> i.isPresent() ? i.getAsLong() : null)
         .addObjectClassHandler(Class.class, c -> c.getName())
-        .addObjectClassHandler(Path.class, p -> p.toString())
-        .addObjectClassHandler(File.class, f -> f.toString());
+        .addObjectClassHandler(Path.class, p -> p.toString().replace('\\', '/'))
+        .addObjectClassHandler(File.class, f -> f.toString().replace('\\', '/'));
   }
 
   public JsonPrinter filterTransient() {
