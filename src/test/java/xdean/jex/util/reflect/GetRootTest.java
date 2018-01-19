@@ -2,12 +2,21 @@ package xdean.jex.util.reflect;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 import org.junit.Test;
 
 public class GetRootTest {
-  
+
+  @Test
+  public void testSetModifier() throws Exception {
+    Constructor<TestClass> con = ReflectUtil.getRootExecutable(TestClass.class.getDeclaredConstructor());
+    ReflectUtil.setModifiers(con, con.getModifiers() & ~Modifier.PRIVATE | Modifier.PUBLIC);
+    TestClass.class.getDeclaredConstructor().newInstance();
+  }
+
   @Test
   public void testGetRootExecutable() throws Exception {
     assertNotNull(ReflectUtil.getRootExecutable(TestClass.class.getDeclaredConstructor()));

@@ -2,6 +2,7 @@ package xdean.jex.util.reflect;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -39,6 +40,13 @@ public class ReflectUtil {
     } catch (NoSuchMethodException | SecurityException | NoSuchFieldException e) {
       throw new IllegalStateException("ReflectUtil init fail, check your java version.", e);
     }
+  }
+
+  public static void setModifiers(AccessibleObject ao, int modifier) {
+    Arrays.stream(getAllFields(ao.getClass()))
+        .filter(f -> f.getName().equals("modifiers"))
+        .peek(f -> f.setAccessible(true))
+        .forEach(f -> uncheck(() -> f.set(ao, modifier)));
   }
 
   /**
