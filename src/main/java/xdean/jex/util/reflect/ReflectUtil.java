@@ -2,6 +2,7 @@ package xdean.jex.util.reflect;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -16,15 +17,15 @@ import java.util.function.UnaryOperator;
 
 public class ReflectUtil {
 
-  private static final UnaryOperator<Method> METHOD_GET_ROOT;
+  private static final UnaryOperator<Executable> EXECUTABLE_GET_ROOT;
   private static final Function<Class<?>, Method[]> CLASS_GET_ROOT_METHODS;
   private static final UnaryOperator<Field> FIELD_GET_ROOT;
   private static final Function<Class<?>, Field[]> CLASS_GET_ROOT_FIELDS;
   static {
     try {
-      Method getRootMethod = Method.class.getDeclaredMethod("getRoot");
+      Method getRootMethod = Executable.class.getDeclaredMethod("getRoot");
       getRootMethod.setAccessible(true);
-      METHOD_GET_ROOT = m -> uncheck(() -> (Method) getRootMethod.invoke(m));
+      EXECUTABLE_GET_ROOT = m -> uncheck(() -> (Executable) getRootMethod.invoke(m));
       Method getRootMethods = Class.class.getDeclaredMethod("privateGetPublicMethods");
       getRootMethods.setAccessible(true);
       CLASS_GET_ROOT_METHODS = c -> uncheck(() -> (Method[]) getRootMethods.invoke(c));
@@ -44,7 +45,15 @@ public class ReflectUtil {
    * Get root of the method.
    */
   public static Method getRootMethod(Method m) {
-    return METHOD_GET_ROOT.apply(m);
+    return getRootExecutable(m);
+  }
+
+  /**
+   * Get root of the executable.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T extends Executable> T getRootExecutable(T m) {
+    return (T) EXECUTABLE_GET_ROOT.apply(m);
   }
 
   /**
