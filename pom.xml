@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.XDean</groupId>
 	<artifactId>Java-EX</artifactId>
-	<version>0.0.6.3</version>
+	<version>0.0.7</version>
 	<name>Java-EX</name>
 	<description>Common Java Extension</description>
 	<url>https://github.com/XDean/Java-EX</url>
