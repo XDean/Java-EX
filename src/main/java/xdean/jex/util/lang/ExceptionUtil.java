@@ -10,8 +10,8 @@ import java.util.function.Function;
 
 import xdean.jex.extra.Either;
 import xdean.jex.extra.Wrapper;
-import xdean.jex.extra.function.RunnableThrow;
-import xdean.jex.extra.function.SupplierThrow;
+import xdean.jex.extra.function.ActionE0;
+import xdean.jex.extra.function.FuncE0;
 
 public class ExceptionUtil {
   public static <T extends Throwable, R> R throwIt(T t) throws T {
@@ -23,21 +23,21 @@ public class ExceptionUtil {
     throw (T) t;
   }
 
-  public static void uncheck(RunnableThrow<?> task) {
+  public static void uncheck(ActionE0<?> task) {
     try {
-      task.run();
+      task.call();
     } catch (Exception t) {
       throwAsUncheck(t);
     }
   }
 
-  public static <T> T uncheck(SupplierThrow<T, ?> task) {
+  public static <T> T uncheck(FuncE0<T, ?> task) {
     return supplierToRunnable(task, r -> uncheck(r));
   }
 
-  public static boolean uncatch(RunnableThrow<?> task) {
+  public static boolean uncatch(ActionE0<?> task) {
     try {
-      task.run();
+      task.call();
       return true;
     } catch (Exception t) {
       trace().log("Dont catch", t);
@@ -49,14 +49,14 @@ public class ExceptionUtil {
    * @param task
    * @return can be null
    */
-  public static <T> T uncatch(SupplierThrow<T, ?> task) {
+  public static <T> T uncatch(FuncE0<T, ?> task) {
     return supplierToRunnable(task, r -> uncatch(r));
   }
 
   @SuppressWarnings("unchecked")
-  public static <E extends Exception> Optional<E> throwToReturn(RunnableThrow<E> task) {
+  public static <E extends Exception> Optional<E> throwToReturn(ActionE0<E> task) {
     try {
-      task.run();
+      task.call();
     } catch (Exception t) {
       try {
         return Optional.of((E) t);
@@ -67,9 +67,9 @@ public class ExceptionUtil {
     return Optional.empty();
   }
 
-  public static <T, E extends Exception> Either<T, E> throwToReturn(SupplierThrow<T, E> task) {
+  public static <T, E extends Exception> Either<T, E> throwToReturn(FuncE0<T, E> task) {
     Wrapper<T> w = new Wrapper<>(null);
-    return Either.rightOrDefault(throwToReturn(() -> w.set(task.get())), w.get());
+    return Either.rightOrDefault(throwToReturn(() -> w.set(task.call())), w.get());
   }
 
   public static String getStackTraceString(Throwable tr) {
@@ -87,10 +87,10 @@ public class ExceptionUtil {
     return sw.toString();
   }
 
-  public static <E extends Exception> void wrapException(Function<Exception, E> wrapper, RunnableThrow<?> task)
+  public static <E extends Exception> void wrapException(Function<Exception, E> wrapper, ActionE0<?> task)
       throws E {
     try {
-      task.run();
+      task.call();
     } catch (Exception e) {
       throw wrapper.apply(e);
     }

@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
-import xdean.jex.extra.function.RunnableThrow;
+import xdean.jex.extra.function.ActionE0;
 import xdean.jex.util.task.tryto.Try;
 
 public class TryTest {
@@ -23,7 +23,7 @@ public class TryTest {
 
   @Test
   public void testTo() throws Exception {
-    assertTrue(to((RunnableThrow<Exception>) (() -> hitCount++)).isSuccess());
+    assertTrue(to((ActionE0<Exception>) (() -> hitCount++)).isSuccess());
     assertEquals(1, hitCount);
     assertTrue(to(() -> hitCount++).isSuccess());
     assertEquals(2, hitCount);

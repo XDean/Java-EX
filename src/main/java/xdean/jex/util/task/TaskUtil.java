@@ -9,8 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import xdean.jex.extra.Either;
-import xdean.jex.extra.function.RunnableThrow;
-import xdean.jex.extra.function.SupplierThrow;
+import xdean.jex.extra.function.ActionE0;
+import xdean.jex.extra.function.FuncE0;
 
 /**
  * Utility methods for task flow control.
@@ -39,8 +39,8 @@ public class TaskUtil {
    * @throws IllegalStateException If all tasks failed.
    */
   @SafeVarargs
-  public static <T> T firstSuccess(SupplierThrow<T, ?>... tasks) throws IllegalStateException {
-    for (SupplierThrow<T, ?> task : tasks) {
+  public static <T> T firstSuccess(FuncE0<T, ?>... tasks) throws IllegalStateException {
+    for (FuncE0<T, ?> task : tasks) {
       Either<T, ?> res = throwToReturn(task);
       if (res.isLeft()) {
         return res.getLeft();
@@ -57,8 +57,8 @@ public class TaskUtil {
    * @return can be null
    */
   @SafeVarargs
-  public static <T> Optional<T> firstNonNull(SupplierThrow<T, ?>... tasks) {
-    for (SupplierThrow<T, ?> task : tasks) {
+  public static <T> Optional<T> firstNonNull(FuncE0<T, ?>... tasks) {
+    for (FuncE0<T, ?> task : tasks) {
       T res = uncatch(task);
       if (res != null) {
         return Optional.of(res);
@@ -75,10 +75,10 @@ public class TaskUtil {
    */
   @SafeVarargs
   @SuppressWarnings("unchecked")
-  public static <T extends Exception> Optional<T> firstFail(RunnableThrow<T>... tasks) {
-    for (RunnableThrow<T> task : tasks) {
+  public static <T extends Exception> Optional<T> firstFail(ActionE0<T>... tasks) {
+    for (ActionE0<T> task : tasks) {
       try {
-        task.run();
+        task.call();
       } catch (Exception t) {
         return Optional.of((T) t);
       }

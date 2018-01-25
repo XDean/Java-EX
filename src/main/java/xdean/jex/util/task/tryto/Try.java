@@ -8,8 +8,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import xdean.jex.extra.function.RunnableThrow;
-import xdean.jex.extra.function.SupplierThrow;
+import xdean.jex.extra.function.ActionE0;
+import xdean.jex.extra.function.FuncE0;
 
 /**
  * Try pattern, similar to Optional (learn from Scala)
@@ -22,15 +22,15 @@ public abstract class Try<T>{
   /**
    * Constructs a `Try` using a code as a supplier.
    */
-  public static <T> Try<T> to(SupplierThrow<T, Exception> code, RunnableThrow<Exception> onFinally) {
+  public static <T> Try<T> to(FuncE0<T, Exception> code, ActionE0<Exception> onFinally) {
     try {
-      return new Success<>(code.get());
+      return new Success<>(code.call());
     } catch (Exception e) {
       return new Failure<>(e);
     } finally {
       if (onFinally != null) {
         try {
-          onFinally.run();
+          onFinally.call();
         } catch (Exception e) {
           trace().log(e.getMessage(), e);
         }
@@ -38,18 +38,18 @@ public abstract class Try<T>{
     }
   }
 
-  public static <T> Try<T> to(SupplierThrow<T, Exception> code) {
+  public static <T> Try<T> to(FuncE0<T, Exception> code) {
     return Try.to(code, null);
   }
 
-  public static Try<Void> to(RunnableThrow<Exception> code, RunnableThrow<Exception> onFinally) {
+  public static Try<Void> to(ActionE0<Exception> code, ActionE0<Exception> onFinally) {
     return Try.to(() -> {
-      code.run();
+      code.call();
       return null;
     }, onFinally);
   }
 
-  public static Try<Void> to(RunnableThrow<Exception> code) {
+  public static Try<Void> to(ActionE0<Exception> code) {
     return Try.to(code, null);
   }
 

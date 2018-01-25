@@ -2,20 +2,20 @@ package xdean.jex.util;
 
 import java.util.Optional;
 
-import xdean.jex.extra.function.ConsumerThrow;
-import xdean.jex.extra.function.RunnableThrow;
+import xdean.jex.extra.function.ActionE1;
+import xdean.jex.extra.function.ActionE0;
 
 public class OptionalUtil {
-  public static <T, E extends Exception> Optional<T> ifEmpty(Optional<T> o, RunnableThrow<E> r) throws E {
+  public static <T, E extends Exception> Optional<T> ifEmpty(Optional<T> o, ActionE0<E> r) throws E {
     if (o.isPresent() == false) {
-      r.run();
+      r.call();
     }
     return o;
   }
 
-  public static <T, E extends Exception> Optional<T> ifPresent(Optional<T> o, ConsumerThrow<T, E> r) throws E {
+  public static <T, E extends Exception> Optional<T> ifPresent(Optional<T> o, ActionE1<T, E> r) throws E {
     if (o.isPresent()) {
-      r.accept(o.get());
+      r.call(o.get());
     }
     return o;
   }

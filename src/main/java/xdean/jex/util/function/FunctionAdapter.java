@@ -7,9 +7,9 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import xdean.jex.extra.Wrapper;
-import xdean.jex.extra.function.ConsumerThrow;
-import xdean.jex.extra.function.RunnableThrow;
-import xdean.jex.extra.function.SupplierThrow;
+import xdean.jex.extra.function.ActionE1;
+import xdean.jex.extra.function.ActionE0;
+import xdean.jex.extra.function.FuncE0;
 import xdean.jex.internal.codecov.CodecovIgnore;
 
 @CodecovIgnore
@@ -58,15 +58,15 @@ public class FunctionAdapter {
    * @return the supplier's product
    */
   public static <T> T supplierToRunnable(Supplier<T> s, Consumer<Runnable> c) {
-    Wrapper<T> w = new Wrapper<T>(null);
+    Wrapper<T> w = new Wrapper<>(null);
     c.accept(() -> w.set(s.get()));
     return w.get();
   }
 
   public static <T, E extends Exception, EE extends Exception> T
-      supplierToRunnable(SupplierThrow<T, E> s, ConsumerThrow<RunnableThrow<E>, EE> c) throws EE {
-    Wrapper<T> w = new Wrapper<T>(null);
-    c.accept(() -> w.set(s.get()));
+      supplierToRunnable(FuncE0<T, E> s, ActionE1<ActionE0<E>, EE> c) throws EE {
+    Wrapper<T> w = new Wrapper<>(null);
+    c.call(() -> w.set(s.call()));
     return w.get();
   }
 }
