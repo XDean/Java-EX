@@ -1,22 +1,39 @@
 package xdean.jex.extra;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.FieldDefaults;
+import java.util.Objects;
 
-@Getter
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@EqualsAndHashCode
-@ToString
+/**
+ * @author XDean
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class Pair<K, V> {
-  K left;
-  V right;
+  private static final Pair<?, ?> EMPTY = new Pair<>(null, null);
+
+  public static <K, V> Pair<K, V> of(K k, V v) {
+    return new Pair<>(k, v);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <K, V> Pair<K, V> empty() {
+    return (Pair<K, V>) EMPTY;
+  }
+
+  private final K left;
+  private final V right;
 
   public Pair(K k, V v) {
     this.left = k;
     this.right = v;
+  }
+
+  public K getLeft() {
+    return left;
+  }
+
+  public V getRight() {
+    return right;
   }
 
   public <L> Pair<L, V> left(L left) {
@@ -27,14 +44,26 @@ public class Pair<K, V> {
     return Pair.of(left, right);
   }
 
-  public static <K, V> Pair<K, V> of(K k, V v) {
-    return new Pair<>(k, v);
+  @Override
+  public int hashCode() {
+    return Objects.hash(left, right);
   }
 
-  private static final Pair<?, ?> EMPTY = new Pair<>(null, null);
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    } else if (obj == null) {
+      return false;
+    } else if (!(obj instanceof Pair)) {
+      return false;
+    }
+    Pair<?, ?> other = (Pair<?, ?>) obj;
+    return Objects.equals(left, other.left) && Objects.equals(right, other.right);
+  }
 
-  @SuppressWarnings("unchecked")
-  public static <K, V> Pair<K, V> empty() {
-    return (Pair<K, V>) EMPTY;
+  @Override
+  public String toString() {
+    return "Pair [left=" + left + ", right=" + right + "]";
   }
 }

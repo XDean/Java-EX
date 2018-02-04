@@ -3,25 +3,23 @@ package xdean.jex.extra.collection;
 import java.util.AbstractList;
 import java.util.Comparator;
 
-import lombok.ToString;
 import xdean.jex.extra.collection.LinkedList.Node;
 
 /**
  * A monotone increase list
- * 
+ *
  * @author XDean
  *
  * @param <E>
  */
-@ToString(includeFieldNames = true, exclude = { "compartor" })
 public class LinkedMonotoneList<E> extends AbstractList<E> {
 
   public enum MonoType {
     /** When add an element, put it into the correct position **/
     INSERT,
     /**
-     * When add an element, link it to the last, and then delete as less as possible elements to make the list monotone
-     * again
+     * When add an element, link it to the last, and then delete as less as possible elements to
+     * make the list monotone again
      **/
     OVERWRITE;
   }
@@ -79,4 +77,8 @@ public class LinkedMonotoneList<E> extends AbstractList<E> {
     return list.size;
   }
 
+  @Override
+  public String toString() {
+    return "LinkedMonotoneList [type=" + type + ", list=" + list + "]";
+  }
 }

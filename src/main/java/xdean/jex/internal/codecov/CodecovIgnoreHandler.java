@@ -1,6 +1,6 @@
 package xdean.jex.internal.codecov;
 
-import static xdean.jex.util.lang.ExceptionUtil.uncatch;
+import static xdean.jex.util.lang.ExceptionUtil.*;
 import static xdean.jex.util.log.LogUtil.*;
 
 import java.nio.file.Files;
@@ -12,7 +12,6 @@ import java.util.stream.StreamSupport;
 
 import com.google.common.base.Charsets;
 
-import lombok.SneakyThrows;
 import xdean.jex.util.file.FileUtil;
 
 /**
@@ -56,9 +55,8 @@ public class CodecovIgnoreHandler {
         .subscribe(ignores -> writeIgnore(codecov, ignores));
   }
 
-  @SneakyThrows
   private static void writeIgnore(Path codecov, List<Path> ignores) {
-    List<String> lines = Files.readAllLines(codecov, Charsets.UTF_8);
+    List<String> lines = uncheck(() -> Files.readAllLines(codecov, Charsets.UTF_8));
     List<String> ignoreLines = ignores.stream()
         .map(p -> p.toString().replace('\\', '/'))
         .map(s -> "  - \"" + s + "\"")
@@ -84,7 +82,7 @@ public class CodecovIgnoreHandler {
         lines.addAll(generateLine, ignoreLines);
       }
     }
-    Files.write(codecov, lines);
+    uncheck(() -> Files.write(codecov, lines));
     info().log("codecov.yml has been updated!");
   }
 }

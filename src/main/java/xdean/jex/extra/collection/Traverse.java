@@ -8,7 +8,6 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import lombok.RequiredArgsConstructor;
 import xdean.jex.extra.Either;
 import xdean.jex.extra.rx2.RxIterator;
 
@@ -48,13 +47,16 @@ public class Traverse {
     <T> Flowable<T> travese(T root, Function<T, Iterable<T>> getChildren);
   }
 
-  @RequiredArgsConstructor
   public enum DefaultTraverser implements Traverser {
     PRE_ORDER(Traverse::preOrderTraversal),
     POST_ORDER(Traverse::postOrderTraversal),
     BREAD_FIRST(Traverse::breadthFirstTraversal);
 
     private final Traverser traverser;
+
+    private DefaultTraverser(Traverser traverser) {
+      this.traverser = traverser;
+    }
 
     @Override
     public <T> Flowable<T> travese(T root, Function<T, Iterable<T>> getChildren) {
@@ -63,7 +65,7 @@ public class Traverse {
   }
 
   private static <T> Deque<T> newDeque(T root) {
-    Deque<T> deque = new ArrayDeque<T>();
+    Deque<T> deque = new ArrayDeque<>();
     deque.add(root);
     return deque;
   }

@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.Getter;
 import xdean.jex.extra.Wrapper;
 import xdean.jex.extra.collection.Traverse.Traversable;
 import xdean.jex.extra.collection.Traverse.Traverser;
 
 import com.google.common.collect.Lists;
 
-@Getter
 public class Tree<T> implements Traversable<Tree<T>> {
   private Tree<T> parent;
   private List<Tree<T>> children = new ArrayList<>();
@@ -24,6 +22,18 @@ public class Tree<T> implements Traversable<Tree<T>> {
 
   public Tree(T value) {
     this.value = value;
+  }
+
+  public Tree<T> getParent() {
+    return parent;
+  }
+
+  public List<Tree<T>> getChildren() {
+    return children;
+  }
+
+  public T getValue() {
+    return value;
   }
 
   /**
