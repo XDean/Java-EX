@@ -5,13 +5,14 @@ import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -23,11 +24,11 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 
@@ -40,6 +41,7 @@ public class JsonPrinter {
   @SuppressWarnings("unchecked")
   public static JsonPrinter getDefault() {
     return getJava()
+        .printIdPolicy(PrintIdPolicy.ONLY_REFERENCED)
         .addObjectClassHandler(Either.class, e -> e.unify(a -> a, b -> b))
         .addObjectClassHandler(Multimap.class, m -> m.asMap())
         .addObjectClassHandler(Table.class, t -> t.rowMap());
@@ -49,8 +51,7 @@ public class JsonPrinter {
     return new JsonPrinter()
         .addJavaHandlers()
         .filterTransient()
-        .printId(true)
-        .printClass(true)
+        .printClass(false)
         .printStructedList(true)
         .printStructedMap(true)
         .idFunction(autoIncreaseId(0));
@@ -66,11 +67,26 @@ public class JsonPrinter {
     return o -> map.computeIfAbsent(o, e -> id.getAndIncrement());
   }
 
+  public enum PrintIdPolicy {
+    /**
+     * Print all object's id and use id to resolve reference.
+     */
+    ALL,
+    /**
+     * Use id to resolve reference and only print referenced object's id.
+     */
+    ONLY_REFERENCED,
+    /**
+     * Don't resolve reference, always print whole object.
+     */
+    OFF
+  }
+
   private final List<Pair<Predicate<Object>, Function<Object, Object>>> objectHandlers = new LinkedList<>();
   private final List<Predicate<Field>> fieldFilters = new LinkedList<>();
   private String tabCharacter = "  ";
   private boolean printClass = false;
-  private boolean printId = false;
+  private PrintIdPolicy idPolicy = PrintIdPolicy.OFF;
   private boolean printStructedList = false;
   private boolean printStructedMap = false;
   private Function<Object, Integer> idFunction = System::identityHashCode;
@@ -95,8 +111,8 @@ public class JsonPrinter {
     return this;
   }
 
-  public JsonPrinter printId(boolean b) {
-    printId = b;
+  public JsonPrinter printIdPolicy(PrintIdPolicy b) {
+    idPolicy = b;
     return this;
   }
 
@@ -138,7 +154,11 @@ public class JsonPrinter {
   }
 
   public void print(Object o, PrintStream ps) {
-    new InnerPrinter(ps).print(o);
+    InnerPrinter innerPrinter = new InnerPrinter(ps);
+    if (idPolicy == PrintIdPolicy.ONLY_REFERENCED) {
+      innerPrinter.prepareReferenced(o);
+    }
+    innerPrinter.print(o);
   }
 
   public void println(Object o, PrintStream ps) {
@@ -146,19 +166,73 @@ public class JsonPrinter {
     ps.println();
   }
 
-  public String toString(Object o) {
+  public String toString(Object o, Charset cs) throws UnsupportedEncodingException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    print(o, new PrintStream(baos));
-    return baos.toString();
+    print(o, new PrintStream(baos, false, cs.name()));
+    return baos.toString(cs.name());
+  }
+
+  public String toString(Object o) {
+    return uncheck(() -> toString(o, Charsets.UTF_8));
   }
 
   private class InnerPrinter {
     int tab;
-    Set<Integer> visited = new HashSet<>();
+    Map<Object, Void> referenced = new IdentityHashMap<>();
+    Map<Object, Void> visited = new IdentityHashMap<>();
     InnerPrintStream out;
 
     InnerPrinter(PrintStream ps) {
       out = new InnerPrintStream(ps);
+    }
+
+    private InnerPrinter prepareReferenced(Object o) {
+      traversal(o, new IdentityHashMap<>());
+      return this;
+    }
+
+    private void traversal(Object o, Map<Object, Object> visited) {
+      if (o == null) {
+        return;
+      }
+      Class<?> clz = o.getClass();
+      if (PrimitiveTypeUtil.isWrapper(clz)) {
+      } else if (clz == String.class) {
+      } else if (clz.isArray()) {
+        int length = Array.getLength(o);
+        for (int i = 0; i < length; i++) {
+          traversal(Array.get(o, i), visited);
+        }
+      } else if (printStructedMap && Map.class.isAssignableFrom(clz)) {
+        ((Map<?, ?>) o).forEach((k, v) -> {
+          traversal(k, visited);
+          traversal(v, visited);
+        });
+      } else if (printStructedList && Collection.class.isAssignableFrom(clz)) {
+        ((Collection<?>) o).forEach(i -> traversal(i, visited));
+      } else {
+        Optional<Function<Object, Object>> selector = objectHandlers.stream()
+            .filter(p -> p.getLeft().test(o))
+            .map(Pair::getRight)
+            .findFirst();
+        if (selector.isPresent()) {
+          traversal(selector.get().apply(o), visited);
+        } else {
+          if (visited.put(o, o) != null) {
+            referenced.put(o, null);
+            return;
+          }
+          Field[] allFields = ReflectUtil.getAllFields(o.getClass(), false);
+          for (Field f : allFields) {
+            if (!fieldFilters.stream().allMatch(p -> p.test(f))) {
+              continue;
+            }
+            f.setAccessible(true);
+            Object v = uncheck(() -> f.get(o));
+            traversal(v, visited);
+          }
+        }
+      }
     }
 
     void print(Object o) {
@@ -183,19 +257,18 @@ public class JsonPrinter {
       } else if (printStructedList && Collection.class.isAssignableFrom(clz)) {
         printList((Collection<?>) o);
       } else {
-        Optional<Function<Object, Object>> toString = objectHandlers.stream()
+        Optional<Function<Object, Object>> selector = objectHandlers.stream()
             .filter(p -> p.getLeft().test(o))
             .map(Pair::getRight)
             .findFirst();
-        if (toString.isPresent()) {
-          print(toString.get().apply(o));
+        if (selector.isPresent()) {
+          print(selector.get().apply(o));
+        } else if ((idPolicy == PrintIdPolicy.ALL && visited.containsKey(o)) ||
+            (idPolicy == PrintIdPolicy.ONLY_REFERENCED && visited.containsKey(o) && referenced.containsKey(o))) {
+          print("@" + idFunction.apply(o));
         } else {
-          Integer id = idFunction.apply(o);
-          if (visited.add(id)) {
-            printObject(o);
-          } else {
-            print("@" + id);
-          }
+          visited.put(o, null);
+          printObject(o);
         }
       }
     }
@@ -252,7 +325,7 @@ public class JsonPrinter {
     void printObject(Object o) {
       Field[] allFields = ReflectUtil.getAllFields(o.getClass(), false);
       Map<String, Object> map = new LinkedHashMap<>();
-      if (printId) {
+      if (idPolicy == PrintIdPolicy.ALL || (idPolicy == PrintIdPolicy.ONLY_REFERENCED && referenced.containsKey(o))) {
         map.put("UID", "@" + idFunction.apply(o));
       }
       if (printClass) {
