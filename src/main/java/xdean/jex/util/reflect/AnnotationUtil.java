@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -80,7 +81,8 @@ public class AnnotationUtil {
   }
 
   /**
-   * Changes the annotation value for the given key of the given annotation to newValue and returns the previous value.
+   * Changes the annotation value for the given key of the given annotation to newValue and returns
+   * the previous value.
    *
    * @author Balder@stackoverflow
    * @see <a href="https://stackoverflow.com/a/28118436/7803527">Origin code on Stackoverflow</a>
@@ -306,5 +308,15 @@ public class AnnotationUtil {
     return Stream.of(annotationClass.getDeclaredMethods())
         .filter(m -> m.getDefaultValue() != null)
         .collect(Collectors.toMap(m -> m.getName(), m -> m.getDefaultValue()));
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T extends Annotation> T copyAnnotation(T anno) {
+    return (T) createAnnotationFromMap(anno.annotationType(),
+        Stream.of(anno.annotationType().getMethods())
+            .filter(m -> m.getDeclaringClass() == anno.annotationType())
+            .filter(m -> m.getParameterCount() == 0)
+            .filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .collect(Collectors.toMap(m -> m.getName(), m -> uncheck(() -> m.invoke(anno)))));
   }
 }
