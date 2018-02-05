@@ -1,11 +1,9 @@
 package xdean.jex.extra;
 
 /**
- * Useful class for build chain and extendible API.
+ * Useful interface to build chain and extendible API.
  *
  * @author XDean
- *
- * @param <T>
  */
 public interface GetSelf<T> {
   @SuppressWarnings("unchecked")
