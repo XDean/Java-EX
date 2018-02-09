@@ -3,8 +3,24 @@ package xdean.jex.util.lang;
 import static xdean.jex.util.lang.PrimitiveTypeUtil.*;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class ArrayUtil {
+
+  public static <T> void forEach(T[] array, Consumer<? super T> action) {
+    Arrays.stream(array).forEach(action);
+  }
+
+  public static void forEach(Object array, Consumer<Object> action) {
+    if (!array.getClass().isArray()) {
+      throw new IllegalArgumentException("The parameter is not array.");
+    }
+    int len = Array.getLength(array);
+    for (int i = 0; i < len; i++) {
+      action.accept(Array.get(array, i));
+    }
+  }
 
   public static Object deepClone(Object array) {
     if (array == null || array.getClass().isArray() == false) {
