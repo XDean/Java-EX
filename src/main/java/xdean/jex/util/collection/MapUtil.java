@@ -24,14 +24,8 @@ public class MapUtil {
    * @param defaultGetter
    * @return
    */
+  @Deprecated
   public static <K, V> V getOrPutDefault(Map<K, V> map, K key, Supplier<V> defaultGetter) {
-    V result = map.get(key);
-    if (result == null) {
-      V defaultValue = defaultGetter.get();
-      map.put(key, defaultValue);
-      return defaultValue;
-    } else {
-      return result;
-    }
+    return map.computeIfAbsent(key, k -> defaultGetter.get());
   }
 }

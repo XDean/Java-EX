@@ -8,8 +8,6 @@ import java.util.function.Supplier;
 
 import com.google.common.collect.MapMaker;
 
-import xdean.jex.util.collection.MapUtil;
-
 @SuppressWarnings("unchecked")
 public class CacheUtil {
 
@@ -77,13 +75,7 @@ public class CacheUtil {
   }
 
   private static Map<Object, Object> getMap(Object owner) {
-    return MapUtil.getOrPutDefault(
-        MapUtil.getOrPutDefault(
-            CACHE_MAP,
-            owner.getClass(),
-            () -> createMap()),
-        owner,
-        () -> createMap());
+    return CACHE_MAP.computeIfAbsent(owner.getClass(), k -> createMap()).computeIfAbsent(owner, k1 -> createMap());
   }
 
   private static <K, V> Map<K, V> createMap() {
