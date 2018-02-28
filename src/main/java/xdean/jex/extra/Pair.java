@@ -1,6 +1,9 @@
 package xdean.jex.extra;
 
 import java.util.Objects;
+import java.util.Optional;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author XDean
@@ -8,6 +11,7 @@ import java.util.Objects;
  * @param <K>
  * @param <V>
  */
+@Immutable
 public class Pair<K, V> {
   private static final Pair<?, ?> EMPTY = new Pair<>(null, null);
 
@@ -32,8 +36,16 @@ public class Pair<K, V> {
     return left;
   }
 
+  public Optional<K> toLeft() {
+    return Optional.ofNullable(left);
+  }
+
   public V getRight() {
     return right;
+  }
+
+  public Optional<V> toRight() {
+    return Optional.ofNullable(right);
   }
 
   public <L> Pair<L, V> left(L left) {
