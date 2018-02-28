@@ -7,7 +7,6 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -103,20 +102,6 @@ public class ReflectUtil {
     } catch (IllegalAccessException e) {
       throw new IllegalStateException(e);
     }
-  }
-
-  class IntList extends ArrayList<Integer> {
-  }
-
-  /**
-   * @deprecated GenericUtil#getGenericTypes(Type, Class)
-   * @param sourceType
-   * @param targetClass
-   * @return
-   */
-  @Deprecated
-  public static Type[] getGenericTypes(Type sourceType, Class<?> targetClass) {
-    return GenericUtil.getGenericTypes(sourceType, targetClass);
   }
 
   /**
