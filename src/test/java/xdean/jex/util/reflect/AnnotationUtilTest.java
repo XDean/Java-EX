@@ -1,6 +1,14 @@
 package xdean.jex.util.reflect;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static xdean.jex.util.reflect.AnnotationUtil.addAnnotation;
+import static xdean.jex.util.reflect.AnnotationUtil.changeAnnotationValue;
+import static xdean.jex.util.reflect.AnnotationUtil.copyAnnotation;
+import static xdean.jex.util.reflect.AnnotationUtil.createAnnotationFromMap;
+import static xdean.jex.util.reflect.AnnotationUtil.removeAnnotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,13 +16,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runners.Suite.SuiteClasses;
-
-import static xdean.jex.util.reflect.AnnotationUtil.*;
 
 public class AnnotationUtilTest {
   private static final String VALUE = "value";
@@ -120,5 +127,13 @@ public class AnnotationUtilTest {
     assertEquals(AFTER, annotation.value());
     annotation = field.getAnnotation(TestAnnotation.class);
     assertNull(annotation);
+  }
+
+  @Test
+  public void testCopy() throws Exception {
+    annotation = createAnnotationFromMap(TestAnnotation.class, Collections.singletonMap(VALUE, VALUE));
+    TestAnnotation copy = copyAnnotation(annotation);
+    assertNotSame(annotation, copy);
+    assertEquals(annotation, copy);
   }
 }
