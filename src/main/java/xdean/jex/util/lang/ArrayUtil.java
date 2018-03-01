@@ -1,6 +1,7 @@
 package xdean.jex.util.lang;
 
-import static xdean.jex.util.lang.PrimitiveTypeUtil.*;
+import static xdean.jex.util.lang.PrimitiveTypeUtil.toPrimitiveArray;
+import static xdean.jex.util.lang.PrimitiveTypeUtil.toWrapperArray;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;

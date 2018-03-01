@@ -6,11 +6,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import xdean.codecov.CodecovIgnore;
 import xdean.jex.extra.Wrapper;
-import xdean.jex.extra.function.ActionE1;
 import xdean.jex.extra.function.ActionE0;
+import xdean.jex.extra.function.ActionE1;
 import xdean.jex.extra.function.FuncE0;
-import xdean.jex.internal.codecov.CodecovIgnore;
 
 @CodecovIgnore
 public class FunctionAdapter {

@@ -1,6 +1,7 @@
 package xdean.jex.util.lang;
 
-import static xdean.jex.util.cache.CacheUtil.*;
+import static xdean.jex.util.cache.CacheUtil.cache;
+import static xdean.jex.util.cache.CacheUtil.set;
 import static xdean.jex.util.function.FunctionAdapter.supplier;
 
 import java.util.function.Supplier;

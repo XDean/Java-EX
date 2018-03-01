@@ -4,10 +4,10 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Ordering;
+
 import xdean.jex.extra.collection.IntList;
 import xdean.jex.util.cache.CacheUtil;
-
-import com.google.common.collect.Ordering;
 
 public class StringUtil {
   public static String replaceExcept(String origin, String from, String to, String except) {

@@ -1,6 +1,13 @@
 package xdean.jex.extra.rx2;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.reactivestreams.Subscription;
+
 import io.reactivex.Flowable;
 import io.reactivex.Notification;
 import io.reactivex.Observable;
@@ -8,12 +15,6 @@ import io.reactivex.Scheduler;
 import io.reactivex.annotations.SchedulerSupport;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.reactivestreams.Subscription;
 
 /**
  * Convert RxStream to Iterator.

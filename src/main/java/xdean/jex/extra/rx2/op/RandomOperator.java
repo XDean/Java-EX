@@ -1,6 +1,7 @@
 package xdean.jex.extra.rx2.op;
 
-import static io.reactivex.internal.util.BackpressureHelper.*;
+import static io.reactivex.internal.util.BackpressureHelper.add;
+import static io.reactivex.internal.util.BackpressureHelper.produced;
 
 import java.util.ArrayList;
 import java.util.List;

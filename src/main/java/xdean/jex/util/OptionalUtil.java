@@ -2,8 +2,8 @@ package xdean.jex.util;
 
 import java.util.Optional;
 
-import xdean.jex.extra.function.ActionE1;
 import xdean.jex.extra.function.ActionE0;
+import xdean.jex.extra.function.ActionE1;
 
 public class OptionalUtil {
   public static <T, E extends Exception> Optional<T> ifEmpty(Optional<T> o, ActionE0<E> r) throws E {

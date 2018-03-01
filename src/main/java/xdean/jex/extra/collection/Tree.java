@@ -2,18 +2,20 @@ package xdean.jex.extra.collection;
 
 import static xdean.jex.extra.rx2.RxFunctions.rx;
 import static xdean.jex.util.function.FunctionAdapter.function;
-import static xdean.jex.util.function.Predicates.*;
-import io.reactivex.Flowable;
+import static xdean.jex.util.function.Predicates.is;
+import static xdean.jex.util.function.Predicates.isEquals;
+import static xdean.jex.util.function.Predicates.its;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.common.collect.Lists;
+
+import io.reactivex.Flowable;
 import xdean.jex.extra.Wrapper;
 import xdean.jex.extra.collection.Traverse.Traversable;
 import xdean.jex.extra.collection.Traverse.Traverser;
-
-import com.google.common.collect.Lists;
 
 public class Tree<T> implements Traversable<Tree<T>> {
   private Tree<T> parent;

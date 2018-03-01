@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import xdean.jex.extra.RelativeComparator;
-
 import com.google.common.collect.Lists;
+
+import xdean.jex.extra.RelativeComparator;
 
 public class ComparatorUtil {
   public static <T> Comparator<T> notSort() {

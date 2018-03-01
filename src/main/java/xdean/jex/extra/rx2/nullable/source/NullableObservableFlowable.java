@@ -1,10 +1,9 @@
 package xdean.jex.extra.rx2.nullable.source;
 
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-
 import java.util.Optional;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import xdean.jex.extra.rx2.nullable.handler.NullHandler;
 
 public interface NullableObservableFlowable<F> extends

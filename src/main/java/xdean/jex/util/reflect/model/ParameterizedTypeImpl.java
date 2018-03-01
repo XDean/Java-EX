@@ -7,7 +7,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Objects;
 
-import xdean.jex.internal.codecov.CodecovIgnore;
+import xdean.codecov.CodecovIgnore;
 
 @CodecovIgnore
 public final class ParameterizedTypeImpl implements ParameterizedType {

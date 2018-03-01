@@ -1,9 +1,9 @@
 package xdean.jex.util.calc;
 
-import io.reactivex.Flowable;
-
 import java.util.Arrays;
 import java.util.List;
+
+import io.reactivex.Flowable;
 
 public class CartesianProduct {
 

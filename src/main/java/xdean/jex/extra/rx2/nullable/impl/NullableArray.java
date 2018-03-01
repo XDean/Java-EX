@@ -1,11 +1,11 @@
 package xdean.jex.extra.rx2.nullable.impl;
 
 import static xdean.jex.util.function.Predicates.not;
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 import java.util.stream.Stream;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import xdean.jex.extra.rx2.nullable.handler.NullHandler;
 import xdean.jex.extra.rx2.nullable.source.NullableObservableFlowable;
 import xdean.jex.extra.rx2.nullable.source.ObservableFlowable;

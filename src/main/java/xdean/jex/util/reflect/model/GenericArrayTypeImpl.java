@@ -3,7 +3,7 @@ package xdean.jex.util.reflect.model;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 
-import xdean.jex.internal.codecov.CodecovIgnore;
+import xdean.codecov.CodecovIgnore;
 
 @CodecovIgnore
 public final class GenericArrayTypeImpl implements GenericArrayType {

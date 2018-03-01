@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-import xdean.jex.internal.codecov.CodecovIgnore;
+import xdean.codecov.CodecovIgnore;
 
 @CodecovIgnore
 public class EmptyFunction {

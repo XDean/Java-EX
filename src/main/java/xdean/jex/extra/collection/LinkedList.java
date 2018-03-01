@@ -41,7 +41,7 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 
-import xdean.jex.internal.codecov.CodecovIgnore;
+import xdean.codecov.CodecovIgnore;
 
 /**
  * Copy from system library, jdk 1.8.0_112u

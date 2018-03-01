@@ -1,11 +1,10 @@
 package xdean.jex.extra.rx2.nullable.impl;
 
+import org.reactivestreams.Publisher;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.subscribers.DefaultSubscriber;
-
-import org.reactivestreams.Publisher;
-
 import xdean.jex.extra.rx2.nullable.handler.NullHandler;
 import xdean.jex.extra.rx2.nullable.source.NullableObservableFlowable;
 import xdean.jex.extra.rx2.nullable.source.ObservableFlowable;

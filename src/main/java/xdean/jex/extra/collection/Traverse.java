@@ -1,13 +1,12 @@
 package xdean.jex.extra.collection;
 
-import io.reactivex.Flowable;
-
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.function.Function;
 
+import io.reactivex.Flowable;
 import xdean.jex.extra.Either;
 import xdean.jex.extra.rx2.RxIterator;
 

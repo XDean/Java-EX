@@ -2,7 +2,7 @@ package xdean.jex.util.log;
 
 import java.util.logging.Logger;
 
-import xdean.jex.internal.codecov.CodecovIgnore;
+import xdean.codecov.CodecovIgnore;
 import xdean.jex.util.log.Log.SubLog;
 
 @CodecovIgnore
