@@ -46,6 +46,7 @@
       <groupId>com.github.XDean</groupId>
       <artifactId>codecov-ignore</artifactId>
       <version>1.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
