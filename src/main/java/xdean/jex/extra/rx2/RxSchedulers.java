@@ -10,10 +10,22 @@ import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.ThreadFactory;
 
 import io.reactivex.Scheduler;
+import io.reactivex.internal.schedulers.RxThreadFactory;
 import io.reactivex.schedulers.Schedulers;
+import xdean.jex.extra.LazyValue;
 import xdean.jex.util.lang.FinalizeSupport;
 
 public class RxSchedulers {
+  /**
+   * @see https://github.com/ReactiveX/RxJava/issues/5822
+   */
+  private static final LazyValue<Scheduler> NEW_IO = LazyValue.create(
+      () -> Schedulers.from(Executors.newCachedThreadPool(new RxThreadFactory("RxSchedulers.newIOScheduler"))));
+
+  public static Scheduler newIO() {
+    return NEW_IO.get();
+  }
+
   public static Scheduler fixedSize(int size) {
     return autoClose(Executors.newFixedThreadPool(size, new ThreadFactory() {
       int i = 0;
