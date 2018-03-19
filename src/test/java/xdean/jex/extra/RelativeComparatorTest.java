@@ -1,8 +1,8 @@
 package xdean.jex.extra;
 
-import io.reactivex.Flowable;
-
 import org.junit.Test;
+
+import io.reactivex.Flowable;
 
 public class RelativeComparatorTest {
   @Test

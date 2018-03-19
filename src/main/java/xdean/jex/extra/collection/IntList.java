@@ -277,12 +277,11 @@ public class IntList implements RandomAccess, Cloneable, Serializable {
 
   @Override
   public String toString() {
-
     return "IntList: " +
         stream().mapToObj(Integer::toString)
             .reduce((a, b) -> a + ", " + b)
             .map(s -> "[" + s + "]")
-            .orElse("null");
+            .orElse("[]");
   }
 
   @Override
