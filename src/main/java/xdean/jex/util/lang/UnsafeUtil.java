@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import sun.misc.Unsafe;
-import xdean.jex.util.log.Log;
-import xdean.jex.util.log.LogUtil;
+import xdean.jex.log.Log;
+import xdean.jex.log.LogFactory;
 import xdean.jex.util.reflect.ReflectUtil;
 
 public class UnsafeUtil {
@@ -22,11 +22,11 @@ public class UnsafeUtil {
   private static final int ADDRESS_SIZE = THE_UNSAFE.addressSize();
   private static final long HEADER_SIZE = initHeaderSize();
   private static final boolean useCompressedOops = initUseCompressedOops();
-  private static final Log LOGGER = LogUtil.log();
+  private static final Log LOGGER = LogFactory.from(UnsafeUtil.class);
   static {
-    LOGGER.trace().log("address size: {0}", ADDRESS_SIZE);
-    LOGGER.trace().log("header size: {0}", HEADER_SIZE);
-    LOGGER.trace().log("useCompressedOops: {0}", useCompressedOops);
+    LOGGER.trace("address size: {0}", ADDRESS_SIZE);
+    LOGGER.trace("header size: {0}", HEADER_SIZE);
+    LOGGER.trace("useCompressedOops: {0}", useCompressedOops);
   }
 
   public static Unsafe getUnsafe() {

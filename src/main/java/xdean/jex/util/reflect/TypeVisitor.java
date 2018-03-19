@@ -8,7 +8,7 @@ import java.lang.reflect.WildcardType;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import xdean.jex.util.log.Logable;
+import xdean.jex.log.Logable;
 
 public class TypeVisitor<T> implements Logable {
 

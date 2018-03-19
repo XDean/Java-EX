@@ -17,12 +17,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import xdean.jex.util.log.Log;
-import xdean.jex.util.log.LogUtil;
+import xdean.jex.log.Log;
+import xdean.jex.log.LogFactory;
 
 public class FunctionInterfaceUtil {
 
-  private static final Log LOG = LogUtil.log();
+  private static final Log LOG = LogFactory.from(FunctionInterfaceUtil.class);
 
   /**
    * Get the method from a function interface
@@ -143,7 +143,7 @@ public class FunctionInterfaceUtil {
         return null;
       }
     } else {
-      LOG.warning().log("Can't handle GenericReturnType: {} with type {}", functionGenericReturnType,
+      LOG.warn().log("Can't handle GenericReturnType: {} with type {}", functionGenericReturnType,
           functionGenericReturnType.getClass());
       return null;
     }
@@ -175,7 +175,7 @@ public class FunctionInterfaceUtil {
           return null;
         }
       } else {
-        LOG.warning().log("Can't handle GenericParameterType: {} with type {}", paramType, paramType.getClass());
+        LOG.warn().log("Can't handle GenericParameterType: {} with type {}", paramType, paramType.getClass());
         return null;
       }
     }
@@ -197,7 +197,7 @@ public class FunctionInterfaceUtil {
                     functionThrowClass = explicitType;
                   }
                 } else {
-                  LOG.warning().log("Can't handle GenericException: {} with type {}", functionThrowType,
+                  LOG.warn().log("Can't handle GenericException: {} with type {}", functionThrowType,
                       functionThrowType.getClass());
                   return false;
                 }
@@ -244,7 +244,7 @@ public class FunctionInterfaceUtil {
           } else if (t instanceof TypeVariable) {
             return getAllBounds(((TypeVariable<?>) t));
           } else {
-            LOG.warning().log("Can't handle TypeVariable Bound: {} with type {}", t, t.getClass());
+            LOG.warn().log("Can't handle TypeVariable Bound: {} with type {}", t, t.getClass());
             return Stream.empty();
           }
         });

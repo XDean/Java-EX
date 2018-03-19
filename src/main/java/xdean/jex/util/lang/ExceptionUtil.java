@@ -1,7 +1,6 @@
 package xdean.jex.util.lang;
 
 import static xdean.jex.util.function.FunctionAdapter.supplierToRunnable;
-import static xdean.jex.util.log.LogUtil.trace;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -12,6 +11,7 @@ import xdean.jex.extra.Either;
 import xdean.jex.extra.Wrapper;
 import xdean.jex.extra.function.ActionE0;
 import xdean.jex.extra.function.FuncE0;
+import xdean.jex.log.LogFactory;
 
 public class ExceptionUtil {
   public static <T extends Throwable, R> R throwIt(T t) throws T {
@@ -40,7 +40,7 @@ public class ExceptionUtil {
       task.call();
       return true;
     } catch (Exception t) {
-      trace().log("Dont catch", t);
+      LogFactory.from(ExceptionUtil.class).trace("Dont catch", t);
       return false;
     }
   }

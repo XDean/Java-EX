@@ -1,7 +1,5 @@
 package xdean.jex.util.task.tryto;
 
-import static xdean.jex.util.log.LogUtil.trace;
-
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -10,6 +8,7 @@ import java.util.function.Supplier;
 
 import xdean.jex.extra.function.ActionE0;
 import xdean.jex.extra.function.FuncE0;
+import xdean.jex.log.LogFactory;
 
 /**
  * Try pattern, similar to Optional (learn from Scala)
@@ -32,7 +31,7 @@ public abstract class Try<T>{
         try {
           onFinally.call();
         } catch (Exception e) {
-          trace().log(e.getMessage(), e);
+          LogFactory.from(Try.class).trace().log(e.getMessage(), e);
         }
       }
     }

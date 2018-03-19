@@ -1,7 +1,5 @@
 package xdean.jex.extra.rx2;
 
-import static xdean.jex.util.log.LogUtil.debug;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
@@ -13,6 +11,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.internal.schedulers.RxThreadFactory;
 import io.reactivex.schedulers.Schedulers;
 import xdean.jex.extra.LazyValue;
+import xdean.jex.log.LogFactory;
 import xdean.jex.util.lang.FinalizeSupport;
 
 public class RxSchedulers {
@@ -64,7 +63,7 @@ public class RxSchedulers {
   public static Scheduler autoClose(ExecutorService pool) {
     Scheduler scheduler = Schedulers.from(pool);
     FinalizeSupport.finalize(scheduler, () -> {
-      debug().log("Shutdown the scheduler from: " + pool);
+      LogFactory.from(RxSchedulers.class).debug("Shutdown the scheduler from: " + pool);
       pool.shutdown();
     });
     return scheduler;
