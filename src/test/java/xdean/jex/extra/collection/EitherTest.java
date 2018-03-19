@@ -1,7 +1,7 @@
-package xdean.jex.extra;
+package xdean.jex.extra.collection;
 
+import static xdean.jex.extra.collection.Either.*;
 import static xdean.jex.util.lang.ExceptionUtil.*;
-import static xdean.jex.extra.Either.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

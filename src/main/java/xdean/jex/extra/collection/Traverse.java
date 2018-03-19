@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.function.Function;
 
 import io.reactivex.Flowable;
-import xdean.jex.extra.Either;
 import xdean.jex.extra.rx2.RxIterator;
 
 public class Traverse {

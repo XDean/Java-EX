@@ -7,8 +7,8 @@ import java.io.StringWriter;
 import java.util.Optional;
 import java.util.function.Function;
 
-import xdean.jex.extra.Either;
-import xdean.jex.extra.Wrapper;
+import xdean.jex.extra.collection.Either;
+import xdean.jex.extra.collection.Wrapper;
 import xdean.jex.extra.function.ActionE0;
 import xdean.jex.extra.function.FuncE0;
 import xdean.jex.log.LogFactory;

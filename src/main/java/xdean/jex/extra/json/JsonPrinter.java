@@ -32,8 +32,8 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 
-import xdean.jex.extra.Either;
-import xdean.jex.extra.Pair;
+import xdean.jex.extra.collection.Either;
+import xdean.jex.extra.collection.Pair;
 import xdean.jex.util.lang.PrimitiveTypeUtil;
 import xdean.jex.util.reflect.ReflectUtil;
 

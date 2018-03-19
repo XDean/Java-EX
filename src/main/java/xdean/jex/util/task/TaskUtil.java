@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
-import xdean.jex.extra.Either;
+import xdean.jex.extra.collection.Either;
 import xdean.jex.extra.function.ActionE0;
 import xdean.jex.extra.function.FuncE0;
 

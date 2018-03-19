@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import xdean.jex.extra.Pair;
+import xdean.jex.extra.collection.Pair;
 
 /**
  * Change annotations in runtime.

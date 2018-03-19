@@ -1,4 +1,4 @@
-package xdean.jex.extra;
+package xdean.jex.extra.collection;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -6,13 +6,16 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
- * 
+ *
  * @author org.reactfx.util, XDean
  *
  * @param <L>
  * @param <R>
  */
+@Immutable
 public interface Either<L, R> {
 
   static <L, R> Either<L, R> left(L l) {

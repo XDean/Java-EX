@@ -1,4 +1,4 @@
-package xdean.jex.util.task.tryto;
+package xdean.jex.extra.tryto;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

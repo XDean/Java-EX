@@ -13,7 +13,6 @@ import java.util.Optional;
 import com.google.common.collect.Lists;
 
 import io.reactivex.Flowable;
-import xdean.jex.extra.Wrapper;
 import xdean.jex.extra.collection.Traverse.Traversable;
 import xdean.jex.extra.collection.Traverse.Traverser;
 

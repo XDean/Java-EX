@@ -1,16 +1,16 @@
-package xdean.jex.util.task;
+package xdean.jex.extra;
 
 import static org.junit.Assert.*;
+import static xdean.jex.extra.tryto.Try.*;
 import static xdean.jex.util.function.Predicates.is;
 import static xdean.jex.util.lang.ExceptionUtil.*;
-import static xdean.jex.util.task.tryto.Try.*;
 
 import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
 import xdean.jex.extra.function.ActionE0;
-import xdean.jex.util.task.tryto.Try;
+import xdean.jex.extra.tryto.Try;
 
 public class TryTest {
   int hitCount;

@@ -7,7 +7,7 @@ import static xdean.jex.util.task.TaskUtil.andFinal;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import xdean.jex.extra.Wrapper;
+import xdean.jex.extra.collection.Wrapper;
 
 public class UnsafeUtilTest {
 

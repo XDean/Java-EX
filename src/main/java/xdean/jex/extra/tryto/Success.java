@@ -1,4 +1,4 @@
-package xdean.jex.util.task.tryto;
+package xdean.jex.extra.tryto;
 
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;

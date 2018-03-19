@@ -1,4 +1,4 @@
-package xdean.jex.extra;
+package xdean.jex.extra.collection;
 
 import java.util.Objects;
 

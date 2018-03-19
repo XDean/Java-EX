@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import xdean.jex.extra.Wrapper;
+import xdean.jex.extra.collection.Wrapper;
 import xdean.jex.util.reflect.ReflectUtil;
 
 public class CacheUtilTest {

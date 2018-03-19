@@ -5,7 +5,7 @@ import static xdean.jex.util.function.Predicates.*;
 
 import org.junit.Test;
 
-import xdean.jex.extra.Wrapper;
+import xdean.jex.extra.collection.Wrapper;
 import xdean.jex.util.function.Predicates;
 
 public class PredicatesTest {

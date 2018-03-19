@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import xdean.jex.extra.Wrapper;
+import xdean.jex.extra.collection.Wrapper;
 import xdean.jex.util.lang.FinalizeSupport;
 
 public class RxSchedulersTest {
