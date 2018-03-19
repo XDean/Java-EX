@@ -28,11 +28,15 @@ comment:
 ignore:
 #generated
   - "src/main/java/xdean/jex/extra/collection/LinkedList.java"
+  - "src/main/java/xdean/jex/extra/function/Action0.java"
+  - "src/main/java/xdean/jex/extra/function/Action1.java"
+  - "src/main/java/xdean/jex/extra/function/Action2.java"
+  - "src/main/java/xdean/jex/extra/function/Func0.java"
+  - "src/main/java/xdean/jex/extra/function/Func1.java"
+  - "src/main/java/xdean/jex/extra/function/Func2.java"
   - "src/main/java/xdean/jex/extra/rx2/RxFunctions.java"
   - "src/main/java/xdean/jex/util/function/EmptyFunction.java"
   - "src/main/java/xdean/jex/util/function/FunctionAdapter.java"
-  - "src/main/java/xdean/jex/util/log/Logable.java"
-  - "src/main/java/xdean/jex/util/log/LogUtil.java"
   - "src/main/java/xdean/jex/util/reflect/model/GenericArrayTypeImpl.java"
   - "src/main/java/xdean/jex/util/reflect/model/ParameterizedTypeImpl.java"
   - "src/main/java/xdean/jex/util/reflect/model/WildcardTypeImpl.java"
