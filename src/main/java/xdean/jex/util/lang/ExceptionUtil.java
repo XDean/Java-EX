@@ -95,4 +95,13 @@ public class ExceptionUtil {
       throw wrapper.apply(e);
     }
   }
+
+  public static <E extends Exception, T> T wrapException(Function<Exception, E> wrapper, FuncE0<T, ?> task)
+      throws E {
+    try {
+      return task.call();
+    } catch (Exception e) {
+      throw wrapper.apply(e);
+    }
+  }
 }
