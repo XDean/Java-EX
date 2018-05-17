@@ -2,12 +2,33 @@
 
 hs_err_pid*
 
-.svn/
+### Eclipse ###
 .settings/
 target/
 bin/
-doc/
-.idea/
-*.iml
 .classpath
 .project
+.factorypath
+.apt_generated
+.springBeans
+rebel.xml
+/javadoc/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### other ###
+.svn/
+.*.md.html
+dependency-reduced-pom.xml
