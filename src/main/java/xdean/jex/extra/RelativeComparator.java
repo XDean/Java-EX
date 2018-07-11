@@ -35,7 +35,7 @@ public class RelativeComparator<T> {
 
   @SafeVarargs
   public static <T> Comparator<T> of(Comparator<T> defaultComparator, T... ts) {
-    return new RelativeComparator<T>(defaultComparator).addOrder(ts).toComparator();
+    return new RelativeComparator<>(defaultComparator).addOrder(ts).toComparator();
   }
 
   Comparator<T> defaultComparator;
@@ -66,7 +66,7 @@ public class RelativeComparator<T> {
     Optional<Tree<T>> oBigNode = root.deepChild(big);
     if (oBigNode.isPresent()) {
       Tree<T> bigNode = oBigNode.get();
-      Tree<T> commonParent = smallNode.commonParent(bigNode).get();
+      Tree<T> commonParent = smallNode.commonParent(bigNode).orElse(root);
       if (commonParent == smallNode) {
         return this;
       } else if (commonParent == bigNode) {

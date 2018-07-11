@@ -8,8 +8,8 @@ import xdean.jex.extra.annotation.marker.OnHold;
 
 @OnHold
 class IteratorSequence<E> implements Sequence<E> {
-  private Iterator<E> origin;
-  private List<E> released = new ArrayList<>();
+  private final Iterator<E> origin;
+  private final List<E> released = new ArrayList<>();
 
   public IteratorSequence(Iterator<E> origin) {
     this.origin = origin;
@@ -23,7 +23,7 @@ class IteratorSequence<E> implements Sequence<E> {
   @Override
   public E next() {
     if (released.isEmpty()) {
-      return null;
+      return origin.next();
     } else {
       return released.remove(0);
     }
