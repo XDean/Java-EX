@@ -102,7 +102,7 @@ public class UnsafeUtil {
     Class<? extends Object> clz = o.getClass();
     if (clz.isArray()) {
       int len = Array.getLength(o);
-      return regulateSize(THE_UNSAFE.arrayBaseOffset(clz) + THE_UNSAFE.arrayIndexScale(clz) * len);
+      return regulateSize(THE_UNSAFE.arrayBaseOffset(clz) + (long) THE_UNSAFE.arrayIndexScale(clz) * len);
     }
     return shallowSizeOf(clz);
   }

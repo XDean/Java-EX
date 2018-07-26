@@ -2,6 +2,7 @@ package xdean.jex.util.string;
 
 import java.util.Base64;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Ordering;
@@ -20,7 +21,8 @@ public class StringUtil {
   }
 
   /**
-   * Get a list of not exist chars in given string. You can use these chars as placeholder to replace string safety.
+   * Get a list of not exist chars in given string. You can use these chars as placeholder to
+   * replace string safety.
    *
    * @param s
    * @return
@@ -38,7 +40,7 @@ public class StringUtil {
           next = null;
           return c;
         } else {
-          throw new IllegalStateException("No next not exist char.");
+          throw new NoSuchElementException("No next non-exist character.");
         }
       }
 

@@ -217,9 +217,9 @@ public class ReflectUtil {
   /**
    * Get caller stack info.
    *
-   * @param deep Deep to search the caller class.If deep is 0, it returns the class who calls this method.
+   * @param deep Deep to search the caller class.If deep is 0, it returns the class who calls this
+   *          method.
    * @param ignoreSameClass If it is true, calling in same class will be ignored.
-   * @return
    */
   public static StackTraceElement getCaller(int deep, boolean ignoreSameClass) {
     // index 0 is Thread.getStackTrace
@@ -240,6 +240,6 @@ public class ReflectUtil {
         return currentStack;
       }
     }
-    return null;
+    throw new IllegalArgumentException("Stack don't have such deep.");
   }
 }
