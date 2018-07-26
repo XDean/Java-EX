@@ -1,6 +1,7 @@
 # Java-EX
 [![Build Status](https://travis-ci.org/XDean/Java-EX.svg?branch=master)](https://travis-ci.org/XDean/Java-EX)
-[![codecov.io](http://codecov.io/github/XDean/Java-EX/coverage.svg?branch=master)](https://codecov.io/gh/XDean/Java-EX/branch/master)
+[![Code Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.github.XDean%3AJava-EX&metric=coverage)](https://sonarcloud.io/dashboard?id=com.github.XDean%3AJava-EX)
+[![Code Quality](https://sonarcloud.io/api/project_badges/measure?project=com.github.XDean%3AJava-EX&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.github.XDean%3AJava-EX)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.XDean/Java-EX/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.XDean/Java-EX)
 
 Java Common Extension
