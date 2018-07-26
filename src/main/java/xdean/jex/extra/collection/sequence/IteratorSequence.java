@@ -31,7 +31,6 @@ class IteratorSequence<E> implements Sequence<E> {
 
   @Override
   public boolean release(E e) {
-    return false;
+    return released.add(e);
   }
-
 }

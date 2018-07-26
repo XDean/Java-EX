@@ -11,6 +11,7 @@
 	<name>Java-EX</name>
 	<description>Common Java Extension</description>
 	<url>https://github.com/XDean/Java-EX</url>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -22,6 +23,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.github.XDean</groupId>
