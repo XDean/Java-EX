@@ -27,8 +27,11 @@ public class RxSchedulersTest {
         .doOnNext(i -> worker.set(Thread.currentThread()))
         .blockingSubscribe();
     scheduler = null;
-    System.gc();
-    assertTrue(done.await(100, TimeUnit.MILLISECONDS));
+    for (int i = 0; i < 10; i++) {
+      Thread.sleep(10);
+      System.gc();
+    }
+    assertTrue(done.await(1000, TimeUnit.MILLISECONDS));
     assertNotNull(worker.get());
     for (int i = 0; i < 20; i++) {
       System.gc();
