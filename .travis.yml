@@ -7,6 +7,10 @@ cache:
 jdk:
 - oraclejdk8
 install: true
-script: mvn clean package -P jacoco
+addons:
+  sonarcloud:
+    organization: xdean-github
+script:
+- mvn clean package sonar:sonar -P jacoco
 after_success:
 - bash <(curl -s https://codecov.io/bash)
