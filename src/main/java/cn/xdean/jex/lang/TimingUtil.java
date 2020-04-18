@@ -2,14 +2,12 @@ package cn.xdean.jex.lang;
 
 import cn.xdean.jex.lang.function.FunctionAdapter;
 import com.google.common.base.Stopwatch;
-import xdean.codecov.CodecovIgnore;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@CodecovIgnore
 public class TimingUtil {
   public static void timeThen(Runnable r, Consumer<Long> then) {
     Stopwatch s = getShareStopwatch();
@@ -36,8 +34,8 @@ public class TimingUtil {
 
   /**
    * @param uniqueKey unique key
-   * @param r the task
-   * @param then (this time, total time) -&#62; {...}
+   * @param r         the task
+   * @param then      (this time, total time) -&#62; {...}
    */
   public static void seriesTimeThen(Object uniqueKey, Runnable r, BiConsumer<Long, Long> then) {
     Stopwatch total = CacheUtil.cache(TimingUtil.class, uniqueKey, () -> Stopwatch.createUnstarted());

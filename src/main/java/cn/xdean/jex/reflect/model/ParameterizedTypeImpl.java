@@ -1,7 +1,5 @@
 package cn.xdean.jex.reflect.model;
 
-import xdean.codecov.CodecovIgnore;
-
 import java.lang.reflect.MalformedParameterizedTypeException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -9,7 +7,6 @@ import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Objects;
 
-@CodecovIgnore
 public final class ParameterizedTypeImpl implements ParameterizedType {
   private final Class<?> rawType;
   private final Type ownerType;
@@ -51,8 +48,8 @@ public final class ParameterizedTypeImpl implements ParameterizedType {
       Type thatOwner = that.getOwnerType();
       Type thatRawType = that.getRawType();
       return Objects.equals(ownerType, thatOwner) &&
-          Objects.equals(rawType, thatRawType) &&
-          Arrays.equals(actualTypeArguments, that.getActualTypeArguments());
+              Objects.equals(rawType, thatRawType) &&
+              Arrays.equals(actualTypeArguments, that.getActualTypeArguments());
     } else {
       return false;
     }
@@ -61,8 +58,8 @@ public final class ParameterizedTypeImpl implements ParameterizedType {
   @Override
   public int hashCode() {
     return Arrays.hashCode(actualTypeArguments) ^
-        (ownerType == null ? 0 : ownerType.hashCode()) ^
-        (rawType == null ? 0 : rawType.hashCode());
+            (ownerType == null ? 0 : ownerType.hashCode()) ^
+            (rawType == null ? 0 : rawType.hashCode());
   }
 
   @Override
@@ -77,7 +74,7 @@ public final class ParameterizedTypeImpl implements ParameterizedType {
       sb.append(".");
       if (ownerType instanceof ParameterizedType) {
         sb.append(rawType.getName().replace(
-            ((Class<?>) ((ParameterizedType) ownerType).getRawType()).getName() + "$", ""));
+                ((Class<?>) ((ParameterizedType) ownerType).getRawType()).getName() + "$", ""));
       } else {
         sb.append(rawType.getName());
       }

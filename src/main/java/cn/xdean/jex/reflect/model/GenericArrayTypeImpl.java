@@ -1,11 +1,9 @@
 package cn.xdean.jex.reflect.model;
 
-import xdean.codecov.CodecovIgnore;
-
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
+import java.util.Objects;
 
-@CodecovIgnore
 public final class GenericArrayTypeImpl implements GenericArrayType {
   private final Type componentType;
 
@@ -38,7 +36,7 @@ public final class GenericArrayTypeImpl implements GenericArrayType {
       GenericArrayType that = (GenericArrayType) o;
 
       Type thatComponentType = that.getGenericComponentType();
-      return componentType == null ? thatComponentType == null : componentType.equals(thatComponentType);
+      return Objects.equals(componentType, thatComponentType);
     } else {
       return false;
     }

@@ -4,11 +4,9 @@ import cn.xdean.jex.lang.collection.Wrapper;
 import cn.xdean.jex.lang.function.type.ActionE0;
 import cn.xdean.jex.lang.function.type.ActionE1;
 import cn.xdean.jex.lang.function.type.FuncE0;
-import xdean.codecov.CodecovIgnore;
 
 import java.util.function.*;
 
-@CodecovIgnore
 public class FunctionAdapter {
 
   public static <T> Supplier<T> supplier(T t) {

@@ -1,12 +1,9 @@
 package cn.xdean.jex.reflect.model;
 
-import xdean.codecov.CodecovIgnore;
-
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 
-@CodecovIgnore
 public final class WildcardTypeImpl implements WildcardType {
   private final Type[] lower;
   private final Type[] upper;
@@ -36,7 +33,7 @@ public final class WildcardTypeImpl implements WildcardType {
     if (o instanceof WildcardType) {
       WildcardType that = (WildcardType) o;
       return Arrays.equals(this.getLowerBounds(), that.getLowerBounds()) && Arrays.equals(this.getUpperBounds(),
-          that.getUpperBounds());
+              that.getUpperBounds());
     } else {
       return false;
     }

@@ -1,13 +1,10 @@
 package cn.xdean.jex.lang.function;
 
-import xdean.codecov.CodecovIgnore;
-
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-@CodecovIgnore
 public class EmptyFunction {
   public static Runnable runnable() {
     return () -> {

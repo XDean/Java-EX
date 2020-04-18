@@ -1,11 +1,9 @@
 package cn.xdean.jex.thrid.rxjava;
 
 import io.reactivex.functions.*;
-import xdean.codecov.CodecovIgnore;
 
 import java.util.concurrent.Callable;
 
-@CodecovIgnore
 public class RxFunctions {
   public static Action rx(java.lang.Runnable java) {
     return java::run;
