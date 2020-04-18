@@ -32,7 +32,7 @@ public class JsonPrinterTest {
   }
 
   private void assertWith(String s, String file) throws IOException, URISyntaxException {
-    Path p = Paths.get("src/test/resources/cn/xdean/jex/extra/json/");
+    Path p = Paths.get("src/test/resources/cn/xdean/jex/json/");
     Path goldenFile = p.resolve(file + ".json");
     if (!Files.exists(goldenFile)) {
       Files.createDirectories(goldenFile.getParent());
