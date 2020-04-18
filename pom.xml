@@ -6,6 +6,7 @@
 		<artifactId>oss-parent</artifactId>
 		<version>1.1</version>
 	</parent>
+	<groupId>cn.xdean</groupId>
 	<artifactId>Java-EX</artifactId>
 	<version>0.1.2</version>
 	<name>Java-EX</name>
