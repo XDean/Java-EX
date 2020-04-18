@@ -1,7 +1,6 @@
-package cn.xdean.jex.fx;
+package cn.xdean.jex.lang.convert;
 
 import cn.xdean.jex.lang.function.Try;
-import javafx.util.StringConverter;
 
 import java.util.*;
 import java.util.function.Function;
