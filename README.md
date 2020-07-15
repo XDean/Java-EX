@@ -14,7 +14,7 @@ To add a dependency on Java-EX using Maven, use the following:
 <dependency>
     <groupId>com.github.XDean</groupId>
     <artifactId>Java-EX</artifactId>
-    <version>0.0.7</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
