@@ -8,8 +8,6 @@ Java Common Extension
 
 # Get it
 
-To add a dependency on Java-EX using Maven, use the following:
-
 ```xml
 <dependency>
     <groupId>com.github.XDean</groupId>
